@@ -6,6 +6,8 @@ import {
   Button,
   Space,
   Typography,
+  Drawer,
+  Skeleton,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -27,6 +29,9 @@ function SearchTable() {
 
   const tableCallback = async (record, type) => {
     console.log(record, type);
+    if (type === 'details') {
+      setVisible(true);
+    }
   };
 
   const columns = useMemo(() => getColumns(t, tableCallback), [t]);
@@ -41,6 +46,7 @@ function SearchTable() {
   });
   const [loading, setLoading] = useState(true);
   const [formParams, setFormParams] = useState({});
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -113,6 +119,53 @@ function SearchTable() {
         columns={columns}
         data={data}
       />
+
+      <Drawer
+        width={600}
+        title={<span>Basic Information </span>}
+        visible={visible}
+        onOk={() => {
+          setVisible(false);
+        }}
+        onCancel={() => {
+          setVisible(false);
+        }}
+        footer={null}
+      >
+        <Skeleton
+          loading={false}
+          animation
+          text={{
+            rows: 15,
+            width: ['100%', 600, 400, 300],
+          }}
+        >
+          <div className={styles.drawer_wrap}>
+            <div className={styles.order_header}>
+              <div style={{ display: 'flex' }}>
+                <div className={styles.order_header_icon}></div>
+                <div style={{ margin: '20px' }}>
+                  <div>得到订单</div>
+                  <div>订单编号：88888888</div>
+                </div>
+              </div>
+              <div>
+                <Space>
+                  <Button
+                    style={{ width: '100px', marginRight: '20px' }}
+                    type="primary"
+                  >
+                    匹配
+                  </Button>
+                </Space>
+                <Space>
+                  <Button>备注</Button>
+                </Space>
+              </div>
+            </div>
+          </div>
+        </Skeleton>
+      </Drawer>
     </Card>
   );
 }

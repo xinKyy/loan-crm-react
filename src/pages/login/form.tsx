@@ -14,6 +14,9 @@ import useStorage from '@/utils/useStorage';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
+import { APIDoLogin } from '@/api/api';
+import { router } from 'next/client';
+import { useRouter } from 'next/router';
 
 export default function LoginForm() {
   const formRef = useRef<FormInstance>();
@@ -21,11 +24,8 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [loginParams, setLoginParams, removeLoginParams] =
     useStorage('loginParams');
-
   const t = useLocale(locale);
-
   const [rememberPassword, setRememberPassword] = useState(!!loginParams);
-
   function afterLoginSuccess(params) {
     // 记住密码
     if (rememberPassword) {
@@ -35,33 +35,21 @@ export default function LoginForm() {
     }
     // 记录登录状态
     localStorage.setItem('userStatus', 'login');
+    localStorage.setItem('token', params.result);
     // 跳转首页
     window.location.href = '/';
   }
-
-  function login(params) {
-    setErrorMessage('');
-    setLoading(true);
-    axios
-      .post('/api/user/login', params)
-      .then((res) => {
-        const { status, msg } = res.data;
-        if (status === 'ok') {
-          afterLoginSuccess(params);
-        } else {
-          setErrorMessage(msg || t['login.form.login.errMsg']);
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }
-
   function onSubmitClick() {
     formRef.current.validate().then((values) => {
       login(values);
     });
   }
+
+  const login = (params) => {
+    APIDoLogin(params).then((resp) => {
+      afterLoginSuccess(resp);
+    });
+  };
 
   // 读取 localStorage，设置初始值
   useEffect(() => {

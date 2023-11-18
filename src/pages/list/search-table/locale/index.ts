@@ -24,8 +24,8 @@ const i18n = {
     'searchForm.all.placeholder': 'all',
   },
   'zh-CN': {
-    'menu.list': '列表页',
-    'menu.list.searchTable': '查询表格',
+    'menu.list': '订单管理',
+    'menu.list.searchTable': '基金订单列表',
     'searchTable.form.search': '查询',
     'searchTable.form.reset': '重置',
     'searchTable.columns.id': '集合编号',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Typography, Badge } from '@arco-design/web-react';
+import { Button, Typography, Badge, Space } from '@arco-design/web-react';
 import IconText from './icons/text.svg';
 import IconHorizontalVideo from './icons/horizontal.svg';
 import IconVerticalVideo from './icons/vertical.svg';
@@ -24,16 +24,16 @@ export function getColumns(
 ) {
   return [
     {
-      title: t['searchTable.columns.id'],
+      title: '订单编号',
       dataIndex: 'id',
       render: (value) => <Text copyable>{value}</Text>,
     },
     {
-      title: t['searchTable.columns.name'],
+      title: '用户昵称',
       dataIndex: 'name',
     },
     {
-      title: t['searchTable.columns.contentType'],
+      title: '订单金额',
       dataIndex: 'contentType',
       render: (value) => (
         <div className={styles['content-type']}>
@@ -43,17 +43,9 @@ export function getColumns(
       ),
     },
     {
-      title: t['searchTable.columns.filterType'],
+      title: '订单类型',
       dataIndex: 'filterType',
       render: (value) => FilterType[value],
-    },
-    {
-      title: t['searchTable.columns.contentNum'],
-      dataIndex: 'count',
-      sorter: (a, b) => a.count - b.count,
-      render(x) {
-        return Number(x).toLocaleString();
-      },
     },
     {
       title: t['searchTable.columns.createdTime'],
@@ -62,7 +54,7 @@ export function getColumns(
       sorter: (a, b) => b.createdTime - a.createdTime,
     },
     {
-      title: t['searchTable.columns.status'],
+      title: '订单状态',
       dataIndex: 'status',
       render: (x) => {
         if (x === 0) {
@@ -72,17 +64,33 @@ export function getColumns(
       },
     },
     {
-      title: t['searchTable.columns.operations'],
+      title: '操作',
       dataIndex: 'operations',
-      headerCellStyle: { paddingLeft: '15px' },
+      headerCellStyle: { paddingLeft: '40px' },
       render: (_, record) => (
-        <Button
-          type="text"
-          size="small"
-          onClick={() => callback(record, 'view')}
-        >
-          {t['searchTable.columns.operations.view']}
-        </Button>
+        <Space>
+          <Button
+            type="text"
+            size="small"
+            onClick={() => callback(record, 'details')}
+          >
+            订单详情
+          </Button>
+          <Button
+            type="text"
+            size="small"
+            onClick={() => callback(record, 'remarks')}
+          >
+            订单备注
+          </Button>
+          <Button
+            type="text"
+            size="small"
+            onClick={() => callback(record, 'accept')}
+          >
+            审核
+          </Button>
+        </Space>
       ),
     },
   ];
