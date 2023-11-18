@@ -8,6 +8,10 @@ import {
   Typography,
   Drawer,
   Skeleton,
+  Grid,
+  Tag,
+  Tabs,
+  Divider,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -18,6 +22,8 @@ import locale from './locale';
 import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
+const Row = Grid.Row;
+const Col = Grid.Col;
 
 const { Title } = Typography;
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
@@ -46,7 +52,9 @@ function SearchTable() {
   });
   const [loading, setLoading] = useState(true);
   const [formParams, setFormParams] = useState({});
+
   const [visible, setVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('1');
 
   useEffect(() => {
     fetchData();
@@ -144,8 +152,10 @@ function SearchTable() {
             <div className={styles.order_header}>
               <div style={{ display: 'flex' }}>
                 <div className={styles.order_header_icon}></div>
-                <div style={{ margin: '20px' }}>
-                  <div>得到订单</div>
+                <div style={{ margin: '15px' }}>
+                  <div style={{ fontWeight: 600, fontSize: '20px' }}>
+                    得到订单
+                  </div>
                   <div>订单编号：88888888</div>
                 </div>
               </div>
@@ -163,6 +173,31 @@ function SearchTable() {
                 </Space>
               </div>
             </div>
+            <Row style={{ marginTop: '20px' }}>
+              <Col span={8}>
+                <Space direction={'vertical'} size={'small'}>
+                  <div>订单状态</div>
+                  <Tag color={'#ff7d00'}>匹配中</Tag>
+                </Space>
+              </Col>
+              <Col span={8}>
+                <Space direction={'vertical'} size={'small'}>
+                  订单金额
+                  <div>1000.0</div>
+                </Space>
+              </Col>
+              <Col span={8}>
+                <Space direction={'vertical'} size={'small'}>
+                  创建时间
+                  <div>2023-01-1</div>
+                </Space>
+              </Col>
+            </Row>
+            <Divider />
+            <Tabs activeTab={activeTab} onChange={setActiveTab}>
+              <Tabs.TabPane key="1" title="订单信息"></Tabs.TabPane>
+              <Tabs.TabPane key="2" title="订单记录"></Tabs.TabPane>
+            </Tabs>
           </div>
         </Skeleton>
       </Drawer>
