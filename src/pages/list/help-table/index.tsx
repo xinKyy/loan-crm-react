@@ -16,6 +16,7 @@ import {
   TableColumnProps,
   Modal,
   Input,
+  Checkbox,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -69,6 +70,7 @@ function SearchTable() {
   const [modalVisible, setModalVisible] = useState(false);
   const [remarkModalVisible, setRemarkModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -138,10 +140,14 @@ function SearchTable() {
                     <span>本金：</span>1000
                   </div>
                   <div>
-                    <span>充值CC：</span>1000
+                    <span>赠送CC：</span>1000
                   </div>
                   <div>
-                    <span>收款地址：</span>1000
+                    <span>消耗CC：</span>1000
+                  </div>
+                  <div>
+                    <span>付款地址：</span>
+                    0x650ee95accdce850f113c4cde717935f20c0c688
                   </div>
                 </div>
                 <div className={styles.row}>
@@ -149,10 +155,16 @@ function SearchTable() {
                     <span>订单创建时间：</span>2023-11-1
                   </div>
                   <div>
-                    <span>付款地址：</span>1000
+                    <span>匹配时间：</span>2023-11-1
                   </div>
                   <div>
                     <span>备注：</span>--
+                  </div>
+                  <div>
+                    <div>
+                      <span>付款地址：</span>
+                    </div>
+                    0x650ee95accdce850f113c4cde717935f20c0c688
                   </div>
                 </div>
                 <Row></Row>
@@ -204,7 +216,7 @@ function SearchTable() {
                     type="primary"
                     onClick={openModal}
                   >
-                    审核
+                    匹配
                   </Button>
                 </Space>
                 <Space>
@@ -253,21 +265,14 @@ function SearchTable() {
                       <div className={styles.row_item}>
                         <div>本金：1000</div>
                         <div>充值CC：20.00</div>
-                        <div>消耗CC：10.00</div>
+                        <div>充值哈希值：0xFfd8d83210f0213</div>
                       </div>
                     </Row>
                     <Row className={styles.row_wrap}>
                       <div className={styles.row_item}>
-                        <div>冻结周期：15天</div>
-                        <div>预计收益：7777</div>
-                        <div>匹配编号：111</div>
-                      </div>
-                    </Row>
-                    <Row className={styles.row_wrap}>
-                      <div className={styles.row_item}>
-                        <div>匹配时间：2023-11-11</div>
-                        <div>支付时间：2023-11-11</div>
-                        <div>支付哈希值：0x111313123123123</div>
+                        <div>订单状态：审核中</div>
+                        <div>订单编号：7777</div>
+                        <div>创建时间：2023-11-16：17:59:35</div>
                       </div>
                     </Row>
                     <Row className={styles.row_wrap}>
@@ -286,7 +291,7 @@ function SearchTable() {
                   </Col>
                   <Divider />
                   <Col>
-                    <div className={styles.title}>订单疑问</div>
+                    <div className={styles.title}>订单备注</div>
                     <Col>
                       <div className={styles.row_wrap}>
                         疑问时间：2023-11-1 17：01：23
@@ -306,16 +311,52 @@ function SearchTable() {
       </Drawer>
 
       <Modal
-        title="订单审核"
+        title={
+          <span>
+            可匹配提供帮助订单：
+            <span style={{ color: 'red' }}>当前还需匹配1200.00金额</span>
+          </span>
+        }
         visible={modalVisible}
+        wrapClassName={styles.table_modal_wrap}
         onOk={() => setModalVisible(false)}
         onCancel={() => cancelModal()}
-        okText={'审核通过'}
-        cancelText={'拒绝通过'}
+        okText={'确定'}
+        hideCancel={true}
         autoFocus={false}
         focusLock={true}
       >
-        <p>是否已确认订单详情</p>
+        <Table
+          rowKey="key"
+          columns={mateColumns}
+          data={orderData}
+          rowSelection={{
+            type: 'checkbox',
+            selectedRowKeys,
+            onChange: (selectedRowKeys, selectedRows) => {
+              console.log('onChange:', selectedRowKeys, selectedRows);
+              setSelectedRowKeys(selectedRowKeys);
+            },
+            onSelect: (selected, record, selectedRows) => {
+              console.log('onSelect:', selected, record, selectedRows);
+            },
+          }}
+        />
+
+        <div>
+          <strong>差额补足账户</strong>
+        </div>
+        <div className={styles.row}>
+          <div style={{ flex: 1 }}>
+            <Checkbox>4</Checkbox>
+          </div>
+          <div style={{ flex: 2, margin: '0 20px' }}>
+            <Input placeholder={'当前可用余额9999'}></Input>
+          </div>
+          <div>89999988888</div>
+          <div>后台配置</div>
+          <div>00：00：00</div>
+        </div>
       </Modal>
 
       <Modal
@@ -349,6 +390,28 @@ const orderColumns: TableColumnProps[] = [
   },
   {
     title: '操作角色',
+    dataIndex: 'email',
+  },
+];
+const mateColumns: TableColumnProps[] = [
+  {
+    title: 'ID',
+    dataIndex: 'name',
+  },
+  {
+    title: '订单金额',
+    dataIndex: 'salary',
+  },
+  {
+    title: '订单编号',
+    dataIndex: 'address',
+  },
+  {
+    title: '账户来源',
+    dataIndex: 'email',
+  },
+  {
+    title: '匹配剩余时间',
     dataIndex: 'email',
   },
 ];

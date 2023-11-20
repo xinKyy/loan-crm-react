@@ -94,13 +94,22 @@
   display: flex;
   justify-content: space-between;
   margin: 10px;
+  align-items: center;
   padding: 5px;
 
   div {
-    flex: 1;
+    flex: 2;
 
     span {
       font-weight: 600;
+    }
+  }
+}
+
+.table_modal_wrap {
+  :global {
+    .arco-modal {
+      width: unset;
     }
   }
 }

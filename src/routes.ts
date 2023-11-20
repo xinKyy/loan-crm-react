@@ -34,7 +34,11 @@ export const routes: IRoute[] = [
     key: 'list',
     children: [
       {
-        name: 'menu.list.searchTable',
+        name: '帮助订单',
+        key: 'list/help-table',
+      },
+      {
+        name: '基金订单',
         key: 'list/search-table',
       },
       // {
