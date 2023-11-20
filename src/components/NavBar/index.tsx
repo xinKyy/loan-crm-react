@@ -145,71 +145,71 @@ function Navbar({ show }: { show: boolean }) {
       <div className={styles.left}>
         <div className={styles.logo}>
           <Logo />
-          <div className={styles['logo-name']}>Arco Pro</div>
+          <div className={styles['logo-name']}>LCC Admin</div>
         </div>
       </div>
-      <ul className={styles.right}>
-        <li>
-          <Input.Search
-            className={styles.round}
-            placeholder={t['navbar.search.placeholder']}
-          />
-        </li>
-        <li>
-          <Select
-            triggerElement={<IconButton icon={<IconLanguage />} />}
-            options={[
-              { label: '中文', value: 'zh-CN' },
-              { label: 'English', value: 'en-US' },
-            ]}
-            value={lang}
-            triggerProps={{
-              autoAlignPopupWidth: false,
-              autoAlignPopupMinWidth: true,
-              position: 'br',
-            }}
-            trigger="hover"
-            onChange={(value) => {
-              setLang(value);
-              const nextLang = defaultLocale[value];
-              Message.info(`${nextLang['message.lang.tips']}${value}`);
-            }}
-          />
-        </li>
-        <li>
-          <MessageBox>
-            <IconButton icon={<IconNotification />} />
-          </MessageBox>
-        </li>
-        <li>
-          <Tooltip
-            content={
-              theme === 'light'
-                ? t['settings.navbar.theme.toDark']
-                : t['settings.navbar.theme.toLight']
-            }
-          >
-            <IconButton
-              icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            />
-          </Tooltip>
-        </li>
-        <Settings />
-        {userInfo && (
-          <li>
-            <Dropdown droplist={droplist} position="br" disabled={userLoading}>
-              <Avatar size={32} style={{ cursor: 'pointer' }}>
-                {userLoading ? (
-                  <IconLoading />
-                ) : (
-                  <img alt="avatar" src={userInfo.avatar} />
-                )}
-              </Avatar>
-            </Dropdown>
-          </li>
-        )}
-      </ul>
+      {/*<ul className={styles.right}>*/}
+      {/*  <li>*/}
+      {/*    <Input.Search*/}
+      {/*      className={styles.round}*/}
+      {/*      placeholder={t['navbar.search.placeholder']}*/}
+      {/*    />*/}
+      {/*  </li>*/}
+      {/*  <li>*/}
+      {/*    <Select*/}
+      {/*      triggerElement={<IconButton icon={<IconLanguage />} />}*/}
+      {/*      options={[*/}
+      {/*        { label: '中文', value: 'zh-CN' },*/}
+      {/*        { label: 'English', value: 'en-US' },*/}
+      {/*      ]}*/}
+      {/*      value={lang}*/}
+      {/*      triggerProps={{*/}
+      {/*        autoAlignPopupWidth: false,*/}
+      {/*        autoAlignPopupMinWidth: true,*/}
+      {/*        position: 'br',*/}
+      {/*      }}*/}
+      {/*      trigger="hover"*/}
+      {/*      onChange={(value) => {*/}
+      {/*        setLang(value);*/}
+      {/*        const nextLang = defaultLocale[value];*/}
+      {/*        Message.info(`${nextLang['message.lang.tips']}${value}`);*/}
+      {/*      }}*/}
+      {/*    />*/}
+      {/*  </li>*/}
+      {/*  <li>*/}
+      {/*    <MessageBox>*/}
+      {/*      <IconButton icon={<IconNotification />} />*/}
+      {/*    </MessageBox>*/}
+      {/*  </li>*/}
+      {/*  <li>*/}
+      {/*    <Tooltip*/}
+      {/*      content={*/}
+      {/*        theme === 'light'*/}
+      {/*          ? t['settings.navbar.theme.toDark']*/}
+      {/*          : t['settings.navbar.theme.toLight']*/}
+      {/*      }*/}
+      {/*    >*/}
+      {/*      <IconButton*/}
+      {/*        icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}*/}
+      {/*        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}*/}
+      {/*      />*/}
+      {/*    </Tooltip>*/}
+      {/*  </li>*/}
+      {/*  <Settings />*/}
+      {/*  {userInfo && (*/}
+      {/*    <li>*/}
+      {/*      <Dropdown droplist={droplist} position="br" disabled={userLoading}>*/}
+      {/*        <Avatar size={32} style={{ cursor: 'pointer' }}>*/}
+      {/*          {userLoading ? (*/}
+      {/*            <IconLoading />*/}
+      {/*          ) : (*/}
+      {/*            <img alt="avatar" src={userInfo.avatar} />*/}
+      {/*          )}*/}
+      {/*        </Avatar>*/}
+      {/*      </Dropdown>*/}
+      {/*    </li>*/}
+      {/*  )}*/}
+      {/*</ul>*/}
     </div>
   );
 }
