@@ -30,6 +30,20 @@ export const routes: IRoute[] = [
     ],
   },
   {
+    name: '用户管理',
+    key: 'userList',
+    children: [
+      {
+        name: '用户列表',
+        key: 'user/user-table',
+      },
+      // {
+      //   name: 'menu.list.cardList',
+      //   key: 'list/card',
+      // },
+    ],
+  },
+  {
     name: 'menu.list',
     key: 'list',
     children: [

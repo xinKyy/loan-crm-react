@@ -122,7 +122,7 @@ function SearchTable() {
 
   return (
     <Card>
-      <Title heading={6}>{t['menu.list.searchTable']}</Title>
+      <Title heading={6}>帮助订单列表</Title>
       <SearchForm onSearch={handleSearch} />
       <Table
         rowKey="id"
