@@ -37,10 +37,6 @@ export const routes: IRoute[] = [
         name: '用户列表',
         key: 'user/user-table',
       },
-      // {
-      //   name: 'menu.list.cardList',
-      //   key: 'list/card',
-      // },
     ],
   },
   {
@@ -61,7 +57,34 @@ export const routes: IRoute[] = [
       // },
     ],
   },
-
+  {
+    name: '分销',
+    key: 'distribution',
+    children: [
+      {
+        name: '分销配置',
+        key: 'distribution/configuration',
+      },
+      {
+        name: '分销员列表',
+        key: 'distribution/distribution-table',
+      },
+      {
+        name: '分销等级',
+        key: 'distribution/distribution-level-table',
+      },
+    ],
+  },
+  {
+    name: '文章',
+    key: 'post',
+    children: [
+      {
+        name: '文章管理',
+        key: 'post/post-table',
+      },
+    ],
+  },
   // {
   //   name: 'menu.visualization',
   //   key: 'visualization',
