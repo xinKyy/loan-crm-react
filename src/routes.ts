@@ -85,6 +85,24 @@ export const routes: IRoute[] = [
       },
     ],
   },
+  {
+    name: '设置',
+    key: 'setting',
+    children: [
+      {
+        name: '系统设置',
+        key: 'setting/system-setting',
+      },
+      {
+        name: '权限管理',
+        key: 'setting/auth-table',
+      },
+      {
+        name: '支付设置',
+        key: 'setting/pay',
+      },
+    ],
+  },
   // {
   //   name: 'menu.visualization',
   //   key: 'visualization',
