@@ -34,21 +34,21 @@ const Content = Layout.Content;
 
 function getIconFromKey(key) {
   switch (key) {
-    case 'dashboard':
+    case 'dashboard/workplace':
       return <IconDashboard className={styles.icon} />;
     case 'list':
       return <IconList className={styles.icon} />;
-    case 'form':
+    case 'setting':
       return <IconSettings className={styles.icon} />;
     case 'profile':
       return <IconFile className={styles.icon} />;
-    case 'visualization':
+    case 'distribution':
       return <IconApps className={styles.icon} />;
-    case 'result':
+    case 'post/post-table':
       return <IconCheckCircle className={styles.icon} />;
     case 'exception':
       return <IconExclamationCircle className={styles.icon} />;
-    case 'user':
+    case 'user/user-table':
       return <IconUser className={styles.icon} />;
     default:
       return <div className={styles['icon-empty']} />;

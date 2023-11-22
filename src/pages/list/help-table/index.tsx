@@ -28,6 +28,7 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
+import { getHelpOrderList } from '@/api/api';
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -65,39 +66,25 @@ function SearchTable() {
   });
   const [loading, setLoading] = useState(true);
   const [formParams, setFormParams] = useState({});
-
   const [visible, setVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [remarkModalVisible, setRemarkModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-  useEffect(() => {
-    fetchData();
-  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+  const getHelpOrder = () => {
+    getHelpOrderList({
+      status: '4',
+    }).then((resp: any) => {
+      setData(resp.result.records);
+      setLoading(false);
+    });
+  };
 
-  function fetchData() {
-    const { current, pageSize } = pagination;
-    setLoading(true);
-    axios
-      .get('/api/list', {
-        params: {
-          page: current,
-          pageSize,
-          ...formParams,
-        },
-      })
-      .then((res) => {
-        setData(res.data.list);
-        setPatination({
-          ...pagination,
-          current,
-          pageSize,
-          total: res.data.total,
-        });
-        setLoading(false);
-      });
-  }
+  useEffect(() => {
+    // fetchData();
+    getHelpOrder();
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
   function onChangeTable({ current, pageSize }) {
     setPatination({
@@ -137,25 +124,32 @@ function SearchTable() {
               <Col>
                 <div className={styles.row}>
                   <div>
-                    <span>本金：</span>1000
+                    <span>本金：</span>
+                    {record.orderType === 1
+                      ? record.offerAmount
+                      : record.amount}
                   </div>
                   <div>
-                    <span>赠送CC：</span>1000
+                    <span>赠送LCC：</span>
+                    {record.obtainLcc ?? '--'}
                   </div>
                   <div>
-                    <span>消耗CC：</span>1000
+                    <span>消耗CC：</span>
+                    {record.consumeLcc ?? '--'}
                   </div>
                   <div>
-                    <span>付款地址：</span>
-                    0x650ee95accdce850f113c4cde717935f20c0c688
+                    <span>收款地址：</span>
+                    {record.toAddress ?? '--'}
                   </div>
                 </div>
                 <div className={styles.row}>
                   <div>
-                    <span>订单创建时间：</span>2023-11-1
+                    <span>订单创建时间：</span>
+                    {record.createTime}
                   </div>
                   <div>
-                    <span>匹配时间：</span>2023-11-1
+                    <span>匹配时间：</span>
+                    {record.matchTime ?? '--'}
                   </div>
                   <div>
                     <span>备注：</span>--
@@ -164,7 +158,7 @@ function SearchTable() {
                     <div>
                       <span>付款地址：</span>
                     </div>
-                    0x650ee95accdce850f113c4cde717935f20c0c688
+                    {record.fromAddress ?? '--'}
                   </div>
                 </div>
                 <Row></Row>

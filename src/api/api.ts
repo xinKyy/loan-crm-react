@@ -1,7 +1,7 @@
 import axios from './axios_instance';
 
-const getOrderList = () => {
-  return axios.get('');
+export const getHelpOrderList = (params) => {
+  return axios.post('/api/v1/iccOrder/getPageList', params);
 };
 
 export const APIDoLogin = (params) => {

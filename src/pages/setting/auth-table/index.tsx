@@ -20,7 +20,9 @@ import {
   Radio,
   Dropdown,
   Menu,
-  InputNumber, DatePicker, Switch,
+  InputNumber,
+  DatePicker,
+  Switch,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDown, IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -80,6 +82,7 @@ function SearchTable() {
   const [formParams, setFormParams] = useState({});
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [addAdminVisible, setAddAdminVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [editPasswordVisible, setEditPasswordVisible] = useState(false);
 
@@ -146,9 +149,7 @@ function SearchTable() {
   return (
     <Card>
       <Row>
-        <div style={{ fontSize: '16px', fontWeight: 600 }}>
-          时间选择：
-        </div>
+        <div style={{ fontSize: '16px', fontWeight: 600 }}>时间选择：</div>
         <RadioGroup
           type="button"
           name="lang"
@@ -179,7 +180,9 @@ function SearchTable() {
         <div style={{ width: 120 }}>关键字：</div>
         <Input placeholder={'请输入名称'}></Input>
         <div style={{ width: 20 }}></div>
-        <Button type={'primary'}>添加管理员</Button>
+        <Button onClick={() => setAddAdminVisible(true)} type={'primary'}>
+          添加管理员
+        </Button>
       </div>
       <div style={{ height: 20 }} />
       <Table
@@ -223,17 +226,47 @@ function SearchTable() {
         focusLock={true}
       >
         <div style={{ height: 20 }} />
-        <Input
-          addBefore="管理员姓名"
-          placeholder="请输入管理员姓名"
-        />
+        <Input addBefore="管理员姓名" placeholder="请输入管理员姓名" />
         <div style={{ height: 20 }} />
         <Input
           addBefore="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;帐号"
           placeholder="请输入管理员帐号"
         />
         <div style={{ height: 20 }} />
-        <div style={{display:"flex", marginLeft:"20px"}}>
+        <div style={{ display: 'flex', marginLeft: '20px' }}>
+          <div>是否可用:</div>
+          <div style={{ width: 20 }} />
+          <Switch></Switch>
+        </div>
+      </Modal>
+
+      <Modal
+        title={'添加管理员'}
+        visible={addAdminVisible}
+        wrapClassName={styles.table_modal_wrap}
+        onOk={() => setAddAdminVisible(false)}
+        onCancel={() => setAddAdminVisible(false)}
+        okText={'确定'}
+        hideCancel={true}
+        autoFocus={false}
+        focusLock={true}
+      >
+        <div style={{ height: 20 }} />
+        <Input addBefore="管理员姓名" placeholder="请输入管理员姓名" />
+        <div style={{ height: 20 }} />
+        <Input
+          addBefore="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;帐号"
+          placeholder="请输入管理员帐号"
+        />
+        <div style={{ height: 20 }} />
+        <Input
+          addBefore="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;密码"
+          placeholder="请输入管理员密码"
+        />
+        <div style={{ height: 20 }} />
+        <Input addBefore="确认密码" placeholder="请确认管理员密码" />
+        <div style={{ height: 20 }} />
+        <div style={{ display: 'flex', marginLeft: '20px' }}>
           <div>是否可用:</div>
           <div style={{ width: 20 }} />
           <Switch></Switch>

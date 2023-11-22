@@ -31,13 +31,7 @@ export const routes: IRoute[] = [
   },
   {
     name: '用户管理',
-    key: 'userList',
-    children: [
-      {
-        name: '用户列表',
-        key: 'user/user-table',
-      },
-    ],
+    key: 'user/user-table',
   },
   {
     name: 'menu.list',
@@ -76,14 +70,14 @@ export const routes: IRoute[] = [
     ],
   },
   {
-    name: '文章',
-    key: 'post',
-    children: [
-      {
-        name: '文章管理',
-        key: 'post/post-table',
-      },
-    ],
+    name: '文章管理',
+    key: 'post/post-table',
+    // children: [
+    //   {
+    //     name: '文章管理',
+    //     key: 'post/post-table',
+    //   },
+    // ],
   },
   {
     name: '设置',

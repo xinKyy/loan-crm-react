@@ -1,5 +1,6 @@
 // axiosConfig.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Message } from '@arco-design/web-react';
 
 interface CustomAxiosResponse<T = any> extends AxiosResponse {
   data: T;
@@ -42,9 +43,10 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response: CustomAxiosResponse) => {
     const resp = response.data;
+
     // 在响应返回之后做一些处理
-    if (resp.resultCode === 200 || resp.resultCode === 20033) {
-      return response;
+    if (resp.resultCode === 200) {
+      return resp;
     }
     if (
       resp.resultCode === 10006 ||
@@ -57,11 +59,16 @@ axiosInstance.interceptors.response.use(
     ) {
       localStorage.removeItem('token');
       localStorage.removeItem('userStatus');
-      return 'unlogin';
+      window.location.href = '/login';
+      Message.info('登录过期');
+      return;
     }
     return response;
   },
   (error: CustomAxiosError) => {
+    if (error.response.status === 500) {
+      window.location.href = '/exception/404';
+    }
     // 处理响应错误
     return Promise.reject(error);
   }
