@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Form,
@@ -9,17 +9,20 @@ import {
   Grid,
   Radio,
   Space,
+  Dropdown,
+  Menu,
 } from '@arco-design/web-react';
 import { GlobalContext } from '@/context';
 import locale from './locale';
 import useLocale from '@/utils/useLocale';
-import { IconRefresh, IconSearch } from '@arco-design/web-react/icon';
+import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
+import { getStartOfDay } from '@/utils/dateUtil';
 const { RangePicker } = DatePicker;
 const { Row, Col } = Grid;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
-
+const orderTypeList = ['得到帮助', '提供帮助', '全部'];
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
@@ -27,9 +30,28 @@ function SearchForm(props: {
 
   const t = useLocale(locale);
   const [form] = useForm();
+  const [orderType, setOrderType] = useState(2);
 
   const handleSubmit = () => {
     const values = form.getFieldsValue();
+
+    values.orderType = orderType;
+
+    if (values.orderType === 2) {
+      delete values.orderType;
+    }
+
+    if (values.status === 'all') {
+      delete values.status;
+    }
+
+    if (values.dateStart && values.dateStart != 'all') {
+      values.start = new Date(getStartOfDay(values.dateStart));
+    }
+    if (values.dateStartAndEnd) {
+      values.start = new Date(values.dateStartAndEnd[0]);
+      values.end = new Date(values.dateStartAndEnd[1]);
+    }
     props.onSearch(values);
   };
 
@@ -37,8 +59,6 @@ function SearchForm(props: {
     form.resetFields();
     props.onSearch({});
   };
-
-  const colSpan = lang === 'zh-CN' ? 8 : 12;
 
   function onSelect(dateString, date) {
     console.log('onSelect', dateString, date);
@@ -58,71 +78,88 @@ function SearchForm(props: {
         form={form}
         className={styles['search-form']}
         labelAlign="left"
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 19 }}
+        labelCol={{ span: 3 }}
+        wrapperCol={{ span: 21 }}
       >
         <Row gutter={24}>
-          <Col>
-            <Row>
-              <div style={{ fontSize: '16px', fontWeight: 600 }}>
-                订单状态：
-              </div>
+          <Col span={12}>
+            <Form.Item label={'订单状态：'} field={'status'}>
               <RadioGroup
                 type="button"
                 name="lang"
                 defaultValue="all"
-                style={{ marginRight: 20, marginBottom: 20 }}
+                style={{ marginRight: 20, marginBottom: 0 }}
               >
                 <Radio value="all">全部</Radio>
-                <Radio value="p1">待审核</Radio>
-                <Radio value="p2">已审核</Radio>
-                <Radio value="p3">已失效</Radio>
-                <Radio value="p4">已完成</Radio>
+                <Radio value="0">待支付</Radio>
+                <Radio value="2">匹配中</Radio>
+                <Radio value="-1">已失效</Radio>
+                <Radio value="4">已完成</Radio>
               </RadioGroup>
-            </Row>
-          </Col>
-          <Col>
-            <Row>
-              <div style={{ fontSize: '16px', fontWeight: 600 }}>
-                时间选择：
-              </div>
-              <RadioGroup
-                type="button"
-                name="lang"
-                defaultValue="dateAll"
-                style={{ marginRight: 20, marginBottom: 20 }}
-              >
-                <Radio value="dateAll">全部</Radio>
-                <Radio value="d1">今天</Radio>
-                <Radio value="d2">昨天</Radio>
-                <Radio value="d3">最近7天</Radio>
-                <Radio value="d4">最近30天</Radio>
-                <Radio value="d5">本月</Radio>
-                <Radio value="d6">本年</Radio>
-              </RadioGroup>
-              <RangePicker
-                style={{ width: 360, margin: '0 24px 24px 0' }}
-                showTime={{
-                  defaultValue: ['00:00', '04:05'],
-                  format: 'HH:mm',
-                }}
-                format="YYYY-MM-DD HH:mm"
-                onChange={onChange}
-                onSelect={onSelect}
-                onOk={onOk}
-              />
-            </Row>
+            </Form.Item>
           </Col>
         </Row>
+        <div style={{ display: 'flex' }}>
+          <Form.Item label={'时间选择：'} field={'dateStart'}>
+            <RadioGroup
+              type="button"
+              name="lang"
+              defaultValue="all"
+              style={{ marginBottom: 0 }}
+            >
+              <Radio value="all">全部</Radio>
+              <Radio value={0}>今天</Radio>
+              <Radio value={2}>昨天</Radio>
+              <Radio value={7}>最近7天</Radio>
+              <Radio value={30}>最近30天</Radio>
+              <Radio value="1m">本月</Radio>
+              <Radio value="1y">本年</Radio>
+            </RadioGroup>
+          </Form.Item>
+          <Form.Item field={'dateStartAndEnd'}>
+            <RangePicker
+              style={{ width: 360, margin: '0 0 0 0' }}
+              showTime={{
+                defaultValue: ['00:00', '00:00'],
+                format: 'HH:mm',
+              }}
+              format="YYYY-MM-DD HH:mm"
+              onChange={onChange}
+              onSelect={onSelect}
+              onOk={onOk}
+            />
+          </Form.Item>
+        </div>
         <Row gutter={24}>
-          <Col span={colSpan}>
-            <Form.Item label={'订单单号'} field="id">
+          <Col span={12}>
+            <Form.Item label={'订单单号:'} field="orderNo">
               <Input placeholder={'请输入订单号'} allowClear />
             </Form.Item>
           </Col>
-          <Col span={colSpan}>
-            <Form.Item label={'用户ID号'} field="name">
-              <Input allowClear placeholder={'请输入用户ID号'} />
+          <Col span={12}>
+            <Form.Item label={'订单类型：'} field="orderType">
+              <Dropdown
+                droplist={
+                  <Menu>
+                    <Menu.Item onClick={() => setOrderType(1)} key="1">
+                      提供帮助
+                    </Menu.Item>
+                    <Menu.Item onClick={() => setOrderType(0)} key="0">
+                      得到帮助
+                    </Menu.Item>
+                    <Menu.Item onClick={() => setOrderType(2)} key="2">
+                      全部
+                    </Menu.Item>
+                  </Menu>
+                }
+                trigger="click"
+                position="br"
+              >
+                <Button type="text">
+                  {orderTypeList[orderType]}
+                  <IconDown />
+                </Button>
+              </Dropdown>
             </Form.Item>
           </Col>
         </Row>

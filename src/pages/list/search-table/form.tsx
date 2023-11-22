@@ -58,20 +58,17 @@ function SearchForm(props: {
         form={form}
         className={styles['search-form']}
         labelAlign="left"
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 19 }}
+        labelCol={{ span: 3 }}
+        wrapperCol={{ span: 21 }}
       >
         <Row gutter={24}>
-          <Col>
-            <Row>
-              <div style={{ fontSize: '16px', fontWeight: 600 }}>
-                订单状态：
-              </div>
+          <Col span={12}>
+            <Form.Item label={'订单状态：'} field={'status'}>
               <RadioGroup
                 type="button"
                 name="lang"
                 defaultValue="all"
-                style={{ marginRight: 20, marginBottom: 20 }}
+                style={{ marginRight: 20, marginBottom: 0 }}
               >
                 <Radio value="all">全部</Radio>
                 <Radio value="p1">待审核</Radio>
@@ -79,49 +76,48 @@ function SearchForm(props: {
                 <Radio value="p3">已失效</Radio>
                 <Radio value="p4">已完成</Radio>
               </RadioGroup>
-            </Row>
-          </Col>
-          <Col>
-            <Row>
-              <div style={{ fontSize: '16px', fontWeight: 600 }}>
-                时间选择：
-              </div>
-              <RadioGroup
-                type="button"
-                name="lang"
-                defaultValue="dateAll"
-                style={{ marginRight: 20, marginBottom: 20 }}
-              >
-                <Radio value="dateAll">全部</Radio>
-                <Radio value="d1">今天</Radio>
-                <Radio value="d2">昨天</Radio>
-                <Radio value="d3">最近7天</Radio>
-                <Radio value="d4">最近30天</Radio>
-                <Radio value="d5">本月</Radio>
-                <Radio value="d6">本年</Radio>
-              </RadioGroup>
-              <RangePicker
-                style={{ width: 360, margin: '0 24px 24px 0' }}
-                showTime={{
-                  defaultValue: ['00:00', '04:05'],
-                  format: 'HH:mm',
-                }}
-                format="YYYY-MM-DD HH:mm"
-                onChange={onChange}
-                onSelect={onSelect}
-                onOk={onOk}
-              />
-            </Row>
+            </Form.Item>
           </Col>
         </Row>
+        <div style={{ display: 'flex' }}>
+          <Form.Item label={'时间选择：'} field={'dateStart'}>
+            <RadioGroup
+              type="button"
+              name="lang"
+              defaultValue="dateAll"
+              style={{ marginBottom: 0 }}
+            >
+              <Radio value="dateAll">全部</Radio>
+              <Radio value="d1">今天</Radio>
+              <Radio value="d2">昨天</Radio>
+              <Radio value="d3">最近7天</Radio>
+              <Radio value="d4">最近30天</Radio>
+              <Radio value="d5">本月</Radio>
+              <Radio value="d6">本年</Radio>
+            </RadioGroup>
+          </Form.Item>
+          <Form.Item field={'date'}>
+            <RangePicker
+              style={{ width: 360, margin: '0 0 0 0' }}
+              showTime={{
+                defaultValue: ['00:00', '00:00'],
+                format: 'HH:mm',
+              }}
+              format="YYYY-MM-DD HH:mm"
+              onChange={onChange}
+              onSelect={onSelect}
+              onOk={onOk}
+            />
+          </Form.Item>
+        </div>
         <Row gutter={24}>
-          <Col span={colSpan}>
-            <Form.Item label={'订单单号'} field="id">
+          <Col span={12}>
+            <Form.Item label={'订单单号:'} field="id">
               <Input placeholder={'请输入订单号'} allowClear />
             </Form.Item>
           </Col>
-          <Col span={colSpan}>
-            <Form.Item label={'用户ID号'} field="name">
+          <Col span={12}>
+            <Form.Item label={'用户ID号:'} field="userId">
               <Input allowClear placeholder={'请输入用户ID号'} />
             </Form.Item>
           </Col>

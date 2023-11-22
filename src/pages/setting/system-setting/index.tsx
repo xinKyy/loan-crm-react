@@ -1,46 +1,94 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {Card, Input, InputNumber, Switch, Tabs} from '@arco-design/web-react';
+import {
+  Button,
+  Card,
+  Input,
+  InputNumber,
+  Space,
+  Switch,
+  Table,
+  Tabs,
+} from '@arco-design/web-react';
 import styles from './index.module.less';
+import { ContentType, FilterType } from '@/pages/post/post-table/constants';
 const TabPane = Tabs.TabPane;
+
 function Configuration() {
+  const [loading, setLoading] = useState(true);
+  const [formParams, setFormParams] = useState({});
+  const [data, setData] = useState([]);
+
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+    },
+    {
+      title: '轮播图名称',
+      dataIndex: 'name',
+    },
+    {
+      title: '轮播图',
+      dataIndex: 'contentType',
+    },
+    {
+      title: '跳转链接',
+      dataIndex: 'filterType',
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'filterType',
+    },
+    {
+      title: '是否显示',
+      dataIndex: 'filterType',
+    },
+    {
+      title: '操作',
+      dataIndex: 'operations',
+      headerCellStyle: { paddingLeft: '40px' },
+      render: (_, record) => (
+        <Space>
+          <Button
+            type="text"
+            size="small"
+            onClick={(e) => callback(record, 'edit', e)}
+          >
+            编辑
+          </Button>
+          <Button
+            type="text"
+            size="small"
+            onClick={(e) => callback(record, 'delete', e)}
+          >
+            删除
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const callback = (record, type, e) => {
+    e.stopPropagation();
+  };
+
   return (
     <Card style={{ height: '75vh' }}>
       <Tabs defaultActiveTab="1">
-        <TabPane key="1" title="系统信息">
-          <div style={{ height: 20 }}></div>
-          <div
-            style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-          >
-            <div style={{ width: '100px', textAlign: 'end' }}>
-              <span style={{ color: 'red' }}>*</span>网站启用
-            </div>
-            <div style={{ flex: '1', marginLeft: '30px' }}>
-              <Switch />
-            </div>
+        <TabPane key="1" title="轮播图设置">
+          <div style={{ height: 20 }} />
+          <div style={{ width: 700, display: 'flex', alignItems: 'center' }}>
+            <div style={{ width: 20 }}></div>
+            <div style={{ width: 120 }}>轮播图标题：</div>
+            <Input style={{ width: 500 }} placeholder={'请输入名称'}></Input>
+            <div style={{ width: 20 }}></div>
+            <Button type={'primary'}>添加轮播图</Button>
           </div>
-          <div style={{ height: 20 }}></div>
-          <div
-            style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-          >
-            <div style={{ width: '100px', textAlign: 'end' }}>
-              <span style={{ color: 'red' }}>*</span>网站域名
-            </div>
-            <div style={{ flex: '1', marginLeft: '30px' }}>
-              <Input placeholder={"请输入网站域名"}></Input>
-            </div>
-          </div>
-          <div style={{ height: 20 }}></div>
-          <div
-            style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-          >
-            <div style={{ width: '100px', textAlign: 'end' }}>
-              <span style={{ color: 'red' }}>*</span>网站名称
-            </div>
-            <div style={{ flex: '1', marginLeft: '30px' }}>
-              <Input placeholder={"请输入网站名称"}></Input>
-            </div>
-          </div>
+
+          <div style={{ height: 20 }} />
+          <Table rowKey="id" loading={loading} columns={columns} data={data} />
         </TabPane>
+
         <TabPane key="2" title="交易设置">
           <div style={{ height: 20 }}></div>
           <div className={styles.row_flex}>
@@ -51,9 +99,7 @@ function Configuration() {
                 defaultValue={0}
                 style={{ width: 160, margin: '10px 24px 10px 0' }}
               />
-              <div className={styles.text}>
-                订单提交后待支付时长
-              </div>
+              <div className={styles.text}>订单提交后待支付时长</div>
             </div>
           </div>
           <div style={{ height: 20 }}></div>
@@ -65,9 +111,7 @@ function Configuration() {
                 defaultValue={0}
                 style={{ width: 160, margin: '10px 24px 10px 0' }}
               />
-              <div className={styles.text}>
-                订单提交后待匹配时长
-              </div>
+              <div className={styles.text}>订单提交后待匹配时长</div>
             </div>
           </div>
           <div style={{ height: 20 }}></div>

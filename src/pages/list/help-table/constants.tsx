@@ -90,13 +90,15 @@ export function getColumns(
           >
             订单备注
           </Button>
-          <Button
-            type="text"
-            size="small"
-            onClick={(e) => callback(record, 'accept', e)}
-          >
-            匹配
-          </Button>
+          {record.status === 2 && record.orderType !== 1 ? (
+            <Button
+              type="text"
+              size="small"
+              onClick={(e) => callback(record, 'match', e)}
+            >
+              匹配
+            </Button>
+          ) : null}
         </Space>
       ),
     },

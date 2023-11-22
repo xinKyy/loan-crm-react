@@ -183,6 +183,11 @@ function PageLayout({ children }: { children: ReactNode }) {
 
   return (
     <Layout className={styles.layout}>
+      <div className={styles.mask_admin}>
+        <span>admin</span>
+        <span>admin</span>
+        <span>admin</span>
+      </div>
       <div
         className={cs(styles['layout-navbar'], {
           [styles['layout-navbar-hidden']]: !showNavbar,

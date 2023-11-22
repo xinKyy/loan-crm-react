@@ -53,7 +53,7 @@ export function keepMapRatio(mapData, c) {
     ) {
       setTimeout(() => {
         c.scale(scale);
-        c.render(true);
+        c.render();
       }, 1);
     }
   }

@@ -48,6 +48,12 @@ axiosInstance.interceptors.response.use(
     if (resp.resultCode === 200) {
       return resp;
     }
+
+    if (resp.resultCode === 500) {
+      Message.error('服务器异常！');
+      return resp;
+    }
+
     if (
       resp.resultCode === 10006 ||
       resp.resultCode === 10004 ||
@@ -62,13 +68,16 @@ axiosInstance.interceptors.response.use(
       window.location.href = '/login';
       Message.info('登录过期');
       return;
+    } else {
+      Message.error(resp.resultMessage);
     }
+
     return response;
   },
   (error: CustomAxiosError) => {
-    if (error.response.status === 500) {
-      window.location.href = '/exception/404';
-    }
+    // if (error.response.status === 500) {
+    //   window.location.href = '/exception/404';
+    // }
     // 处理响应错误
     return Promise.reject(error);
   }

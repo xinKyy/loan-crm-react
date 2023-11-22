@@ -17,6 +17,7 @@ import {
   Modal,
   Input,
   Checkbox,
+  Statistic,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -28,26 +29,34 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
-import { getHelpOrderList } from '@/api/api';
+import { getHelpOrderList, getMatchOrderList } from '@/api/api';
 const Row = Grid.Row;
 const Col = Grid.Col;
+const Countdown = Statistic.Countdown;
 
 const { Title } = Typography;
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
 export const FilterType = ['规则筛选', '人工'];
-export const Status = ['已上线', '未上线'];
+export const Status = [
+  '过期',
+  '待支付',
+  '取消订单',
+  '匹配中',
+  '已支付',
+  '完成',
+];
 
 function SearchTable() {
   const t = useLocale(locale);
 
   const tableCallback = async (record, type, e) => {
-    console.log(record, type);
     if (e) e.stopPropagation();
     if (type === 'details') {
+      setCurrentRecord(record);
       setVisible(true);
     }
-    if (type === 'accept') {
-      openModal();
+    if (type === 'match') {
+      openModal(record);
     }
     if (type === 'remarks') {
       setRemarkModalVisible(true);
@@ -57,6 +66,7 @@ function SearchTable() {
   const columns = useMemo(() => getColumns(t, tableCallback), [t]);
 
   const [data, setData] = useState([]);
+  const [childData, setChildData] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
@@ -64,21 +74,27 @@ function SearchTable() {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
+
   const [loading, setLoading] = useState(true);
+  const [modalLoading, setModalLoading] = useState(false);
   const [formParams, setFormParams] = useState({});
   const [visible, setVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [remarkModalVisible, setRemarkModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [currentRecord, setCurrentRecord]: any = useState();
 
   const getHelpOrder = () => {
     getHelpOrderList({
-      status: '4',
-    }).then((resp: any) => {
-      setData(resp.result.records);
-      setLoading(false);
-    });
+      ...formParams,
+    })
+      .then((resp: any) => {
+        setData(resp.result.records);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -99,8 +115,19 @@ function SearchTable() {
     setFormParams(params);
   }
 
-  const openModal = () => {
+  const openModal = (record) => {
     setModalVisible(true);
+    setModalLoading(true);
+    setCurrentRecord(record);
+    getMatchOrderList({
+      orderType: record.orderType === 1 ? 0 : 1,
+    })
+      .then((resp: any) => {
+        setChildData(resp.result.records);
+      })
+      .finally(() => {
+        setModalLoading(false);
+      });
   };
 
   const cancelModal = () => {
@@ -198,9 +225,11 @@ function SearchTable() {
                 <div className={styles.order_header_icon}></div>
                 <div style={{ margin: '15px' }}>
                   <div style={{ fontWeight: 600, fontSize: '20px' }}>
-                    得到订单
+                    {currentRecord?.orderType === 1
+                      ? 'PH（提供帮助）'
+                      : 'PH（获得帮助）'}
                   </div>
-                  <div>订单编号：88888888</div>
+                  <div>订单编号：{currentRecord?.id}</div>
                 </div>
               </div>
               <div>
@@ -224,19 +253,25 @@ function SearchTable() {
               <Col span={8}>
                 <Space direction={'vertical'} size={'small'}>
                   <div>订单状态</div>
-                  <Tag color={'#ff7d00'}>匹配中</Tag>
+                  <Tag color={'#ff7d00'}>
+                    {Status[currentRecord?.status + 1]}
+                  </Tag>
                 </Space>
               </Col>
               <Col span={8}>
                 <Space direction={'vertical'} size={'small'}>
                   订单金额
-                  <div>1000.0</div>
+                  <div>
+                    {currentRecord?.orderType === 1
+                      ? currentRecord?.offerAmount
+                      : currentRecord?.amount}
+                  </div>
                 </Space>
               </Col>
               <Col span={8}>
                 <Space direction={'vertical'} size={'small'}>
                   创建时间
-                  <div>2023-01-1</div>
+                  <div>{currentRecord?.createTime}</div>
                 </Space>
               </Col>
             </Row>
@@ -247,9 +282,9 @@ function SearchTable() {
                   <Col>
                     <div className={styles.title}>用户信息</div>
                     <div className={styles.row_item}>
-                      <div>用户昵称：李哼好</div>
-                      <div>用户ID：7777</div>
-                      <div>绑定邮箱：163@qq.com</div>
+                      <div>用户昵称：{currentRecord?.userName}</div>
+                      <div>用户ID：{currentRecord?.userId}</div>
+                      <div>绑定邮箱：{'--'}</div>
                     </div>
                   </Col>
                   <Divider />
@@ -257,28 +292,52 @@ function SearchTable() {
                     <div className={styles.title}>订单信息</div>
                     <Row className={styles.row_wrap}>
                       <div className={styles.row_item}>
-                        <div>本金：1000</div>
-                        <div>充值CC：20.00</div>
-                        <div>充值哈希值：0xFfd8d83210f0213</div>
+                        <div>
+                          本金：
+                          {currentRecord?.orderType === 1
+                            ? currentRecord?.offerAmount
+                            : currentRecord?.amount}
+                        </div>
+                        <div>赠送LCC：{currentRecord?.obtainLcc ?? '--'}</div>
+                        <div>消耗CC：{currentRecord?.consumeLcc ?? '--'}</div>
                       </div>
                     </Row>
                     <Row className={styles.row_wrap}>
                       <div className={styles.row_item}>
-                        <div>订单状态：审核中</div>
-                        <div>订单编号：7777</div>
-                        <div>创建时间：2023-11-16：17:59:35</div>
+                        <div>
+                          冻结周期：{currentRecord?.freezeDay ?? '--'}天
+                        </div>
+                        <div>
+                          预计收益：{currentRecord?.expectationAmount ?? '--'}
+                        </div>
+                        <div>
+                          匹配编号：{currentRecord?.orderNumMatch ?? '--'}
+                        </div>
+                      </div>
+                    </Row>
+                    <Row className={styles.row_wrap}>
+                      <div className={styles.row_item}>
+                        <div>匹配时间：{currentRecord?.matchTime ?? '--'}</div>
+                        <div>支付时间：{currentRecord?.payTime ?? '--'}</div>
+                        <div>支付哈希值：{currentRecord?.hash ?? '--'}</div>
                       </div>
                     </Row>
                     <Row className={styles.row_wrap}>
                       <div style={{ display: 'flex' }}>
-                        <div>充值凭证：</div>
+                        <div>支付凭证：</div>
                         <Space>
-                          <Image
-                            width={100}
-                            src={
-                              'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a8c8cdb109cb051163646151a4a5083b.png~tplv-uwbnlip3yd-webp.webp'
-                            }
-                          ></Image>
+                          {currentRecord?.transferImage
+                            ?.split('|')
+                            .map((item) => {
+                              return (
+                                <Image
+                                  key={item}
+                                  width={100}
+                                  height={100}
+                                  src={item}
+                                ></Image>
+                              );
+                            })}
                         </Space>
                       </div>
                     </Row>
@@ -288,9 +347,11 @@ function SearchTable() {
                     <div className={styles.title}>订单备注</div>
                     <Col>
                       <div className={styles.row_wrap}>
-                        疑问时间：2023-11-1 17：01：23
+                        疑问时间：{currentRecord?.questionTime ?? '--'}
                       </div>
-                      <div className={styles.row_wrap}>内容：测试</div>
+                      <div className={styles.row_wrap}>
+                        内容：{currentRecord?.question ?? '--'}
+                      </div>
                     </Col>
                   </Col>
                   <Divider />
@@ -308,7 +369,9 @@ function SearchTable() {
         title={
           <span>
             可匹配提供帮助订单：
-            <span style={{ color: 'red' }}>当前还需匹配1200.00金额</span>
+            <span style={{ color: 'red' }}>
+              当前还需匹配{currentRecord?.amount}金额
+            </span>
           </span>
         }
         visible={modalVisible}
@@ -320,37 +383,38 @@ function SearchTable() {
         autoFocus={false}
         focusLock={true}
       >
-        <Table
-          rowKey="key"
-          columns={mateColumns}
-          data={orderData}
-          rowSelection={{
-            type: 'checkbox',
-            selectedRowKeys,
-            onChange: (selectedRowKeys, selectedRows) => {
-              console.log('onChange:', selectedRowKeys, selectedRows);
-              setSelectedRowKeys(selectedRowKeys);
-            },
-            onSelect: (selected, record, selectedRows) => {
-              console.log('onSelect:', selected, record, selectedRows);
-            },
-          }}
-        />
+        <Skeleton loading={modalLoading}>
+          <Table
+            rowKey="id"
+            columns={mateColumns}
+            data={childData}
+            rowSelection={{
+              type: 'checkbox',
+              selectedRowKeys,
+              onChange: (selectedRowKeys, selectedRows) => {
+                console.log('onChange:', selectedRowKeys, selectedRows);
+                setSelectedRowKeys(selectedRowKeys);
+              },
+              onSelect: (selected, record, selectedRows) => {
+                console.log('onSelect:', selected, record, selectedRows);
+              },
+            }}
+          />
 
-        <div>
-          <strong>差额补足账户</strong>
-        </div>
-        <div className={styles.row}>
-          <div style={{ flex: 1 }}>
-            <Checkbox>4</Checkbox>
+          <div>
+            <strong>差额补足账户</strong>
           </div>
-          <div style={{ flex: 2, margin: '0 20px' }}>
-            <Input placeholder={'当前可用余额9999'}></Input>
+          <div className={styles.row}>
+            <div style={{ flex: 1 }}>
+              <Checkbox>4</Checkbox>
+            </div>
+            <div style={{ flex: 2, margin: '0 20px' }}>
+              <Input placeholder={'当前可用余额9999'}></Input>
+            </div>
+            <div>89999988888</div>
+            <div>后台配置</div>
           </div>
-          <div>89999988888</div>
-          <div>后台配置</div>
-          <div>00：00：00</div>
-        </div>
+        </Skeleton>
       </Modal>
 
       <Modal
@@ -389,24 +453,30 @@ const orderColumns: TableColumnProps[] = [
 ];
 const mateColumns: TableColumnProps[] = [
   {
-    title: 'ID',
-    dataIndex: 'name',
+    title: '订单编号',
+    dataIndex: 'id',
   },
   {
     title: '订单金额',
-    dataIndex: 'salary',
-  },
-  {
-    title: '订单编号',
-    dataIndex: 'address',
+    dataIndex: 'amount',
   },
   {
     title: '账户来源',
-    dataIndex: 'email',
+    dataIndex: 'username',
+    render: () => <div>用户</div>,
   },
   {
     title: '匹配剩余时间',
-    dataIndex: 'email',
+    dataIndex: 'deadLineTimeStamp',
+    render: (v) => (
+      <Countdown
+        style={{ fontSize: '12px !important' }}
+        styleValue={{ fontSize: '12px !important' }}
+        value={v}
+        format="D 天 H 时 m 分 s 秒"
+        now={Date.now()}
+      />
+    ),
   },
 ];
 
