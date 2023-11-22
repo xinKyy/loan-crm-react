@@ -51,6 +51,7 @@ axiosInstance.interceptors.response.use(
 
     if (resp.resultCode === 500) {
       Message.error('服务器异常！');
+      Message.error(resp.resultMessage);
       return resp;
     }
 

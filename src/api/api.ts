@@ -44,3 +44,18 @@ export const APIGrantFundsAddress = (params) => {
 export const APIPosFundsAddress = (params) => {
   return axios.get('/api/v1/config/posFunds', { params });
 };
+
+// 备注帮助订单
+export const APIEditLccOrderNote = (params) => {
+  return axios.post('/api/v1/iccOrder/orderNote', params);
+};
+
+// 备注基金订单
+export const APIEditCCOrderNote = (params) => {
+  return axios.post('/api/v1/ccOrder/orderNote', params);
+};
+
+// 备注基金订单
+export const APIMatchOrder = (params) => {
+  return axios.post('/api/v1/iccOrder/match', params);
+};

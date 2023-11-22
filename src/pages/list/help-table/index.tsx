@@ -18,6 +18,8 @@ import {
   Input,
   Checkbox,
   Statistic,
+  Spin,
+  Message,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -29,7 +31,12 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
-import { getHelpOrderList, getMatchOrderList } from '@/api/api';
+import {
+  APIEditLccOrderNote,
+  APIMatchOrder,
+  getHelpOrderList,
+  getMatchOrderList,
+} from '@/api/api';
 const Row = Grid.Row;
 const Col = Grid.Col;
 const Countdown = Statistic.Countdown;
@@ -51,8 +58,11 @@ function SearchTable() {
 
   const tableCallback = async (record, type, e) => {
     if (e) e.stopPropagation();
-    if (type === 'details') {
+    if (!currentRecord || record.id !== currentRecord?.id) {
       setCurrentRecord(record);
+    }
+
+    if (type === 'details') {
       setVisible(true);
     }
     if (type === 'match') {
@@ -62,8 +72,8 @@ function SearchTable() {
       setRemarkModalVisible(true);
     }
   };
-
-  const columns = useMemo(() => getColumns(t, tableCallback), [t]);
+  const [currentRecord, setCurrentRecord]: any = useState();
+  const columns = useMemo(() => getColumns(t, tableCallback), [currentRecord]);
 
   const [data, setData] = useState([]);
   const [childData, setChildData] = useState([]);
@@ -76,6 +86,7 @@ function SearchTable() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
   const [formParams, setFormParams] = useState({});
   const [visible, setVisible] = useState(false);
@@ -83,14 +94,17 @@ function SearchTable() {
   const [remarkModalVisible, setRemarkModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [currentRecord, setCurrentRecord]: any = useState();
+  const [matchAmount, setMatchAmount] = useState(0);
 
   const getHelpOrder = () => {
+    setLoading(true);
     getHelpOrderList({
       ...formParams,
     })
       .then((resp: any) => {
-        setData(resp.result.records);
+        if (resp.result) {
+          setData(resp.result.records);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -134,302 +148,381 @@ function SearchTable() {
     setModalVisible(false);
   };
 
-  return (
-    <Card>
-      <Title heading={6}>帮助订单列表</Title>
-      <SearchForm onSearch={handleSearch} />
-      <Table
-        rowKey="id"
-        loading={loading}
-        onChange={onChangeTable}
-        pagination={pagination}
-        columns={columns}
-        data={data}
-        expandedRowRender={(record) => {
-          return (
-            <>
-              <Col>
-                <div className={styles.row}>
-                  <div>
-                    <span>本金：</span>
-                    {record.orderType === 1
-                      ? record.offerAmount
-                      : record.amount}
-                  </div>
-                  <div>
-                    <span>赠送LCC：</span>
-                    {record.obtainLcc ?? '--'}
-                  </div>
-                  <div>
-                    <span>消耗CC：</span>
-                    {record.consumeLcc ?? '--'}
-                  </div>
-                  <div>
-                    <span>收款地址：</span>
-                    {record.toAddress ?? '--'}
-                  </div>
-                </div>
-                <div className={styles.row}>
-                  <div>
-                    <span>订单创建时间：</span>
-                    {record.createTime}
-                  </div>
-                  <div>
-                    <span>匹配时间：</span>
-                    {record.matchTime ?? '--'}
-                  </div>
-                  <div>
-                    <span>备注：</span>--
-                  </div>
-                  <div>
-                    <div>
-                      <span>付款地址：</span>
-                    </div>
-                    {record.fromAddress ?? '--'}
-                  </div>
-                </div>
-                <Row></Row>
-              </Col>
-            </>
-          );
-        }}
-        expandProps={{
-          expandRowByClick: true,
-          rowExpandable: (record) => true,
-        }}
-      />
+  const editLccNote = (record) => {
+    setRemarkModalVisible(false);
+    setPageLoading(true);
+    APIEditLccOrderNote({
+      orderId: record.id,
+      note: record.note_local,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('备注成功！');
+          setCurrentRecord({
+            ...record,
+            note_confirm: record.note_local,
+          });
+        } else {
+          Message.error('备注失败！');
+        }
+      })
+      .finally(() => {
+        setPageLoading(false);
+      });
+  };
 
-      <Drawer
-        width={800}
-        title={null}
-        visible={visible}
-        onOk={() => {
-          setVisible(false);
-        }}
-        onCancel={() => {
-          setVisible(false);
-        }}
-        footer={null}
-      >
-        <Skeleton
-          loading={false}
-          animation
-          text={{
-            rows: 15,
-            width: ['100%', 600, 400, 300],
-          }}
-        >
-          <div className={styles.drawer_wrap}>
-            <div className={styles.order_header}>
-              <div style={{ display: 'flex' }}>
-                <div className={styles.order_header_icon}></div>
-                <div style={{ margin: '15px' }}>
-                  <div style={{ fontWeight: 600, fontSize: '20px' }}>
-                    {currentRecord?.orderType === 1
-                      ? 'PH（提供帮助）'
-                      : 'PH（获得帮助）'}
+  const matchOrder = () => {
+    setModalVisible(false);
+    setPageLoading(true);
+    APIMatchOrder({
+      orderId: currentRecord.id,
+      matchOrderIds: selectedRowKeys,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('匹配订单成功！');
+          getHelpOrder();
+        }
+      })
+      .finally(() => {
+        setPageLoading(false);
+      });
+  };
+
+  return (
+    <Spin style={{ width: '100%' }} loading={pageLoading}>
+      <Card>
+        <Title heading={6}>帮助订单列表</Title>
+        <SearchForm onSearch={handleSearch} />
+
+        <Table
+          rowKey="id"
+          loading={loading}
+          onChange={onChangeTable}
+          pagination={pagination}
+          columns={columns}
+          data={data}
+          expandedRowRender={(record) => {
+            return (
+              <>
+                <Col>
+                  <div className={styles.row}>
+                    <div>
+                      <span>本金：</span>
+                      {record.orderType === 1
+                        ? record.offerAmount
+                        : record.amount}
+                    </div>
+                    <div>
+                      <span>赠送LCC：</span>
+                      {record.obtainLcc ?? '--'}
+                    </div>
+                    <div>
+                      <span>消耗CC：</span>
+                      {record.consumeLcc ?? '--'}
+                    </div>
+                    <div>
+                      <span>收款地址：</span>
+                      {record.toAddress ?? '--'}
+                    </div>
                   </div>
-                  <div>订单编号：{currentRecord?.id}</div>
+                  <div className={styles.row}>
+                    <div>
+                      <span>订单创建时间：</span>
+                      {record.createTime}
+                    </div>
+                    <div>
+                      <span>匹配时间：</span>
+                      {record.matchTime ?? '--'}
+                    </div>
+                    <div>
+                      <span>备注：</span>{' '}
+                      {record.id === currentRecord?.id
+                        ? currentRecord?.note_confirm ?? record.note ?? '--'
+                        : record.note ?? '--'}
+                    </div>
+                    <div>
+                      <div>
+                        <span>付款地址：</span>
+                      </div>
+                      {record.fromAddress ?? '--'}
+                    </div>
+                  </div>
+                  <Row></Row>
+                </Col>
+              </>
+            );
+          }}
+          expandProps={{
+            expandRowByClick: true,
+            rowExpandable: (record) => true,
+          }}
+        />
+
+        <Drawer
+          width={800}
+          title={null}
+          visible={visible}
+          onOk={() => {
+            setVisible(false);
+          }}
+          onCancel={() => {
+            setVisible(false);
+          }}
+          footer={null}
+        >
+          <Skeleton
+            loading={false}
+            animation
+            text={{
+              rows: 15,
+              width: ['100%', 600, 400, 300],
+            }}
+          >
+            <div className={styles.drawer_wrap}>
+              <div className={styles.order_header}>
+                <div style={{ display: 'flex' }}>
+                  <div className={styles.order_header_icon}></div>
+                  <div style={{ margin: '15px' }}>
+                    <div style={{ fontWeight: 600, fontSize: '20px' }}>
+                      {currentRecord?.orderType === 1
+                        ? 'PH（提供帮助）'
+                        : 'PH（获得帮助）'}
+                    </div>
+                    <div>订单编号：{currentRecord?.id}</div>
+                  </div>
+                </div>
+                <div>
+                  <Space>
+                    {currentRecord?.status === 2 &&
+                    currentRecord?.orderType !== 1 ? (
+                      <Button
+                        style={{ width: '100px', marginRight: '20px' }}
+                        type="primary"
+                        onClick={openModal}
+                      >
+                        匹配
+                      </Button>
+                    ) : null}
+                  </Space>
+                  <Space>
+                    <Button
+                      onClick={() => {
+                        setVisible(false);
+                        setRemarkModalVisible(true);
+                      }}
+                    >
+                      备注
+                    </Button>
+                  </Space>
                 </div>
               </div>
-              <div>
-                <Space>
-                  <Button
-                    style={{ width: '100px', marginRight: '20px' }}
-                    type="primary"
-                    onClick={openModal}
-                  >
-                    匹配
-                  </Button>
-                </Space>
-                <Space>
-                  <Button onClick={() => setRemarkModalVisible(true)}>
-                    备注
-                  </Button>
-                </Space>
-              </div>
-            </div>
-            <Row style={{ marginTop: '20px' }}>
-              <Col span={8}>
-                <Space direction={'vertical'} size={'small'}>
-                  <div>订单状态</div>
-                  <Tag color={'#ff7d00'}>
-                    {Status[currentRecord?.status + 1]}
-                  </Tag>
-                </Space>
-              </Col>
-              <Col span={8}>
-                <Space direction={'vertical'} size={'small'}>
-                  订单金额
-                  <div>
-                    {currentRecord?.orderType === 1
-                      ? currentRecord?.offerAmount
-                      : currentRecord?.amount}
-                  </div>
-                </Space>
-              </Col>
-              <Col span={8}>
-                <Space direction={'vertical'} size={'small'}>
-                  创建时间
-                  <div>{currentRecord?.createTime}</div>
-                </Space>
-              </Col>
-            </Row>
-            <Divider />
-            <div className={styles.order_body_wrap}>
-              <Tabs activeTab={activeTab} onChange={setActiveTab}>
-                <Tabs.TabPane key="1" title="订单信息">
-                  <Col>
-                    <div className={styles.title}>用户信息</div>
-                    <div className={styles.row_item}>
-                      <div>用户昵称：{currentRecord?.userName}</div>
-                      <div>用户ID：{currentRecord?.userId}</div>
-                      <div>绑定邮箱：{'--'}</div>
+              <Row style={{ marginTop: '20px' }}>
+                <Col span={8}>
+                  <Space direction={'vertical'} size={'small'}>
+                    <div>订单状态</div>
+                    <Tag color={'#ff7d00'}>
+                      {Status[currentRecord?.status + 1]}
+                    </Tag>
+                  </Space>
+                </Col>
+                <Col span={8}>
+                  <Space direction={'vertical'} size={'small'}>
+                    订单金额
+                    <div>
+                      {currentRecord?.orderType === 1
+                        ? currentRecord?.offerAmount
+                        : currentRecord?.amount}
                     </div>
-                  </Col>
-                  <Divider />
-                  <Col>
-                    <div className={styles.title}>订单信息</div>
-                    <Row className={styles.row_wrap}>
-                      <div className={styles.row_item}>
-                        <div>
-                          本金：
-                          {currentRecord?.orderType === 1
-                            ? currentRecord?.offerAmount
-                            : currentRecord?.amount}
-                        </div>
-                        <div>赠送LCC：{currentRecord?.obtainLcc ?? '--'}</div>
-                        <div>消耗CC：{currentRecord?.consumeLcc ?? '--'}</div>
-                      </div>
-                    </Row>
-                    <Row className={styles.row_wrap}>
-                      <div className={styles.row_item}>
-                        <div>
-                          冻结周期：{currentRecord?.freezeDay ?? '--'}天
-                        </div>
-                        <div>
-                          预计收益：{currentRecord?.expectationAmount ?? '--'}
-                        </div>
-                        <div>
-                          匹配编号：{currentRecord?.orderNumMatch ?? '--'}
-                        </div>
-                      </div>
-                    </Row>
-                    <Row className={styles.row_wrap}>
-                      <div className={styles.row_item}>
-                        <div>匹配时间：{currentRecord?.matchTime ?? '--'}</div>
-                        <div>支付时间：{currentRecord?.payTime ?? '--'}</div>
-                        <div>支付哈希值：{currentRecord?.hash ?? '--'}</div>
-                      </div>
-                    </Row>
-                    <Row className={styles.row_wrap}>
-                      <div style={{ display: 'flex' }}>
-                        <div>支付凭证：</div>
-                        <Space>
-                          {currentRecord?.transferImage
-                            ?.split('|')
-                            .map((item) => {
-                              return (
-                                <Image
-                                  key={item}
-                                  width={100}
-                                  height={100}
-                                  src={item}
-                                ></Image>
-                              );
-                            })}
-                        </Space>
-                      </div>
-                    </Row>
-                  </Col>
-                  <Divider />
-                  <Col>
-                    <div className={styles.title}>订单备注</div>
+                  </Space>
+                </Col>
+                <Col span={8}>
+                  <Space direction={'vertical'} size={'small'}>
+                    创建时间
+                    <div>{currentRecord?.createTime}</div>
+                  </Space>
+                </Col>
+              </Row>
+              <Divider />
+              <div className={styles.order_body_wrap}>
+                <Tabs activeTab={activeTab} onChange={setActiveTab}>
+                  <Tabs.TabPane key="1" title="订单信息">
                     <Col>
-                      <div className={styles.row_wrap}>
-                        疑问时间：{currentRecord?.questionTime ?? '--'}
-                      </div>
-                      <div className={styles.row_wrap}>
-                        内容：{currentRecord?.question ?? '--'}
+                      <div className={styles.title}>用户信息</div>
+                      <div className={styles.row_item}>
+                        <div>用户昵称：{currentRecord?.userName}</div>
+                        <div>用户ID：{currentRecord?.userId}</div>
+                        <div>绑定邮箱：{'--'}</div>
                       </div>
                     </Col>
-                  </Col>
-                  <Divider />
-                </Tabs.TabPane>
-                <Tabs.TabPane key="2" title="订单记录">
-                  <Table columns={orderColumns} data={orderData} />
-                </Tabs.TabPane>
-              </Tabs>
+                    <Divider />
+                    <Col>
+                      <div className={styles.title}>订单信息</div>
+                      <Row className={styles.row_wrap}>
+                        <div className={styles.row_item}>
+                          <div>
+                            本金：
+                            {currentRecord?.orderType === 1
+                              ? currentRecord?.offerAmount
+                              : currentRecord?.amount}
+                          </div>
+                          <div>赠送LCC：{currentRecord?.obtainLcc ?? '--'}</div>
+                          <div>消耗CC：{currentRecord?.consumeLcc ?? '--'}</div>
+                        </div>
+                      </Row>
+                      <Row className={styles.row_wrap}>
+                        <div className={styles.row_item}>
+                          <div>
+                            冻结周期：{currentRecord?.freezeDay ?? '--'}天
+                          </div>
+                          <div>
+                            预计收益：{currentRecord?.expectationAmount ?? '--'}
+                          </div>
+                          <div>
+                            匹配编号：{currentRecord?.orderNumMatch ?? '--'}
+                          </div>
+                        </div>
+                      </Row>
+                      <Row className={styles.row_wrap}>
+                        <div className={styles.row_item}>
+                          <div>
+                            匹配时间：{currentRecord?.matchTime ?? '--'}
+                          </div>
+                          <div>支付时间：{currentRecord?.payTime ?? '--'}</div>
+                          <div>支付哈希值：{currentRecord?.hash ?? '--'}</div>
+                        </div>
+                      </Row>
+                      <Row className={styles.row_wrap}>
+                        <div style={{ display: 'flex' }}>
+                          <div>支付凭证：</div>
+                          <Space>
+                            {currentRecord?.transferImage
+                              ?.split('|')
+                              .map((item) => {
+                                return (
+                                  <Image
+                                    key={item}
+                                    width={100}
+                                    height={100}
+                                    src={item}
+                                  ></Image>
+                                );
+                              })}
+                          </Space>
+                        </div>
+                      </Row>
+                    </Col>
+                    <Divider />
+                    <Col>
+                      <div className={styles.title}>订单备注</div>
+                      <Col>
+                        <div className={styles.row_wrap}>
+                          疑问时间：{currentRecord?.questionTime ?? '--'}
+                        </div>
+                        <div className={styles.row_wrap}>
+                          内容：{currentRecord?.question ?? '--'}
+                        </div>
+                      </Col>
+                    </Col>
+                    <Divider />
+                  </Tabs.TabPane>
+                  <Tabs.TabPane key="2" title="订单记录">
+                    <Table columns={orderColumns} data={orderData} />
+                  </Tabs.TabPane>
+                </Tabs>
+              </div>
             </div>
-          </div>
-        </Skeleton>
-      </Drawer>
+          </Skeleton>
+        </Drawer>
 
-      <Modal
-        title={
-          <span>
-            可匹配提供帮助订单：
-            <span style={{ color: 'red' }}>
-              当前还需匹配{currentRecord?.amount}金额
+        <Modal
+          title={
+            <span>
+              可匹配提供帮助订单：
+              <span
+                style={{
+                  color:
+                    currentRecord?.amount - matchAmount === 0 ? 'green' : 'red',
+                }}
+              >
+                当前还需匹配{currentRecord?.amount - matchAmount}金额
+              </span>
             </span>
-          </span>
-        }
-        visible={modalVisible}
-        wrapClassName={styles.table_modal_wrap}
-        onOk={() => setModalVisible(false)}
-        onCancel={() => cancelModal()}
-        okText={'确定'}
-        hideCancel={true}
-        autoFocus={false}
-        focusLock={true}
-      >
-        <Skeleton loading={modalLoading}>
-          <Table
-            rowKey="id"
-            columns={mateColumns}
-            data={childData}
-            rowSelection={{
-              type: 'checkbox',
-              selectedRowKeys,
-              onChange: (selectedRowKeys, selectedRows) => {
-                console.log('onChange:', selectedRowKeys, selectedRows);
-                setSelectedRowKeys(selectedRowKeys);
-              },
-              onSelect: (selected, record, selectedRows) => {
-                console.log('onSelect:', selected, record, selectedRows);
-              },
-            }}
-          />
+          }
+          visible={modalVisible}
+          wrapClassName={styles.table_modal_wrap}
+          onOk={matchOrder}
+          onCancel={() => cancelModal()}
+          okText={'确定'}
+          hideCancel={true}
+          autoFocus={false}
+          focusLock={true}
+        >
+          <Skeleton loading={modalLoading}>
+            <Table
+              rowKey="id"
+              columns={mateColumns}
+              data={childData}
+              rowSelection={{
+                type: 'checkbox',
+                checkAll: false,
+                selectedRowKeys,
+                onChange: (selectedRowKeys, selectedRows) => {
+                  let currentAmount = 0;
+                  const selectedKeys = [];
+                  selectedRows.forEach((item: any) => {
+                    if (currentAmount + item.amount <= currentRecord.amount) {
+                      currentAmount += item.amount;
+                      selectedKeys.push(item.id);
+                    }
+                  });
+                  setMatchAmount(currentAmount);
+                  setSelectedRowKeys(selectedKeys);
+                },
+                onSelect: (selected, record, selectedRows) => {
+                  console.log('onSelect:', selected, record, selectedRows);
+                },
+              }}
+            />
 
-          <div>
-            <strong>差额补足账户</strong>
-          </div>
-          <div className={styles.row}>
-            <div style={{ flex: 1 }}>
-              <Checkbox>4</Checkbox>
+            <div>
+              <strong>差额补足账户</strong>
             </div>
-            <div style={{ flex: 2, margin: '0 20px' }}>
-              <Input placeholder={'当前可用余额9999'}></Input>
+            <div className={styles.row}>
+              <div style={{ flex: 1 }}>
+                <Checkbox>4</Checkbox>
+              </div>
+              <div style={{ flex: 2, margin: '0 20px' }}>
+                <Input placeholder={'当前可用余额9999'}></Input>
+              </div>
+              <div>89999988888</div>
+              <div>后台配置</div>
             </div>
-            <div>89999988888</div>
-            <div>后台配置</div>
-          </div>
-        </Skeleton>
-      </Modal>
+          </Skeleton>
+        </Modal>
 
-      <Modal
-        title="订单备注"
-        visible={remarkModalVisible}
-        onOk={() => setRemarkModalVisible(false)}
-        onCancel={() => setRemarkModalVisible(false)}
-        okText={'确定'}
-        hideCancel={true}
-        autoFocus={false}
-        focusLock={true}
-      >
-        <Input.TextArea></Input.TextArea>
-      </Modal>
-    </Card>
+        <Modal
+          title="订单备注"
+          visible={remarkModalVisible}
+          onOk={() => editLccNote(currentRecord)}
+          onCancel={() => setRemarkModalVisible(false)}
+          okText={'确定'}
+          hideCancel={true}
+          autoFocus={false}
+          focusLock={true}
+        >
+          <Input.TextArea
+            value={currentRecord?.note_local}
+            onChange={(v) =>
+              setCurrentRecord({
+                ...currentRecord,
+                note_local: v,
+              })
+            }
+          ></Input.TextArea>
+        </Modal>
+      </Card>
+    </Spin>
   );
 }
 

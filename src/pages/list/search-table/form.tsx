@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Form,
@@ -9,17 +9,20 @@ import {
   Grid,
   Radio,
   Space,
+  Dropdown,
+  Menu,
 } from '@arco-design/web-react';
 import { GlobalContext } from '@/context';
 import locale from './locale';
 import useLocale from '@/utils/useLocale';
-import { IconRefresh, IconSearch } from '@arco-design/web-react/icon';
+import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
+import { getStartOfDay } from '@/utils/dateUtil';
 const { RangePicker } = DatePicker;
 const { Row, Col } = Grid;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
-
+const orderTypeList = ['得到帮助', '提供帮助', '全部'];
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
@@ -27,9 +30,28 @@ function SearchForm(props: {
 
   const t = useLocale(locale);
   const [form] = useForm();
+  const [orderType, setOrderType] = useState(2);
 
   const handleSubmit = () => {
     const values = form.getFieldsValue();
+
+    values.orderType = orderType;
+
+    if (values.orderType === 2) {
+      delete values.orderType;
+    }
+
+    if (values.status === 'all') {
+      delete values.status;
+    }
+
+    if (values.dateStart && values.dateStart != 'all') {
+      values.start = new Date(getStartOfDay(values.dateStart));
+    }
+    if (values.dateStartAndEnd) {
+      values.start = new Date(values.dateStartAndEnd[0]);
+      values.end = new Date(values.dateStartAndEnd[1]);
+    }
     props.onSearch(values);
   };
 
@@ -37,8 +59,6 @@ function SearchForm(props: {
     form.resetFields();
     props.onSearch({});
   };
-
-  const colSpan = lang === 'zh-CN' ? 8 : 12;
 
   function onSelect(dateString, date) {
     console.log('onSelect', dateString, date);
@@ -71,10 +91,10 @@ function SearchForm(props: {
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
                 <Radio value="all">全部</Radio>
-                <Radio value="p1">待审核</Radio>
-                <Radio value="p2">已审核</Radio>
-                <Radio value="p3">已失效</Radio>
-                <Radio value="p4">已完成</Radio>
+                <Radio value="0">待支付</Radio>
+                <Radio value="2">匹配中</Radio>
+                <Radio value="-1">已失效</Radio>
+                <Radio value="4">已完成</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
@@ -84,19 +104,19 @@ function SearchForm(props: {
             <RadioGroup
               type="button"
               name="lang"
-              defaultValue="dateAll"
+              defaultValue="all"
               style={{ marginBottom: 0 }}
             >
-              <Radio value="dateAll">全部</Radio>
-              <Radio value="d1">今天</Radio>
-              <Radio value="d2">昨天</Radio>
-              <Radio value="d3">最近7天</Radio>
-              <Radio value="d4">最近30天</Radio>
-              <Radio value="d5">本月</Radio>
-              <Radio value="d6">本年</Radio>
+              <Radio value="all">全部</Radio>
+              <Radio value={0}>今天</Radio>
+              <Radio value={2}>昨天</Radio>
+              <Radio value={7}>最近7天</Radio>
+              <Radio value={30}>最近30天</Radio>
+              <Radio value="1m">本月</Radio>
+              <Radio value="1y">本年</Radio>
             </RadioGroup>
           </Form.Item>
-          <Form.Item field={'date'}>
+          <Form.Item field={'dateStartAndEnd'}>
             <RangePicker
               style={{ width: 360, margin: '0 0 0 0' }}
               showTime={{
@@ -112,13 +132,13 @@ function SearchForm(props: {
         </div>
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'订单单号:'} field="id">
+            <Form.Item label={'订单单号:'} field="orderNo">
               <Input placeholder={'请输入订单号'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'用户ID号:'} field="userId">
-              <Input allowClear placeholder={'请输入用户ID号'} />
+            <Form.Item label={'用户ID:'} field="userNo">
+              <Input placeholder={'请输入用户ID'} allowClear />
             </Form.Item>
           </Col>
         </Row>
