@@ -27,6 +27,7 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
+import { APIGetCCOrderList, getHelpOrderList } from '@/api/api';
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -40,6 +41,9 @@ function SearchTable() {
 
   const tableCallback = async (record, type, e) => {
     console.log(record, type);
+    if (!currentRecord || record.id !== currentRecord?.id) {
+      setCurrentRecord(record);
+    }
     if (e) e.stopPropagation();
     if (type === 'details') {
       setVisible(true);
@@ -51,8 +55,8 @@ function SearchTable() {
       setRemarkModalVisible(true);
     }
   };
-
-  const columns = useMemo(() => getColumns(t, tableCallback), [t]);
+  const [currentRecord, setCurrentRecord]: any = useState();
+  const columns = useMemo(() => getColumns(t, tableCallback), [currentRecord]);
 
   const [data, setData] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
@@ -71,7 +75,7 @@ function SearchTable() {
   const [activeTab, setActiveTab] = useState('1');
 
   useEffect(() => {
-    fetchData();
+    getCCOrder();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
   function fetchData() {
@@ -96,6 +100,21 @@ function SearchTable() {
         setLoading(false);
       });
   }
+
+  const getCCOrder = () => {
+    setLoading(true);
+    APIGetCCOrderList({
+      ...formParams,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          setData(resp.result.records);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   function onChangeTable({ current, pageSize }) {
     setPatination({

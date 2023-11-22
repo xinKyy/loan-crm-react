@@ -5,6 +5,11 @@ export const getHelpOrderList = (params) => {
   return axios.post('/api/v1/iccOrder/getPageList', params);
 };
 
+// 获取基金订单列表
+export const APIGetCCOrderList = (params) => {
+  return axios.post('/api/v1/ccOrder/getChargeOrderList', params);
+};
+
 // 登录
 export const APIDoLogin = (params) => {
   return axios.post('/adminUser/doLogin', params);

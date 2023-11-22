@@ -25,33 +25,24 @@ export function getColumns(
   return [
     {
       title: '订单编号',
-      dataIndex: 'id',
+      dataIndex: 'orderNo',
       render: (value) => <Text copyable>{value}</Text>,
     },
     {
       title: '用户昵称',
-      dataIndex: 'name',
+      dataIndex: 'userName',
     },
     {
       title: '订单金额',
-      dataIndex: 'contentType',
-      render: (value) => (
-        <div className={styles['content-type']}>
-          {ContentIcon[value]}
-          {ContentType[value]}
-        </div>
-      ),
+      dataIndex: 'amount',
     },
     {
       title: '订单类型',
-      dataIndex: 'filterType',
-      render: (value) => FilterType[value],
+      dataIndex: 'orderType',
     },
     {
       title: t['searchTable.columns.createdTime'],
       dataIndex: 'createdTime',
-      render: (x) => dayjs().subtract(x, 'days').format('YYYY-MM-DD HH:mm:ss'),
-      sorter: (a, b) => b.createdTime - a.createdTime,
     },
     {
       title: '订单状态',
