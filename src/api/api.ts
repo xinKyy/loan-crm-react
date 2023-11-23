@@ -90,6 +90,17 @@ export const APIChangStatePost = (params) => {
   return axios.get('/api/v1/notice/setStatus', { params });
 };
 
+// 获取文章详情
 export const APIGetPostDetail = (params) => {
   return axios.get('/api/v1/notice/getDetail', { params });
+};
+
+// 获取轮播图
+export const APIGetBannerList = (params) => {
+  return axios.get('/api/v1/banner/listBanner', { params });
+};
+
+// 创建轮播图
+export const APICreateBanner = (params) => {
+  return axios.post('/api/v1/banner/postBanner', params);
 };
