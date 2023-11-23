@@ -104,3 +104,23 @@ export const APIGetBannerList = (params) => {
 export const APICreateBanner = (params) => {
   return axios.post('/api/v1/banner/postBanner', params);
 };
+
+// 管理员列表
+export const APIGetAdminUserList = (params) => {
+  return axios.post('/adminUser/listUser', params);
+};
+
+// 创建管理员
+export const APICreateAdminUser = (params) => {
+  return axios.post('/adminUser/addUser', params);
+};
+
+// 删除管理员
+export const APIDeleteAdminUser = (params) => {
+  return axios.get('/adminUser/deleteUser', { params });
+};
+
+// 修改管理员密码
+export const APIEditAdminUserPassword = (params) => {
+  return axios.get('/adminUser/resetPassword', { params });
+};

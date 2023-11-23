@@ -23,6 +23,8 @@ import {
   InputNumber,
   DatePicker,
   Switch,
+  Form,
+  Message,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDown, IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -34,6 +36,12 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
+import {
+  APICreateAdminUser,
+  APIDeleteAdminUser,
+  APIEditAdminUserPassword,
+  APIGetAdminUserList,
+} from '@/api/api';
 const Row = Grid.Row;
 const Col = Grid.Col;
 const { RangePicker } = DatePicker;
@@ -42,7 +50,6 @@ export const ContentType = ['图文', '横版短视频', '竖版短视频'];
 export const FilterType = ['规则筛选', '人工'];
 export const Status = ['已上线', '未上线'];
 const RadioGroup = Radio.Group;
-
 const dropList = (
   <Menu>
     <Menu.Item key="1">普通会员</Menu.Item>
@@ -51,12 +58,15 @@ const dropList = (
     <Menu.Item key="3">总裁</Menu.Item>
   </Menu>
 );
-
+const { useForm } = Form;
 function SearchTable() {
   const t = useLocale(locale);
-
+  const [addForm] = useForm();
   const tableCallback = async (record, type, e) => {
     if (e) e.stopPropagation();
+    if (!currentRecord || record.id !== currentRecord?.id) {
+      setCurrentRecord(record);
+    }
     if (type === 'editPassword') {
       setEditPasswordVisible(true);
     }
@@ -78,40 +88,17 @@ function SearchTable() {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [formParams, setFormParams] = useState({});
-
+  const [currentRecord, setCurrentRecord]: any = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [addAdminVisible, setAddAdminVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [editPasswordVisible, setEditPasswordVisible] = useState(false);
 
   useEffect(() => {
-    fetchData();
+    getAdminUserList();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
-
-  function fetchData() {
-    const { current, pageSize } = pagination;
-    setLoading(true);
-    axios
-      .get('/api/list', {
-        params: {
-          page: current,
-          pageSize,
-          ...formParams,
-        },
-      })
-      .then((res) => {
-        setData(res.data.list);
-        setPatination({
-          ...pagination,
-          current,
-          pageSize,
-          total: res.data.total,
-        });
-        setLoading(false);
-      });
-  }
 
   function onChangeTable({ current, pageSize }) {
     setPatination({
@@ -121,69 +108,90 @@ function SearchTable() {
     });
   }
 
+  const getAdminUserList = () => {
+    setLoading(true);
+    APIGetAdminUserList({
+      ...formParams,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          setData(resp.result.records);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
     setFormParams(params);
   }
 
-  const openModal = () => {
-    setModalVisible(true);
+  const createAdminUser = () => {
+    if (
+      addForm.getFieldsValue().password !== addForm.getFieldsValue().rePassword
+    ) {
+      return Message.error('两次密码需要一致！');
+    }
+    setAddAdminVisible(false);
+    setLoading(true);
+    APICreateAdminUser({
+      ...addForm.getFieldsValue(),
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('增加管理员成功！');
+          getAdminUserList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  const cancelModal = () => {
-    setModalVisible(false);
+  const deleteAdminUser = () => {
+    setDeleteVisible(false);
+    setLoading(true);
+    APIDeleteAdminUser({
+      id: currentRecord?.id,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('删除管理员成功！');
+          getAdminUserList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  function onSelect(dateString, date) {
-    console.log('onSelect', dateString, date);
-  }
-
-  function onChange(dateString, date) {
-    console.log('onChange: ', dateString, date);
-  }
-
-  function onOk(dateString, date) {
-    console.log('onOk: ', dateString, date);
-  }
-
+  const editAdminUserPassword = () => {
+    if (currentRecord.passwordV2 !== currentRecord.rePassword) {
+      return Message.error('两次密码需要一致！');
+    }
+    setEditPasswordVisible(false);
+    setLoading(true);
+    APIEditAdminUserPassword({
+      userName: currentRecord?.userName,
+      password: currentRecord.passwordV2,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('修改管理员密码成功！');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
   return (
     <Card>
-      <Row>
-        <div style={{ fontSize: '16px', fontWeight: 600 }}>时间选择：</div>
-        <RadioGroup
-          type="button"
-          name="lang"
-          defaultValue="dateAll"
-          style={{ marginRight: 20, marginBottom: 20 }}
-        >
-          <Radio value="dateAll">全部</Radio>
-          <Radio value="d1">今天</Radio>
-          <Radio value="d2">昨天</Radio>
-          <Radio value="d3">最近7天</Radio>
-          <Radio value="d4">最近30天</Radio>
-          <Radio value="d5">本月</Radio>
-          <Radio value="d6">本年</Radio>
-        </RadioGroup>
-        <RangePicker
-          style={{ width: 360, margin: '0 24px 24px 0' }}
-          showTime={{
-            defaultValue: ['00:00', '04:05'],
-            format: 'HH:mm',
-          }}
-          format="YYYY-MM-DD HH:mm"
-          onChange={onChange}
-          onSelect={onSelect}
-          onOk={onOk}
-        />
-      </Row>
-      <div style={{ width: 550, display: 'flex', alignItems: 'center' }}>
-        <div style={{ width: 120 }}>关键字：</div>
-        <Input placeholder={'请输入名称'}></Input>
-        <div style={{ width: 20 }}></div>
-        <Button onClick={() => setAddAdminVisible(true)} type={'primary'}>
-          添加管理员
-        </Button>
-      </div>
+      <SearchForm onSearch={handleSearch}></SearchForm>
+      <Button onClick={() => setAddAdminVisible(true)} type={'primary'}>
+        创建管理员
+      </Button>
       <div style={{ height: 20 }} />
       <Table
         rowKey="id"
@@ -198,7 +206,9 @@ function SearchTable() {
         title={'修改管理员密码'}
         visible={editPasswordVisible}
         wrapClassName={styles.table_modal_wrap}
-        onOk={() => setEditPasswordVisible(false)}
+        onOk={() => {
+          editAdminUserPassword();
+        }}
         onCancel={() => setEditPasswordVisible(false)}
         okText={'确定'}
         hideCancel={true}
@@ -209,9 +219,20 @@ function SearchTable() {
         <Input
           addBefore="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;密码"
           placeholder="请输入密码"
+          value={currentRecord?.passwordV2}
+          onChange={(v) =>
+            setCurrentRecord({ ...currentRecord, passwordV2: v })
+          }
         />
         <div style={{ height: 20 }} />
-        <Input addBefore="确认密码" placeholder="请再次输入密码" />
+        <Input
+          addBefore="确认密码"
+          placeholder="请再次输入密码"
+          value={currentRecord?.rePassword}
+          onChange={(v) =>
+            setCurrentRecord({ ...currentRecord, rePassword: v })
+          }
+        />
       </Modal>
 
       <Modal
@@ -244,40 +265,48 @@ function SearchTable() {
         title={'添加管理员'}
         visible={addAdminVisible}
         wrapClassName={styles.table_modal_wrap}
-        onOk={() => setAddAdminVisible(false)}
+        onOk={() => {
+          createAdminUser();
+        }}
         onCancel={() => setAddAdminVisible(false)}
         okText={'确定'}
         hideCancel={true}
         autoFocus={false}
         focusLock={true}
       >
-        <div style={{ height: 20 }} />
-        <Input addBefore="管理员姓名" placeholder="请输入管理员姓名" />
-        <div style={{ height: 20 }} />
-        <Input
-          addBefore="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;帐号"
-          placeholder="请输入管理员帐号"
-        />
-        <div style={{ height: 20 }} />
-        <Input
-          addBefore="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;密码"
-          placeholder="请输入管理员密码"
-        />
-        <div style={{ height: 20 }} />
-        <Input addBefore="确认密码" placeholder="请确认管理员密码" />
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex', marginLeft: '20px' }}>
-          <div>是否可用:</div>
-          <div style={{ width: 20 }} />
-          <Switch></Switch>
-        </div>
+        <Form form={addForm}>
+          <div style={{ height: 20 }} />
+          <Form.Item label={'管理员姓名'} field={'realName'}>
+            <Input placeholder="请输入管理员姓名" />
+          </Form.Item>
+          <div style={{ height: 20 }} />
+          <Form.Item label={'账号'} field={'userName'}>
+            <Input placeholder="请输入管理员帐号" />
+          </Form.Item>
+          <div style={{ height: 20 }} />
+          <Form.Item label={'密码'} field={'password'}>
+            <Input placeholder="请输入管理员密码" />
+          </Form.Item>
+
+          <div style={{ height: 20 }} />
+          <Form.Item label={'确认密码'} field={'rePassword'}>
+            <Input placeholder="请确认管理员密码" />
+          </Form.Item>
+          <div style={{ height: 20 }} />
+        </Form>
+
+        {/*<div style={{ display: 'flex', marginLeft: '20px' }}>*/}
+        {/*  <div>是否可用:</div>*/}
+        {/*  <div style={{ width: 20 }} />*/}
+        {/*  <Switch></Switch>*/}
+        {/*</div>*/}
       </Modal>
 
       <Modal
         title={'提示'}
         visible={deleteVisible}
         wrapClassName={styles.table_modal_wrap}
-        onOk={() => setDeleteVisible(false)}
+        onOk={() => deleteAdminUser()}
         onCancel={() => setDeleteVisible(false)}
         okText={'确定'}
         autoFocus={false}
@@ -285,7 +314,8 @@ function SearchTable() {
       >
         <div style={{ height: 20 }} />
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div className={styles.warning}></div>确认删除【XXX】管理员吗？
+          <div className={styles.warning}></div>确认删除【
+          {currentRecord?.userName}】管理员吗？
         </div>
       </Modal>
     </Card>

@@ -5,7 +5,8 @@ import {
   Badge,
   Space,
   Dropdown,
-  Menu, Switch,
+  Menu,
+  Switch,
 } from '@arco-design/web-react';
 import IconText from './icons/text.svg';
 import IconHorizontalVideo from './icons/horizontal.svg';
@@ -43,39 +44,19 @@ export function getColumns(
     },
     {
       title: '管理员名称',
-      dataIndex: 'name',
+      dataIndex: 'userName',
     },
-    {
-      title: '身份',
-      dataIndex: 'contentType',
-      render: (value) => (
-        <div className={styles['content-type']}>
-          {ContentIcon[value]}
-          {ContentType[value]}
-        </div>
-      ),
-    },
-    {
-      title: '账号',
-      dataIndex: 'filterType',
-      render: (value) => FilterType[value],
-    },
-    {
-      title: '是否可用',
-      dataIndex: 'status',
-      render: (x) => {
-        return <Switch checked={x}></Switch>
-      },
-    },
+    // {
+    //   title: '身份',
+    //   dataIndex: 'roleName',
+    // },
+    // {
+    //   title: '账号',
+    //   dataIndex: 'filterType',
+    // },
     {
       title: '创建时间',
-      dataIndex: 'status',
-      render: (x) => {
-        if (x === 0) {
-          return <Badge status="error" text={Status[x]}></Badge>;
-        }
-        return <Badge status="success" text={Status[x]}></Badge>;
-      },
+      dataIndex: 'createTime',
     },
     {
       title: '操作',
@@ -90,13 +71,13 @@ export function getColumns(
           >
             修改管理员密码
           </Button>
-          <Button
-            type="text"
-            size="small"
-            onClick={(e) => callback(record, 'edit', e)}
-          >
-            编辑
-          </Button>
+          {/*<Button*/}
+          {/*  type="text"*/}
+          {/*  size="small"*/}
+          {/*  onClick={(e) => callback(record, 'edit', e)}*/}
+          {/*>*/}
+          {/*  编辑*/}
+          {/*</Button>*/}
           <Button
             type="text"
             size="small"
