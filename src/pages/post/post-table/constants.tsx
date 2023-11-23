@@ -6,6 +6,8 @@ import {
   Space,
   Dropdown,
   Menu,
+  Image,
+  Switch,
 } from '@arco-design/web-react';
 import IconText from './icons/text.svg';
 import IconHorizontalVideo from './icons/horizontal.svg';
@@ -35,17 +37,6 @@ export function getColumns(
     callback({}, page, e);
   };
 
-  const dropList = (
-    <Menu>
-      <Menu.Item onClick={(e) => onItemClick('deposit', e)} key="1">
-        充值CC基金
-      </Menu.Item>
-      <Menu.Item onClick={(e) => onItemClick('editPassword', e)} key="2">
-        修改登录密码
-      </Menu.Item>
-    </Menu>
-  );
-
   return [
     {
       title: 'ID',
@@ -54,32 +45,26 @@ export function getColumns(
     },
     {
       title: '文章图片',
-      dataIndex: 'name',
+      dataIndex: 'image',
+      render: (value) => <Image width={100} height={100} src={value}></Image>,
     },
     {
       title: '文章标题',
-      dataIndex: 'contentType',
-      render: (value) => (
-        <div className={styles['content-type']}>
-          {ContentIcon[value]}
-          {ContentType[value]}
-        </div>
-      ),
+      dataIndex: 'noticeTitle',
     },
     {
       title: '时间',
-      dataIndex: 'filterType',
-      render: (value) => FilterType[value],
+      dataIndex: 'createTime',
     },
     {
       title: '推送',
       dataIndex: 'status',
-      render: (x) => {
-        if (x === 0) {
-          return <Badge status="error" text={Status[x]}></Badge>;
-        }
-        return <Badge status="success" text={Status[x]}></Badge>;
-      },
+      render: (x, record) => (
+        <Switch
+          onClick={(e) => callback(record, 'change', e)}
+          checked={x === 1}
+        />
+      ),
     },
     {
       title: '操作',

@@ -91,10 +91,9 @@ function SearchForm(props: {
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
                 <Radio value="all">全部</Radio>
-                <Radio value="0">待支付</Radio>
-                <Radio value="2">匹配中</Radio>
-                <Radio value="-1">已失效</Radio>
-                <Radio value="4">已完成</Radio>
+                <Radio value="0">待审核</Radio>
+                <Radio value="2">已失效</Radio>
+                <Radio value="1">已完成</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>

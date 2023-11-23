@@ -21,6 +21,7 @@ import {
   Dropdown,
   Menu,
   InputNumber,
+  Message,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDown, IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -32,7 +33,8 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
-import {useRouter} from "next/router";
+import { useRouter } from 'next/router';
+import { APIChangStatePost, APIPostList } from '@/api/api';
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -53,18 +55,22 @@ const dropList = (
 
 function SearchTable() {
   const t = useLocale(locale);
-
+  const router = useRouter();
   const tableCallback = async (record, type, e) => {
     if (e) e.stopPropagation();
+    if (!currentRecord || record.id !== currentRecord?.id) {
+      setCurrentRecord(record);
+    }
     if (type === 'edit') {
-      openModal();
+      router.push(`/post/create-post?id=${record.id}`);
     }
     if (type === 'delete') {
       setDeleteVisible(true);
     }
+    if (type === 'change') {
+      changePostStatus(record);
+    }
   };
-
-  const router = useRouter();
 
   const columns = useMemo(() => getColumns(t, tableCallback), [t]);
 
@@ -76,38 +82,15 @@ function SearchTable() {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [formParams, setFormParams] = useState({});
-
+  const [currentRecord, setCurrentRecord]: any = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
 
   useEffect(() => {
-    fetchData();
+    getPostList();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
-
-  function fetchData() {
-    const { current, pageSize } = pagination;
-    setLoading(true);
-    axios
-      .get('/api/list', {
-        params: {
-          page: current,
-          pageSize,
-          ...formParams,
-        },
-      })
-      .then((res) => {
-        setData(res.data.list);
-        setPatination({
-          ...pagination,
-          current,
-          pageSize,
-          total: res.data.total,
-        });
-        setLoading(false);
-      });
-  }
 
   function onChangeTable({ current, pageSize }) {
     setPatination({
@@ -115,11 +98,6 @@ function SearchTable() {
       current,
       pageSize,
     });
-  }
-
-  function handleSearch(params) {
-    setPatination({ ...pagination, current: 1 });
-    setFormParams(params);
   }
 
   const openModal = () => {
@@ -130,13 +108,52 @@ function SearchTable() {
     setModalVisible(false);
   };
 
+  const getPostList = () => {
+    setLoading(true);
+    APIPostList({})
+      .then((resp: any) => {
+        setData(resp.result);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const changePostStatus = (record, deleteStatus?) => {
+    setLoading(true);
+    setDeleteVisible(false);
+    APIChangStatePost({
+      id: record.id,
+      status: deleteStatus ?? (record.status === 1 ? 0 : 1),
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          deleteStatus
+            ? Message.info('删除文章成功！')
+            : Message.info('修改状态成功！');
+          getPostList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <Card>
       <div style={{ width: 550, display: 'flex', alignItems: 'center' }}>
-        <div style={{ width: 120 }}>文章标题：</div>
+        <div style={{ width: 200 }}>文章标题：</div>
         <Input placeholder={'请输入名称'}></Input>
         <div style={{ width: 20 }}></div>
-        <Button type={'primary'} onClick={()=>router.push("/post/create-post")}>添加文章</Button>
+        <Space>
+          <Button type={'primary'}>搜索</Button>
+          <Button
+            type={'primary'}
+            onClick={() => router.push('/post/create-post')}
+          >
+            添加文章
+          </Button>
+        </Space>
       </div>
       <div style={{ height: 20 }} />
       <Table
@@ -229,7 +246,7 @@ function SearchTable() {
         title={'提示'}
         visible={deleteVisible}
         wrapClassName={styles.table_modal_wrap}
-        onOk={() => setDeleteVisible(false)}
+        onOk={() => changePostStatus(currentRecord, 3)}
         onCancel={() => setDeleteVisible(false)}
         okText={'确定'}
         autoFocus={false}

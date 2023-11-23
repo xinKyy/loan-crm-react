@@ -67,5 +67,29 @@ export const APIMatchOrder = (params) => {
 
 // 获取订单操作记录  type:0 基金订单操作记录，1：帮助订单操作记录
 export const APIOrderActionLog = (params) => {
-  return axios.get('/api/v1/orderOperateRecord/getOrderRecordList', {params});
+  return axios.get('/api/v1/orderOperateRecord/getOrderRecordList', { params });
+};
+
+// 审批基金订单
+export const APIAcceptOrder = (params) => {
+  return axios.get('/api/v1/ccOrder/check', { params });
+};
+
+// 发布文章
+export const APICreatePost = (params) => {
+  return axios.post('/api/v1/notice/saveNotice', params);
+};
+
+// 文章列表
+export const APIPostList = (params) => {
+  return axios.get('/api/v1/notice/getList', { params });
+};
+
+// 修改文章状态
+export const APIChangStatePost = (params) => {
+  return axios.get('/api/v1/notice/setStatus', { params });
+};
+
+export const APIGetPostDetail = (params) => {
+  return axios.get('/api/v1/notice/getDetail', { params });
 };

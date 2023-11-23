@@ -10,14 +10,7 @@ const { Text } = Typography;
 
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
 export const FilterType = ['规则筛选', '人工'];
-export const Status = [
-  '过期',
-  '待支付',
-  '取消订单',
-  '匹配中',
-  '已支付',
-  '完成',
-];
+export const Status = ['待审核', '已完成', '已失效'];
 
 const ContentIcon = [
   <IconText key={0} />,
@@ -54,7 +47,7 @@ export function getColumns(
     {
       title: '订单状态',
       dataIndex: 'status',
-      render: (x) => <div>{Status[x + 1]}</div>,
+      render: (x) => <div>{Status[x]}</div>,
     },
     {
       title: '操作',
@@ -76,13 +69,15 @@ export function getColumns(
           >
             订单备注
           </Button>
-          <Button
-            type="text"
-            size="small"
-            onClick={(e) => callback(record, 'accept', e)}
-          >
-            审核
-          </Button>
+          {record.status === 0 ? (
+            <Button
+              type="text"
+              size="small"
+              onClick={(e) => callback(record, 'accept', e)}
+            >
+              审核
+            </Button>
+          ) : null}
         </Space>
       ),
     },
