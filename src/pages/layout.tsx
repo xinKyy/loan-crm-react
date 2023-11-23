@@ -44,7 +44,7 @@ function getIconFromKey(key) {
       return <IconFile className={styles.icon} />;
     case 'distribution':
       return <IconApps className={styles.icon} />;
-    case 'post/post-table':
+    case 'post':
       return <IconCheckCircle className={styles.icon} />;
     case 'exception':
       return <IconExclamationCircle className={styles.icon} />;

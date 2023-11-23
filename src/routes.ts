@@ -70,14 +70,18 @@ export const routes: IRoute[] = [
     ],
   },
   {
-    name: '文章管理',
-    key: 'post/post-table',
-    // children: [
-    //   {
-    //     name: '文章管理',
-    //     key: 'post/post-table',
-    //   },
-    // ],
+    name: '文章',
+    key: 'post',
+    children: [
+      {
+        name: '文章管理',
+        key: 'post/post-table',
+      },
+      {
+        name: '发布文章',
+        key: 'post/create-post',
+      },
+    ],
   },
   {
     name: '设置',

@@ -60,7 +60,12 @@ export const APIEditCCOrderNote = (params) => {
   return axios.post('/api/v1/ccOrder/orderNote', params);
 };
 
-// 备注基金订单
+// 匹配帮助订单
 export const APIMatchOrder = (params) => {
   return axios.post('/api/v1/iccOrder/match', params);
+};
+
+// 获取订单操作记录  type:0 基金订单操作记录，1：帮助订单操作记录
+export const APIOrderActionLog = (params) => {
+  return axios.get('/api/v1/orderOperateRecord/getOrderRecordList', {params});
 };

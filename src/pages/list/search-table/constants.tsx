@@ -10,7 +10,14 @@ const { Text } = Typography;
 
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
 export const FilterType = ['规则筛选', '人工'];
-export const Status = ['未上线', '已上线'];
+export const Status = [
+  '过期',
+  '待支付',
+  '取消订单',
+  '匹配中',
+  '已支付',
+  '完成',
+];
 
 const ContentIcon = [
   <IconText key={0} />,
@@ -42,17 +49,12 @@ export function getColumns(
     },
     {
       title: t['searchTable.columns.createdTime'],
-      dataIndex: 'createdTime',
+      dataIndex: 'createTime',
     },
     {
       title: '订单状态',
       dataIndex: 'status',
-      render: (x) => {
-        if (x === 0) {
-          return <Badge status="error" text={Status[x]}></Badge>;
-        }
-        return <Badge status="success" text={Status[x]}></Badge>;
-      },
+      render: (x) => <div>{Status[x + 1]}</div>,
     },
     {
       title: '操作',

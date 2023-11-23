@@ -32,6 +32,7 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
+import {useRouter} from "next/router";
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -62,6 +63,8 @@ function SearchTable() {
       setDeleteVisible(true);
     }
   };
+
+  const router = useRouter();
 
   const columns = useMemo(() => getColumns(t, tableCallback), [t]);
 
@@ -133,7 +136,7 @@ function SearchTable() {
         <div style={{ width: 120 }}>文章标题：</div>
         <Input placeholder={'请输入名称'}></Input>
         <div style={{ width: 20 }}></div>
-        <Button type={'primary'}>添加文章</Button>
+        <Button type={'primary'} onClick={()=>router.push("/post/create-post")}>添加文章</Button>
       </div>
       <div style={{ height: 20 }} />
       <Table

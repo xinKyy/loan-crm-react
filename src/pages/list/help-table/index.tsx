@@ -33,7 +33,7 @@ import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
 import {
   APIEditLccOrderNote,
-  APIMatchOrder,
+  APIMatchOrder, APIOrderActionLog,
   getHelpOrderList,
   getMatchOrderList,
 } from '@/api/api';
@@ -64,6 +64,7 @@ function SearchTable() {
 
     if (type === 'details') {
       setVisible(true);
+      getOrderActionLogs(record);
     }
     if (type === 'match') {
       openModal(record);
@@ -95,6 +96,8 @@ function SearchTable() {
   const [activeTab, setActiveTab] = useState('1');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [matchAmount, setMatchAmount] = useState(0);
+  const [orderActionData, setOrderActionData] = useState([]);
+  const [orderActionDataLoading, setOrderActionDataLoading] = useState(false);
 
   const getHelpOrder = () => {
     setLoading(true);
@@ -188,6 +191,18 @@ function SearchTable() {
         setPageLoading(false);
       });
   };
+
+  const getOrderActionLogs = (record) =>{
+    setOrderActionDataLoading(true);
+    APIOrderActionLog({
+      orderId:record.id,
+      type:1
+    }).then((resp:any) => {
+      setOrderActionData(resp.result);
+    }).finally(()=>{
+      setOrderActionDataLoading(false);
+    });
+  }
 
   return (
     <Spin style={{ width: '100%' }} loading={pageLoading}>
@@ -427,7 +442,7 @@ function SearchTable() {
                     <Divider />
                   </Tabs.TabPane>
                   <Tabs.TabPane key="2" title="订单记录">
-                    <Table columns={orderColumns} data={orderData} />
+                    <Table loading={orderActionDataLoading} columns={orderColumns} data={orderActionData} />
                   </Tabs.TabPane>
                 </Tabs>
               </div>
@@ -529,19 +544,22 @@ function SearchTable() {
 const orderColumns: TableColumnProps[] = [
   {
     title: '订单编号',
-    dataIndex: 'name',
+    dataIndex: 'orderId',
   },
   {
     title: '操作记录',
-    dataIndex: 'salary',
+    dataIndex: 'operate',
   },
   {
     title: '操作时间',
-    dataIndex: 'address',
+    dataIndex: 'createTime',
+    render:(v)=>{
+      return <div>{v.split("T")[0]} {v.split("T")[1].split("+")[0].split(".")[0]}</div>
+    }
   },
   {
     title: '操作角色',
-    dataIndex: 'email',
+    dataIndex: 'roleName',
   },
 ];
 const mateColumns: TableColumnProps[] = [

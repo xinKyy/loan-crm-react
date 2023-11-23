@@ -28,6 +28,7 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers = {
         Authorization: `Bearer ${token}`,
+        token:token
       };
     }
 
@@ -55,15 +56,7 @@ axiosInstance.interceptors.response.use(
       return resp;
     }
 
-    if (
-      resp.resultCode === 10006 ||
-      resp.resultCode === 10004 ||
-      resp.resultCode === 10007 ||
-      resp.resultCode === 10005 ||
-      resp.code === '45000' ||
-      resp.resultCode === 20033 ||
-      resp.resultCode === 10000
-    ) {
+    if (resp.resultCode === 10001) {
       localStorage.removeItem('token');
       localStorage.removeItem('userStatus');
       window.location.href = '/login';
