@@ -174,8 +174,8 @@ function SearchTable() {
     setEditPasswordVisible(false);
     setLoading(true);
     APIEditAdminUserPassword({
-      userName: currentRecord?.userName,
-      password: currentRecord.passwordV2,
+      email: currentRecord?.userName,
+      newPassword: currentRecord.passwordV2,
     })
       .then((resp: any) => {
         if (resp.result) {
