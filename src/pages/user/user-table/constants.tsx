@@ -62,11 +62,10 @@ export function getColumns(
       title: '昵称',
       dataIndex: 'UserName',
     },
-    // {
-    //   title: '有效会员',
-    //   dataIndex: 'filterType',
-    //   render: (value) => FilterType[value],
-    // },
+    {
+      title: '有效会员',
+      dataIndex: 'IsMember',
+    },
     {
       title: '会员等级',
       dataIndex: 'MemberLevel',

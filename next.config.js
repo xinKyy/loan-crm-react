@@ -45,8 +45,8 @@ module.exports = withLess(
       return [
         {
           source: '/api/:path*',
-          destination: 'http://192.168.2.126:8080/:path*', // 实际API的基本URL
-          // destination: 'http://192.168.2.128:8080/:path*', // 实际API的基本URL
+          // destination: 'http://192.168.2.126:8080/:path*', // 实际API的基本URL
+          destination: 'http://192.168.2.128:8080/:path*', // 实际API的基本URL
           // destination: 'http://192.168.2.236:9292/:path*', // 实际API的基本URL
         },
       ];

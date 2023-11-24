@@ -144,3 +144,8 @@ export const APIGetVipList = (params) => {
 export const APIEditVipList = (params) => {
   return axios.post('api/v1/vip/update', params );
 };
+
+// 修改用户详情
+export const APIEditUser = (params) => {
+  return axios.put('/api/getUser', params );
+};

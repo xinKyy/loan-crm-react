@@ -20,7 +20,7 @@ import {
   Radio,
   Dropdown,
   Menu,
-  InputNumber,
+  InputNumber, Form,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDown, IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -57,6 +57,9 @@ function SearchTable() {
   const tableCallback = async (record, type, e) => {
     console.log(record, type);
     if (e) e.stopPropagation();
+    if (!currentRecord || record.Id !== currentRecord?.Id) {
+      setCurrentRecord(record);
+    }
     if (type === 'edit') {
       openModal();
     }
@@ -67,7 +70,7 @@ function SearchTable() {
       setEditPasswordVisible(true);
     }
   };
-
+  const [currentRecord, setCurrentRecord]: any = useState();
   const columns = useMemo(() => getColumns(t, tableCallback), [t]);
 
   const [data, setData] = useState([]);
@@ -196,76 +199,51 @@ function SearchTable() {
         autoFocus={false}
         focusLock={true}
       >
-        <Input
-          disabled
-          value={'999'}
-          addBefore={
-            <span>
-              <span style={{ color: '#ff0000' }}>*</span>用户ID
-            </span>
-          }
-          placeholder="Please enter"
-        />
+        <Form>
+          <Form.Item label={"ID"} field={"userId"}>
+            <Input
+              disabled
+            />
+          </Form.Item>
         <div style={{ height: 20 }} />
-        <Input addBefore="邮箱号" placeholder="请输入邮箱号" />
+          <Form.Item label={"邮箱号"} field={"email"}>
+            <Input  placeholder="请输入邮箱号" />
+          </Form.Item>
         <div style={{ height: 20 }} />
         <div style={{ display: 'flex' }}>
-          <div
-            style={{
-              padding: '0 12px',
-              height: '32px',
-              background: '#F2F3F5',
-              lineHeight: '32px',
-            }}
-          >
-            备注：
-          </div>
-          <div style={{ width: 1, height: 32, background: '#E5E6EC' }}></div>
-          <div style={{ flex: '1' }}>
-            {' '}
+          <Form.Item label={"备注"} field={"remark"}>
             <Input.TextArea placeholder="请输入备注" />
-          </div>
+          </Form.Item>
         </div>
         <div style={{ height: 20 }} />
         <div style={{ display: 'flex' }}>
-          <div style={{ width: 12 }} />
-          <div>
-            <span style={{ color: '#ff0000' }}>*</span>状态:
-          </div>
-          <div style={{ width: 20 }} />
-          <RadioGroup defaultValue="open">
-            <Radio value="open">开启</Radio>
-            <Radio value="close">关闭</Radio>
-          </RadioGroup>
+          <Form.Item label={"状态"} field={"status"}>
+            <RadioGroup defaultValue="open">
+              <Radio value="open">开启</Radio>
+              <Radio value="close">关闭</Radio>
+            </RadioGroup>
+          </Form.Item>
         </div>
         <div style={{ height: 20 }} />
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ width: 12 }} />
-          <div>
-            <span style={{ color: '#ff0000' }}>*</span>会员等级:
-          </div>
-          <div style={{ width: 20 }} />
-          <Dropdown droplist={dropList} position="br">
-            <Button type="default">
-              普通会员
-              <IconDown />
-            </Button>
-          </Dropdown>
+          <Form.Item label={"会员等级"} field={"membershiplevel"}>
+            <Dropdown droplist={dropList} position="br">
+              <Button type="default">
+                普通会员
+                <IconDown />
+              </Button>
+            </Dropdown>
+          </Form.Item>
         </div>
         <div style={{ height: 20 }} />
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ width: 12 }} />
-          <div>
-            <span style={{ color: '#ff0000' }}>*</span>上级推广员:
-          </div>
-          <div style={{ width: 20 }} />
-          <Dropdown droplist={dropList} position="br">
-            <Button type="default">
-              普通会员
-              <IconDown />
-            </Button>
-          </Dropdown>
+          <Form.Item label={"上级推广员"} field={"parentid"}>
+            <Input placeholder={"请输入上级的Email"}>
+
+            </Input>
+          </Form.Item>
         </div>
+        </Form>
       </Modal>
 
       <Modal
