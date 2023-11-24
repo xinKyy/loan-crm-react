@@ -152,7 +152,7 @@ function Configuration() {
     APICreateBanner({
       id: edit ? currentRecord.id : null,
       bannerName: params.bannerName,
-      image: params.image,
+      image: edit && currentRecord.image ? currentRecord.image : params.image,
       jumpUrl: `${selectedRowKeys[0]}`,
       status: params.status ? '1' : '0',
     })
@@ -177,8 +177,8 @@ function Configuration() {
       .then((resp: any) => {
         if (resp.result) {
           deleteStatus
-            ? Message.info('删除文章成功！')
-            : Message.info('修改状态成功！');
+            ? Message.info('删除轮播图成功！')
+            : Message.info('修改轮播图状态成功！');
           getBannerList();
         }
       })
@@ -275,13 +275,44 @@ function Configuration() {
           </Form.Item>
           <Form.Item label={'轮播图'} field={'image'}>
             <div>
-              <Upload
-                listType="picture-card"
-                accept={'.png,.jpg,.jpeg,.webp'}
-                limit={1}
-                onChange={onChange}
-                action="/api/upload/uploadPicUrl"
-              />
+              {edit && currentRecord?.image ? (
+                <div style={{ position: 'relative' }}>
+                  <Image
+                    width={100}
+                    height={100}
+                    src={currentRecord?.image}
+                  ></Image>
+                  <div
+                    onClick={() =>
+                      setCurrentRecord({ ...currentRecord, image: null })
+                    }
+                    style={{
+                      position: 'absolute',
+                      top: '0',
+                      left: '0',
+                      borderRadius: '15px',
+                      cursor: 'pointer',
+                      width: '25px',
+                      height: '25px',
+                      fontSize: '20px',
+                      lineHeight: '25px',
+                      color: '#fff',
+                      textAlign: 'center',
+                      background: 'rgba(0,0,0,0.5)',
+                    }}
+                  >
+                    x
+                  </div>
+                </div>
+              ) : (
+                <Upload
+                  listType="picture-card"
+                  accept={'.png,.jpg,.jpeg,.webp'}
+                  limit={1}
+                  onChange={onChange}
+                  action="/api/upload/uploadPicUrl"
+                />
+              )}
             </div>
           </Form.Item>
           <Form.Item label={'跳转链接'} field={'jumpUrl'}>
@@ -292,7 +323,7 @@ function Configuration() {
             </Button>
           </Form.Item>
           <Form.Item label={'是否显示'} field={'status'}>
-            <Switch></Switch>
+            <Switch checked={currentRecord?.status === 1}></Switch>
           </Form.Item>
         </Form>
       </Modal>
