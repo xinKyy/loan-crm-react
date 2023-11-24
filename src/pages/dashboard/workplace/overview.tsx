@@ -6,6 +6,8 @@ import {
   Divider,
   Skeleton,
   Link,
+  Statistic,
+  Space,
 } from '@arco-design/web-react';
 import { useSelector } from 'react-redux';
 import { IconCaretUp } from '@arco-design/web-react/icon';
@@ -18,9 +20,17 @@ import IconCalendar from './assets/calendar.svg';
 import IconComments from './assets/comments.svg';
 import IconContent from './assets/content.svg';
 import IconIncrease from './assets/increase.svg';
-
+import { useRouter } from 'next/router';
+import { APIHome } from '@/api/api';
+import {
+  Axis,
+  Chart,
+  Coordinate,
+  Interaction,
+  Interval,
+  Tooltip,
+} from 'bizcharts';
 const { Row, Col } = Grid;
-
 type StatisticItemType = {
   icon?: ReactNode;
   title?: ReactNode;
@@ -58,10 +68,16 @@ type DataType = {
 
 function Overview() {
   const [data, setData] = useState<DataType>({});
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const t = useLocale(locale);
 
   const userInfo = useSelector((state: any) => state.userInfo || {});
+
+  const [homeData, setHomeData]: any = useState();
+  const [orderData, setOrderData]: any = useState([]);
+  const [obtainOrderData, setObtainOrderData]: any = useState([]);
+  const [obtainChartData, setObtainChartData] = useState([]);
 
   const fetchData = () => {
     setLoading(true);
@@ -75,80 +91,237 @@ function Overview() {
       });
   };
 
+  const getHome = () => {
+    setLoading(true);
+    APIHome({})
+      .then((resp: any) => {
+        setHomeData(resp.result);
+        const data: DataType = {
+          chartData: [],
+        };
+        if (resp?.result?.offer) {
+          resp.result.offer.forEach((item) => {
+            data.chartData.push({
+              count: item.amount,
+              date: item.date,
+            });
+          });
+          setData(data);
+        }
+
+        if (resp?.result?.obtain) {
+          const tempData = [];
+          resp.result.obtain.forEach((item) => {
+            tempData.push({
+              count: item.amount,
+              date: item.date,
+            });
+          });
+          setObtainChartData(tempData);
+        }
+
+        setOrderData([
+          {
+            type: '今日提供订单金额',
+            value: resp?.result?.toDayOffAmount,
+          },
+          {
+            type: '昨日提供订单金额',
+            value: resp?.result?.yesToDayOffAmount,
+          },
+        ]);
+
+        setObtainOrderData([
+          {
+            type: '今日得到订单金额',
+            value: resp?.result?.toDayObtainAmount,
+          },
+          {
+            type: '昨日得到订单金额',
+            value: resp?.result?.yesToDayObtainAmount,
+          },
+        ]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   useEffect(() => {
-    fetchData();
+    // fetchData();
+    getHome();
   }, []);
 
   return (
-    <Card>
-      <Typography.Title heading={5}>
-        {t['workplace.welcomeBack']}
-        {userInfo.name}
-      </Typography.Title>
-      <Divider />
+    <Card style={{ width: '100%' }}>
       <Row>
         <Col flex={1}>
-          <StatisticItem
-            icon={<IconCalendar />}
-            title={t['workplace.totalOnlyData']}
-            count={data.allContents}
-            loading={loading}
-            unit={t['workplace.pecs']}
-          />
+          <div
+            onClick={() => {
+              router.push('/user/user-table');
+            }}
+          >
+            <StatisticItem
+              icon={<IconCalendar />}
+              title={'用户管理'}
+              count={data.allContents}
+              loading={loading}
+              unit={t['workplace.pecs']}
+            />
+          </div>
         </Col>
         <Divider type="vertical" className={styles.divider} />
         <Col flex={1}>
-          <StatisticItem
-            icon={<IconContent />}
-            title={t['workplace.contentInMarket']}
-            count={data.liveContents}
-            loading={loading}
-            unit={t['workplace.pecs']}
-          />
+          <div
+            onClick={() => {
+              router.push('/list/help-table');
+            }}
+          >
+            <StatisticItem
+              icon={<IconContent />}
+              title={'订单管理'}
+              count={data.liveContents}
+              loading={loading}
+              unit={t['workplace.pecs']}
+            />
+          </div>
         </Col>
         <Divider type="vertical" className={styles.divider} />
         <Col flex={1}>
-          <StatisticItem
-            icon={<IconComments />}
-            title={t['workplace.comments']}
-            count={data.increaseComments}
-            loading={loading}
-            unit={t['workplace.pecs']}
-          />
+          <div
+            onClick={() => {
+              router.push('/distribution/distribution-table');
+            }}
+          >
+            <StatisticItem
+              icon={<IconComments />}
+              title={'分销管理'}
+              count={data.increaseComments}
+              loading={loading}
+              unit={t['workplace.pecs']}
+            />
+          </div>
         </Col>
         <Divider type="vertical" className={styles.divider} />
         <Col flex={1}>
-          <StatisticItem
-            icon={<IconIncrease />}
-            title={t['workplace.growth']}
-            count={
-              <span>
-                {data.growthRate}{' '}
-                <IconCaretUp
-                  style={{ fontSize: 18, color: 'rgb(var(--green-6))' }}
-                />
-              </span>
-            }
-            loading={loading}
-          />
+          <div
+            onClick={() => {
+              router.push('/post/post-table');
+            }}
+          >
+            <StatisticItem
+              icon={<IconIncrease />}
+              title={'文章管理'}
+              count={data.increaseComments}
+              loading={loading}
+            />
+          </div>
         </Col>
       </Row>
       <Divider />
-      <div>
-        <div className={styles.ctw}>
-          <Typography.Paragraph
-            className={styles['chart-title']}
-            style={{ marginBottom: 0 }}
-          >
-            {t['workplace.contentData']}
-            <span className={styles['chart-sub-title']}>
-              ({t['workplace.1year']})
-            </span>
-          </Typography.Paragraph>
-          <Link>{t['workplace.seeMore']}</Link>
+      <Card>
+        <div style={{ display: 'flex' }}>
+          <div style={{ flex: '2' }}>
+            <div className={styles.ctw}>
+              <Statistic
+                title="当日提供订单金额"
+                value={homeData?.toDayOffAmount ?? '--'}
+                groupSeparator
+              />
+            </div>
+            <OverviewAreaLine data={data.chartData} loading={loading} />
+          </div>
+          <Card style={{ width: 360, flex: '1' }} title="数据统计">
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Statistic
+                title="当日订单数"
+                value={homeData?.toDayOfferOrderSize ?? '--'}
+                groupSeparator
+              />
+              <Statistic
+                title="当日支付人数"
+                value={homeData?.toDayOfferPeopleSize ?? '--'}
+                groupSeparator
+              />
+            </div>
+            <Chart data={orderData} height={200} autoFit>
+              <Coordinate type="theta" radius={0.8} innerRadius={0.75} />
+              <Axis visible={false} />
+              <Tooltip showTitle={false} />
+              <Interval
+                adjust="stack"
+                position="value"
+                color="type"
+                shape="sliceShape"
+              />
+              <Interaction type="element-single-selected" />
+            </Chart>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Statistic
+                title="当月订单数"
+                value={homeData?.monthDayOfferOrderSize ?? '--'}
+                groupSeparator
+              />
+              <Statistic
+                title="当月支付人数"
+                value={homeData?.monthDayOfferPeopleSize ?? '--'}
+                groupSeparator
+              />
+            </div>
+          </Card>
         </div>
-        <OverviewAreaLine data={data.chartData} loading={loading} />
-      </div>
+        <Divider />
+        <div style={{ display: 'flex' }}>
+          <div style={{ flex: '2' }}>
+            <div className={styles.ctw}>
+              <Statistic
+                title="当日得到订单金额"
+                value={homeData?.toDayObtainAmount ?? '--'}
+                groupSeparator
+              />
+            </div>
+            <OverviewAreaLine data={obtainChartData} loading={loading} />
+          </div>
+          <Card style={{ width: 360, flex: '1' }} title="数据统计">
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Statistic
+                title="当日订单数"
+                value={homeData?.toDayObtainOrderSize ?? '--'}
+                groupSeparator
+              />
+              <Statistic
+                title="当日得到人数"
+                value={homeData?.toDayObtainPeopleSize ?? '--'}
+                groupSeparator
+              />
+            </div>
+            <Chart data={obtainOrderData} height={200} autoFit>
+              <Coordinate type="theta" radius={0.8} innerRadius={0.75} />
+              <Axis visible={false} />
+              <Tooltip showTitle={false} />
+              <Interval
+                adjust="stack"
+                position="value"
+                color="type"
+                shape="sliceShape"
+              />
+              <Interaction type="element-single-selected" />
+            </Chart>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Statistic
+                title="当月订单数"
+                value={homeData?.monthDayObtainOrderSize ?? '--'}
+                groupSeparator
+              />
+              <Statistic
+                title="当月得到人数"
+                value={homeData?.monthDayObtainPeopleSize ?? '--'}
+                groupSeparator
+              />
+            </div>
+          </Card>
+        </div>
+      </Card>
     </Card>
   );
 }

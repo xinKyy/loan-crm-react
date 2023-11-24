@@ -100,6 +100,7 @@ function SearchTable() {
         },
       })
       .then((res) => {
+        console.log('aaa', res);
         setData(res.data.list);
         setPatination({
           ...pagination,

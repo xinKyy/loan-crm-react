@@ -124,3 +124,8 @@ export const APIDeleteAdminUser = (params) => {
 export const APIEditAdminUserPassword = (params) => {
   return axios.get('/adminUser/resetPassword', { params });
 };
+
+// 首页数据
+export const APIHome = (params) => {
+  return axios.get('/api/v1/iccOrder/home', { params });
+};

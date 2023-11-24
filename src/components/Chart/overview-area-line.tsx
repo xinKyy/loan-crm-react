@@ -6,7 +6,7 @@ import CustomTooltip from './customer-tooltip';
 function OverviewAreaLine({
   data,
   loading,
-  name = '总内容量',
+  name = '提供订单金额',
   color = '#4080FF',
 }: {
   data: any[];
