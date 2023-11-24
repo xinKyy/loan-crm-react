@@ -85,6 +85,7 @@ function SearchTable() {
     sizeCanChange: true,
     showTotal: true,
     pageSize: 10,
+    total: 0,
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
@@ -112,10 +113,16 @@ function SearchTable() {
     setLoading(true);
     APIGetAdminUserList({
       ...formParams,
+      page_size: pagination.pageSize,
+      page_num: pagination.current,
     })
       .then((resp: any) => {
         if (resp.result) {
           setData(resp.result.records);
+          setPatination({
+            ...pagination,
+            total: resp.result.total,
+          });
         }
       })
       .finally(() => {
