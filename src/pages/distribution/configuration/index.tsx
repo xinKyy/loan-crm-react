@@ -14,7 +14,7 @@ function Configuration() {
               <span style={{ color: 'red' }}>*</span>分销启用
             </div>
             <div style={{ flex: '1', marginLeft: '30px' }}>
-              <Switch />
+              <Switch checked={true} />
               <div style={{ fontSize: 12, zoom: '0.8' }}>
                 开启：分销功能启用； 关闭：分销功能不可用
               </div>
@@ -28,7 +28,7 @@ function Configuration() {
               <span style={{ color: 'red' }}>*</span>分佣烧伤启用
             </div>
             <div style={{ flex: '1', marginLeft: '30px' }}>
-              <Switch />
+              <Switch checked={true} />
               <div style={{ fontSize: 12, zoom: '0.8' }}>
                 开启：奖金烧伤功能启用； 关闭：奖金烧伤功能不可用
               </div>

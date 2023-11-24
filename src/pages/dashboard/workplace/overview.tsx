@@ -153,176 +153,219 @@ function Overview() {
   }, []);
 
   return (
-    <Card style={{ width: '100%' }}>
+    <>
       <Row>
-        <Col flex={1}>
-          <div
-            onClick={() => {
-              router.push('/user/user-table');
-            }}
-          >
-            <StatisticItem
-              icon={<IconCalendar />}
-              title={'用户管理'}
-              count={data.allContents}
-              loading={loading}
-              unit={t['workplace.pecs']}
-            />
-          </div>
-        </Col>
-        <Divider type="vertical" className={styles.divider} />
-        <Col flex={1}>
-          <div
-            onClick={() => {
-              router.push('/list/help-table');
-            }}
-          >
-            <StatisticItem
-              icon={<IconContent />}
-              title={'订单管理'}
-              count={data.liveContents}
-              loading={loading}
-              unit={t['workplace.pecs']}
-            />
-          </div>
-        </Col>
-        <Divider type="vertical" className={styles.divider} />
-        <Col flex={1}>
-          <div
-            onClick={() => {
-              router.push('/distribution/distribution-table');
-            }}
-          >
-            <StatisticItem
-              icon={<IconComments />}
-              title={'分销管理'}
-              count={data.increaseComments}
-              loading={loading}
-              unit={t['workplace.pecs']}
-            />
-          </div>
-        </Col>
-        <Divider type="vertical" className={styles.divider} />
-        <Col flex={1}>
-          <div
-            onClick={() => {
-              router.push('/post/post-table');
-            }}
-          >
-            <StatisticItem
-              icon={<IconIncrease />}
-              title={'文章管理'}
-              count={data.increaseComments}
-              loading={loading}
-            />
-          </div>
-        </Col>
+        <Card style={{ width: '100%' }}>
+          <Row gutter={24}>
+            <Space>
+              <Card
+                style={{ width: 300 }}
+                title="已赠送LCC数量"
+              >
+                <Statistic
+                  extra={`今日赠送 ${homeData?.todayAllLcc}`}
+                  value={homeData?.allLcc}
+                  groupSeparator
+                  precision={2}
+                />
+              </Card>
+              <Card
+                style={{ width: 300 }}
+                title="已充值CC总量"
+              >
+                <Statistic
+                  extra={`今日充值 ${homeData?.todayAllChargeCc}`}
+                  value={homeData?.allChargeCc}
+                  groupSeparator
+                  precision={2}
+                />
+              </Card>
+              <Card
+                style={{ width: 300 }}
+                title="已提供帮助总量"
+              >
+                <Statistic
+                  extra={`今日提供帮助 ${homeData?.toDayOfferOrderSize}`}
+                  value={homeData?.allOffer}
+                  groupSeparator
+                  precision={2}
+                />
+              </Card>
+            </Space>
+          </Row>
+          <Divider />
+          <Row style={{ marginTop: '20px' }} gutter={24}>
+            <Col flex={1}>
+              <div
+                onClick={() => {
+                  router.push('/user/user-table');
+                }}
+              >
+                <StatisticItem
+                  icon={<IconCalendar />}
+                  title={'用户管理'}
+                  count={"--"}
+                  loading={loading}
+                  unit={t['workplace.pecs']}
+                />
+              </div>
+            </Col>
+            <Divider type="vertical" className={styles.divider} />
+            <Col flex={1}>
+              <div
+                onClick={() => {
+                  router.push('/list/help-table');
+                }}
+              >
+                <StatisticItem
+                  icon={<IconContent />}
+                  title={'订单管理'}
+                  count={"--"}
+                  loading={loading}
+                  unit={t['workplace.pecs']}
+                />
+              </div>
+            </Col>
+            <Divider type="vertical" className={styles.divider} />
+            <Col flex={1}>
+              <div
+                onClick={() => {
+                  router.push('/distribution/distribution-table');
+                }}
+              >
+                <StatisticItem
+                  icon={<IconComments />}
+                  title={'分销管理'}
+                  count={"--"}
+                  loading={loading}
+                  unit={t['workplace.pecs']}
+                />
+              </div>
+            </Col>
+            <Divider type="vertical" className={styles.divider} />
+            <Col flex={1}>
+              <div
+                onClick={() => {
+                  router.push('/post/post-table');
+                }}
+              >
+                <StatisticItem
+                  icon={<IconIncrease />}
+                  title={'文章管理'}
+                  count={"--"}
+                  loading={loading}
+                  unit={t['workplace.pecs']}
+                />
+              </div>
+            </Col>
+          </Row>
+          <Divider />
+          <Card>
+            <div style={{ display: 'flex' }}>
+              <div style={{ flex: '2' }}>
+                <div className={styles.ctw}>
+                  <Statistic
+                    title="当日提供订单金额"
+                    value={homeData?.toDayOffAmount ?? '--'}
+                    groupSeparator
+                  />
+                </div>
+                <OverviewAreaLine data={data.chartData} loading={loading} />
+              </div>
+              <Card style={{ width: 360, flex: '1' }} title="数据统计">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Statistic
+                    title="当日订单数"
+                    value={homeData?.toDayOfferOrderSize ?? '--'}
+                    groupSeparator
+                  />
+                  <Statistic
+                    title="当日支付人数"
+                    value={homeData?.toDayOfferPeopleSize ?? '--'}
+                    groupSeparator
+                  />
+                </div>
+                <Chart data={orderData} height={200} autoFit>
+                  <Coordinate type="theta" radius={0.8} innerRadius={0.75} />
+                  <Axis visible={false} />
+                  <Tooltip showTitle={false} />
+                  <Interval
+                    adjust="stack"
+                    position="value"
+                    color="type"
+                    shape="sliceShape"
+                  />
+                  <Interaction type="element-single-selected" />
+                </Chart>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Statistic
+                    title="当月订单数"
+                    value={homeData?.monthDayOfferOrderSize ?? '--'}
+                    groupSeparator
+                  />
+                  <Statistic
+                    title="当月支付人数"
+                    value={homeData?.monthDayOfferPeopleSize ?? '--'}
+                    groupSeparator
+                  />
+                </div>
+              </Card>
+            </div>
+            <Divider />
+            <div style={{ display: 'flex' }}>
+              <div style={{ flex: '2' }}>
+                <div className={styles.ctw}>
+                  <Statistic
+                    title="当日得到订单金额"
+                    value={homeData?.toDayObtainAmount ?? '--'}
+                    groupSeparator
+                  />
+                </div>
+                <OverviewAreaLine data={obtainChartData} loading={loading} />
+              </div>
+              <Card style={{ width: 360, flex: '1' }} title="数据统计">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Statistic
+                    title="当日订单数"
+                    value={homeData?.toDayObtainOrderSize ?? '--'}
+                    groupSeparator
+                  />
+                  <Statistic
+                    title="当日得到人数"
+                    value={homeData?.toDayObtainPeopleSize ?? '--'}
+                    groupSeparator
+                  />
+                </div>
+                <Chart data={obtainOrderData} height={200} autoFit>
+                  <Coordinate type="theta" radius={0.8} innerRadius={0.75} />
+                  <Axis visible={false} />
+                  <Tooltip showTitle={false} />
+                  <Interval
+                    adjust="stack"
+                    position="value"
+                    color="type"
+                    shape="sliceShape"
+                  />
+                  <Interaction type="element-single-selected" />
+                </Chart>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Statistic
+                    title="当月订单数"
+                    value={homeData?.monthDayObtainOrderSize ?? '--'}
+                    groupSeparator
+                  />
+                  <Statistic
+                    title="当月得到人数"
+                    value={homeData?.monthDayObtainPeopleSize ?? '--'}
+                    groupSeparator
+                  />
+                </div>
+              </Card>
+            </div>
+          </Card>
+        </Card>
       </Row>
-      <Divider />
-      <Card>
-        <div style={{ display: 'flex' }}>
-          <div style={{ flex: '2' }}>
-            <div className={styles.ctw}>
-              <Statistic
-                title="当日提供订单金额"
-                value={homeData?.toDayOffAmount ?? '--'}
-                groupSeparator
-              />
-            </div>
-            <OverviewAreaLine data={data.chartData} loading={loading} />
-          </div>
-          <Card style={{ width: 360, flex: '1' }} title="数据统计">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Statistic
-                title="当日订单数"
-                value={homeData?.toDayOfferOrderSize ?? '--'}
-                groupSeparator
-              />
-              <Statistic
-                title="当日支付人数"
-                value={homeData?.toDayOfferPeopleSize ?? '--'}
-                groupSeparator
-              />
-            </div>
-            <Chart data={orderData} height={200} autoFit>
-              <Coordinate type="theta" radius={0.8} innerRadius={0.75} />
-              <Axis visible={false} />
-              <Tooltip showTitle={false} />
-              <Interval
-                adjust="stack"
-                position="value"
-                color="type"
-                shape="sliceShape"
-              />
-              <Interaction type="element-single-selected" />
-            </Chart>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Statistic
-                title="当月订单数"
-                value={homeData?.monthDayOfferOrderSize ?? '--'}
-                groupSeparator
-              />
-              <Statistic
-                title="当月支付人数"
-                value={homeData?.monthDayOfferPeopleSize ?? '--'}
-                groupSeparator
-              />
-            </div>
-          </Card>
-        </div>
-        <Divider />
-        <div style={{ display: 'flex' }}>
-          <div style={{ flex: '2' }}>
-            <div className={styles.ctw}>
-              <Statistic
-                title="当日得到订单金额"
-                value={homeData?.toDayObtainAmount ?? '--'}
-                groupSeparator
-              />
-            </div>
-            <OverviewAreaLine data={obtainChartData} loading={loading} />
-          </div>
-          <Card style={{ width: 360, flex: '1' }} title="数据统计">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Statistic
-                title="当日订单数"
-                value={homeData?.toDayObtainOrderSize ?? '--'}
-                groupSeparator
-              />
-              <Statistic
-                title="当日得到人数"
-                value={homeData?.toDayObtainPeopleSize ?? '--'}
-                groupSeparator
-              />
-            </div>
-            <Chart data={obtainOrderData} height={200} autoFit>
-              <Coordinate type="theta" radius={0.8} innerRadius={0.75} />
-              <Axis visible={false} />
-              <Tooltip showTitle={false} />
-              <Interval
-                adjust="stack"
-                position="value"
-                color="type"
-                shape="sliceShape"
-              />
-              <Interaction type="element-single-selected" />
-            </Chart>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Statistic
-                title="当月订单数"
-                value={homeData?.monthDayObtainOrderSize ?? '--'}
-                groupSeparator
-              />
-              <Statistic
-                title="当月得到人数"
-                value={homeData?.monthDayObtainPeopleSize ?? '--'}
-                groupSeparator
-              />
-            </div>
-          </Card>
-        </div>
-      </Card>
-    </Card>
+    </>
   );
 }
 

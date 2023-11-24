@@ -59,10 +59,10 @@ export const routes: IRoute[] = [
         name: '分销配置',
         key: 'distribution/configuration',
       },
-      {
-        name: '分销员列表',
-        key: 'distribution/distribution-table',
-      },
+      // {
+      //   name: '分销员列表',
+      //   key: 'distribution/distribution-table',
+      // },
       {
         name: '分销等级',
         key: 'distribution/distribution-level-table',

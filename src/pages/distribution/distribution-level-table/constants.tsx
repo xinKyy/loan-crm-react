@@ -17,7 +17,7 @@ import { IconDown } from '@arco-design/web-react/icon';
 const { Text } = Typography;
 
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
-export const FilterType = ['规则筛选', '人工'];
+export const FilterType = ['普通会员', '钻石会员', "大使", "总裁"];
 export const Status = ['未上线', '已上线'];
 
 const ContentIcon = [
@@ -52,48 +52,30 @@ export function getColumns(
       dataIndex: 'id',
       render: (value) => <Text copyable>{value}</Text>,
     },
+    // {
+    //   title: '图标',
+    //   dataIndex: 'name',
+    // },
     {
-      title: '图标',
-      dataIndex: 'name',
-    },
-    {
-      title: '昵称',
-      dataIndex: 'contentType',
-      render: (value) => (
-        <div className={styles['content-type']}>
-          {ContentIcon[value]}
-          {ContentType[value]}
-        </div>
-      ),
+      title: '名称',
+      dataIndex: 'rankname',
     },
     {
       title: '等级',
-      dataIndex: 'filterType',
+      dataIndex: 'rankid',
       render: (value) => FilterType[value],
     },
     {
       title: '收益描述',
-      dataIndex: 'status',
-      render: (x) => {
-        if (x === 0) {
-          return <Badge status="error" text={Status[x]}></Badge>;
-        }
-        return <Badge status="success" text={Status[x]}></Badge>;
-      },
+      dataIndex: 'incomedescription',
     },
     {
       title: '直推人数',
-      dataIndex: 'status',
-      render: (x) => {
-        if (x === 0) {
-          return <Badge status="error" text={Status[x]}></Badge>;
-        }
-        return <Badge status="success" text={Status[x]}></Badge>;
-      },
+      dataIndex: 'directnumber',
     },
     {
       title: '团队人数',
-      dataIndex: 'name',
+      dataIndex: 'groupsize',
     },
     {
       title: '操作',
@@ -108,13 +90,13 @@ export function getColumns(
           >
             编辑
           </Button>
-          <Button
-            type="text"
-            size="small"
-            onClick={(e) => callback(record, 'delete', e)}
-          >
-            删除
-          </Button>
+          {/*<Button*/}
+          {/*  type="text"*/}
+          {/*  size="small"*/}
+          {/*  onClick={(e) => callback(record, 'delete', e)}*/}
+          {/*>*/}
+          {/*  删除*/}
+          {/*</Button>*/}
         </Space>
       ),
     },

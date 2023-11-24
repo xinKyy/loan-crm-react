@@ -20,7 +20,7 @@ import {
   Radio,
   Dropdown,
   Menu,
-  InputNumber,
+  InputNumber, Form, Message,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDown, IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -32,6 +32,7 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
+import {APIEditVipList, APIGetVipList} from "@/api/api";
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -40,7 +41,7 @@ export const ContentType = ['图文', '横版短视频', '竖版短视频'];
 export const FilterType = ['规则筛选', '人工'];
 export const Status = ['已上线', '未上线'];
 const RadioGroup = Radio.Group;
-
+const { useForm } = Form;
 const dropList = (
   <Menu>
     <Menu.Item key="1">普通会员</Menu.Item>
@@ -55,6 +56,9 @@ function SearchTable() {
 
   const tableCallback = async (record, type, e) => {
     if (e) e.stopPropagation();
+    if (!currentRecord || record.id !== currentRecord?.id) {
+      setCurrentRecord(record);
+    }
     if (type === 'edit') {
       openModal();
     }
@@ -73,38 +77,16 @@ function SearchTable() {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [form] = useForm();
   const [formParams, setFormParams] = useState({});
 
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
-
+  const [currentRecord, setCurrentRecord]: any = useState();
   useEffect(() => {
-    fetchData();
+    getVipList();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
-
-  function fetchData() {
-    const { current, pageSize } = pagination;
-    setLoading(true);
-    axios
-      .get('/api/list', {
-        params: {
-          page: current,
-          pageSize,
-          ...formParams,
-        },
-      })
-      .then((res) => {
-        setData(res.data.list);
-        setPatination({
-          ...pagination,
-          current,
-          pageSize,
-          total: res.data.total,
-        });
-        setLoading(false);
-      });
-  }
 
   function onChangeTable({ current, pageSize }) {
     setPatination({
@@ -112,11 +94,6 @@ function SearchTable() {
       current,
       pageSize,
     });
-  }
-
-  function handleSearch(params) {
-    setPatination({ ...pagination, current: 1 });
-    setFormParams(params);
   }
 
   const openModal = () => {
@@ -127,14 +104,43 @@ function SearchTable() {
     setModalVisible(false);
   };
 
+  const getVipList = () => {
+    setLoading(true);
+    APIGetVipList({
+
+    }).then((resp:any)=>{
+      if(resp.result){
+        setData(resp.result);
+      }
+    }).finally(()=>{
+      setLoading(false);
+    })
+  }
+
+  const editVipDesc = () => {
+    setModalVisible(false);
+    setLoading(true);
+    APIEditVipList({
+      ...form.getFieldsValue(),
+      id:currentRecord?.id
+    }).then((resp:any)=>{
+      if(resp.result){
+        Message.success("更新成功！");
+        getVipList();
+      }
+    }).finally(()=>{
+      setLoading(false);
+    });
+  }
+
   return (
     <Card>
-      <div style={{ width: 550, display: 'flex', alignItems: 'center' }}>
-        <div style={{ width: 120 }}>等级名称：</div>
-        <Input placeholder={'请输入名称'}></Input>
-        <div style={{ width: 20 }}></div>
-        <Button type={'primary'}>添加分销等级</Button>
-      </div>
+      {/*<div style={{ width: 550, display: 'flex', alignItems: 'center' }}>*/}
+      {/*  <div style={{ width: 120 }}>等级名称：</div>*/}
+      {/*  <Input placeholder={'请输入名称'}></Input>*/}
+      {/*  <div style={{ width: 20 }}></div>*/}
+      {/*  /!*<Button type={'primary'}>添加分销等级</Button>*!/*/}
+      {/*</div>*/}
       <div style={{ height: 20 }} />
       <Table
         rowKey="id"
@@ -148,20 +154,24 @@ function SearchTable() {
       <Modal
         title={
           <span style={{ fontWeight: 'bold', textAlign: 'left' }}>
-            添加分销员等级
+            编辑分销员备注
           </span>
         }
         visible={modalVisible}
         wrapClassName={styles.table_modal_wrap}
-        onOk={() => setModalVisible(false)}
+        onOk={() => editVipDesc()}
         onCancel={() => cancelModal()}
         okText={'确定'}
         hideCancel={true}
         autoFocus={false}
         focusLock={true}
       >
+        <Form form={form}>
         <div style={{ height: 20 }} />
-        <Input addBefore="等级名称" placeholder="请输入等级名称" />
+
+          <Form.Item label={"等级名称"} initialValue={currentRecord?.rankname} field={"rankname"}>
+            <Input  placeholder="请输入等级名称" />
+          </Form.Item>
         <div style={{ height: 20 }} />
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <div style={{ width: 12 }} />
@@ -171,6 +181,7 @@ function SearchTable() {
           </div>
           <div style={{ width: 20 }} />
           <InputNumber
+            disabled
             mode="button"
             defaultValue={500}
             style={{ width: 160 }}
@@ -184,6 +195,7 @@ function SearchTable() {
           </div>
           <div style={{ width: 20 }} />
           <InputNumber
+            disabled
             mode="button"
             defaultValue={500}
             style={{ width: 160 }}
@@ -197,29 +209,17 @@ function SearchTable() {
           </div>
           <div style={{ width: 20 }} />
           <InputNumber
+            disabled
             mode="button"
             defaultValue={500}
             style={{ width: 160 }}
           />
         </div>
         <div style={{ height: 20 }} />
-        <div style={{ display: 'flex' }}>
-          <div
-            style={{
-              padding: '0 12px',
-              height: '32px',
-              background: '#F2F3F5',
-              lineHeight: '32px',
-            }}
-          >
-            收益描述：
-          </div>
-          <div style={{ width: 1, height: 32, background: '#E5E6EC' }}></div>
-          <div style={{ flex: '1' }}>
-            {' '}
+          <Form.Item label={"备注"} initialValue={currentRecord?.incomedescription} field={"incomedescription"}>
             <Input.TextArea placeholder="请输入备注" />
-          </div>
-        </div>
+          </Form.Item>
+        </Form>
       </Modal>
 
       <Modal

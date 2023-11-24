@@ -20,6 +20,7 @@ import {
   Statistic,
   Spin,
   Message,
+  InputNumber
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -81,6 +82,7 @@ function SearchTable() {
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
+    total: 0,
     pageSize: 10,
     current: 1,
     pageSizeChangeResetCurrent: true,
@@ -96,6 +98,8 @@ function SearchTable() {
   const [activeTab, setActiveTab] = useState('1');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [matchAmount, setMatchAmount] = useState(0);
+  const [inputNumber, setInputNumber]:any = useState();
+  const [checkedAdmin, setCheckedAdmin] = useState(false);
   const [orderActionData, setOrderActionData] = useState([]);
   const [orderActionDataLoading, setOrderActionDataLoading] = useState(false);
 
@@ -103,10 +107,16 @@ function SearchTable() {
     setLoading(true);
     getHelpOrderList({
       ...formParams,
+      page_size:pagination.pageSize,
+      page_num:pagination.current,
     })
       .then((resp: any) => {
         if (resp.result) {
           setData(resp.result.records);
+          setPatination({
+            ...pagination,
+            total:resp.result.total
+          })
         }
       })
       .finally(() => {
@@ -140,7 +150,9 @@ function SearchTable() {
       orderType: record.orderType === 1 ? 0 : 1,
     })
       .then((resp: any) => {
-        setChildData(resp.result.records);
+        if(resp.result){
+          setChildData(resp.result.records);
+        }
       })
       .finally(() => {
         setModalLoading(false);
@@ -148,7 +160,11 @@ function SearchTable() {
   };
 
   const cancelModal = () => {
+    setSelectedRowKeys([]);
     setModalVisible(false);
+    setMatchAmount(0);
+    setInputNumber(null);
+    setCheckedAdmin(false);
   };
 
   const editLccNote = (record) => {
@@ -180,6 +196,7 @@ function SearchTable() {
     APIMatchOrder({
       orderId: currentRecord.id,
       matchOrderIds: selectedRowKeys,
+      repairAdminAmount: checkedAdmin ? inputNumber : 0
     })
       .then((resp: any) => {
         if (resp.result) {
@@ -189,6 +206,10 @@ function SearchTable() {
       })
       .finally(() => {
         setPageLoading(false);
+        setCheckedAdmin(false);
+        setInputNumber(null);
+        setMatchAmount(0);
+        setSelectedRowKeys([]);
       });
   };
 
@@ -198,7 +219,9 @@ function SearchTable() {
       orderId:record.id,
       type:1
     }).then((resp:any) => {
-      setOrderActionData(resp.result);
+      if(resp.result){
+        setOrderActionData(resp.result);
+      }
     }).finally(()=>{
       setOrderActionDataLoading(false);
     });
@@ -457,10 +480,14 @@ function SearchTable() {
               <span
                 style={{
                   color:
-                    currentRecord?.amount - matchAmount === 0 ? 'green' : 'red',
+                    currentRecord?.amount - (matchAmount ?? 0) - ((checkedAdmin && inputNumber) ? inputNumber : 0) === 0 ? 'green' : 'red',
                 }}
               >
-                当前还需匹配{currentRecord?.amount - matchAmount}金额
+                {
+                  currentRecord?.amount - (matchAmount ?? 0) - ((checkedAdmin && inputNumber) ? inputNumber : 0) === 0 ?
+                    <span>匹配成功！</span> :
+                    <span>当前还需匹配{currentRecord?.amount - (matchAmount ?? 0) - ((checkedAdmin && inputNumber) ? inputNumber : 0)}金额</span>
+                }
               </span>
             </span>
           }
@@ -469,6 +496,9 @@ function SearchTable() {
           onOk={matchOrder}
           onCancel={() => cancelModal()}
           okText={'确定'}
+          okButtonProps={{
+            disabled: currentRecord?.amount - (matchAmount ?? 0) - ((checkedAdmin && inputNumber) ? inputNumber : 0) !== 0,
+          }}
           hideCancel={true}
           autoFocus={false}
           focusLock={true}
@@ -495,7 +525,7 @@ function SearchTable() {
                   setSelectedRowKeys(selectedKeys);
                 },
                 onSelect: (selected, record, selectedRows) => {
-                  console.log('onSelect:', selected, record, selectedRows);
+                  console.log("");
                 },
               }}
             />
@@ -505,12 +535,20 @@ function SearchTable() {
             </div>
             <div className={styles.row}>
               <div style={{ flex: 1 }}>
-                <Checkbox>4</Checkbox>
+                <Checkbox onClick={() => setCheckedAdmin(!checkedAdmin)} checked={checkedAdmin}>4</Checkbox>
               </div>
               <div style={{ flex: 2, margin: '0 20px' }}>
-                <Input placeholder={'当前可用余额9999'}></Input>
+                <InputNumber
+                  placeholder='可用余额99999'
+                  min={0}
+                  value={inputNumber}
+                  style={{ width: 160, margin: '10px 24px 10px 0' }}
+                  onChange={v=>{
+                    setInputNumber(v);
+                  }}
+                />
               </div>
-              <div>89999988888</div>
+              <div>99999999</div>
               <div>后台配置</div>
             </div>
           </Skeleton>

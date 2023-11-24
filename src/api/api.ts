@@ -129,3 +129,18 @@ export const APIEditAdminUserPassword = (params) => {
 export const APIHome = (params) => {
   return axios.get('/api/v1/iccOrder/home', { params });
 };
+
+// 获取用户列表
+export const APIGetUserList = (params) => {
+  return axios.get('/api/getUser', { params });
+};
+
+// 获取会员等级列表
+export const APIGetVipList = (params) => {
+  return axios.get('/api/v1/vip/list', { params });
+};
+
+// 更改会员等级
+export const APIEditVipList = (params) => {
+  return axios.post('api/v1/vip/update', params );
+};

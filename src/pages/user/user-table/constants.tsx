@@ -5,7 +5,7 @@ import {
   Badge,
   Space,
   Dropdown,
-  Menu,
+  Menu, Image, Statistic,
 } from '@arco-design/web-react';
 import IconText from './icons/text.svg';
 import IconHorizontalVideo from './icons/horizontal.svg';
@@ -13,11 +13,12 @@ import IconVerticalVideo from './icons/vertical.svg';
 import dayjs from 'dayjs';
 import styles from './style/index.module.less';
 import { IconDown } from '@arco-design/web-react/icon';
+import {number} from "prop-types";
 
 const { Text } = Typography;
 
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
-export const FilterType = ['规则筛选', '人工'];
+export const FilterType = ['普通会员', '钻石', "大使", "总裁"];
 export const Status = ['未上线', '已上线'];
 
 const ContentIcon = [
@@ -49,56 +50,41 @@ export function getColumns(
   return [
     {
       title: 'ID',
-      dataIndex: 'id',
+      dataIndex: 'Id',
       render: (value) => <Text copyable>{value}</Text>,
     },
     {
       title: '头像',
-      dataIndex: 'name',
+      dataIndex: 'Avatar',
+      render: (value) => <Image width={50} height={50} src={value}></Image>
     },
     {
       title: '昵称',
-      dataIndex: 'contentType',
-      render: (value) => (
-        <div className={styles['content-type']}>
-          {ContentIcon[value]}
-          {ContentType[value]}
-        </div>
-      ),
+      dataIndex: 'UserName',
     },
-    {
-      title: '有效会员',
-      dataIndex: 'filterType',
-      render: (value) => FilterType[value],
-    },
+    // {
+    //   title: '有效会员',
+    //   dataIndex: 'filterType',
+    //   render: (value) => FilterType[value],
+    // },
     {
       title: '会员等级',
-      dataIndex: 'filterType',
+      dataIndex: 'MemberLevel',
       render: (value) => FilterType[value],
     },
     {
       title: '推荐人',
-      dataIndex: 'status',
-      render: (x) => {
-        if (x === 0) {
-          return <Badge status="error" text={Status[x]}></Badge>;
-        }
-        return <Badge status="success" text={Status[x]}></Badge>;
-      },
+      dataIndex: 'ParentId',
     },
     {
       title: 'USDT余额',
-      dataIndex: 'status',
-      render: (x) => {
-        if (x === 0) {
-          return <Badge status="error" text={Status[x]}></Badge>;
-        }
-        return <Badge status="success" text={Status[x]}></Badge>;
-      },
+      dataIndex: 'Usdtbalance',
+      render:v=> <div>{v.split(".")[0]}</div>
     },
     {
       title: '当前可用CC',
-      dataIndex: 'name',
+      dataIndex: 'Ccbalance',
+      render:v=> <div>{v.split(".")[0]}</div>
     },
     {
       title: '操作',

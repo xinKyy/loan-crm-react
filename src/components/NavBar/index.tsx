@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Tooltip,
   Input,
@@ -46,9 +46,12 @@ function Navbar({ show }: { show: boolean }) {
   const [role, setRole] = useStorage('userRole', 'admin');
 
   const { setLang, lang, theme, setTheme } = useContext(GlobalContext);
+  const [userName, setUserName] = useState("");
 
   function logout() {
     setUserStatus('logout');
+    localStorage.removeItem("adminUserName");
+    localStorage.removeItem("token");
     window.location.href = '/login';
   }
 
@@ -61,6 +64,9 @@ function Navbar({ show }: { show: boolean }) {
   }
 
   useEffect(() => {
+
+    setUserName(localStorage.getItem("adminUserName"));
+
     dispatch({
       type: 'update-userInfo',
       payload: {
@@ -91,48 +97,6 @@ function Navbar({ show }: { show: boolean }) {
 
   const droplist = (
     <Menu onClickMenuItem={onMenuItemClick}>
-      <Menu.SubMenu
-        key="role"
-        title={
-          <>
-            <IconUser className={styles['dropdown-icon']} />
-            <span className={styles['user-role']}>
-              {role === 'admin'
-                ? t['menu.user.role.admin']
-                : t['menu.user.role.user']}
-            </span>
-          </>
-        }
-      >
-        <Menu.Item onClick={handleChangeRole} key="switch role">
-          <IconTag className={styles['dropdown-icon']} />
-          {t['menu.user.switchRoles']}
-        </Menu.Item>
-      </Menu.SubMenu>
-      <Menu.Item key="setting">
-        <IconSettings className={styles['dropdown-icon']} />
-        {t['menu.user.setting']}
-      </Menu.Item>
-      <Menu.SubMenu
-        key="more"
-        title={
-          <div style={{ width: 80 }}>
-            <IconExperiment className={styles['dropdown-icon']} />
-            {t['message.seeMore']}
-          </div>
-        }
-      >
-        <Menu.Item key="workplace">
-          <IconDashboard className={styles['dropdown-icon']} />
-          {t['menu.dashboard.workplace']}
-        </Menu.Item>
-        <Menu.Item key="card list">
-          <IconInteraction className={styles['dropdown-icon']} />
-          {t['menu.list.cardList']}
-        </Menu.Item>
-      </Menu.SubMenu>
-
-      <Divider style={{ margin: '4px 0' }} />
       <Menu.Item key="logout">
         <IconPoweroff className={styles['dropdown-icon']} />
         {t['navbar.logout']}
@@ -148,68 +112,32 @@ function Navbar({ show }: { show: boolean }) {
           <div className={styles['logo-name']}>LCC Admin</div>
         </div>
       </div>
-      {/*<ul className={styles.right}>*/}
-      {/*  <li>*/}
-      {/*    <Input.Search*/}
-      {/*      className={styles.round}*/}
-      {/*      placeholder={t['navbar.search.placeholder']}*/}
-      {/*    />*/}
-      {/*  </li>*/}
-      {/*  <li>*/}
-      {/*    <Select*/}
-      {/*      triggerElement={<IconButton icon={<IconLanguage />} />}*/}
-      {/*      options={[*/}
-      {/*        { label: '中文', value: 'zh-CN' },*/}
-      {/*        { label: 'English', value: 'en-US' },*/}
-      {/*      ]}*/}
-      {/*      value={lang}*/}
-      {/*      triggerProps={{*/}
-      {/*        autoAlignPopupWidth: false,*/}
-      {/*        autoAlignPopupMinWidth: true,*/}
-      {/*        position: 'br',*/}
-      {/*      }}*/}
-      {/*      trigger="hover"*/}
-      {/*      onChange={(value) => {*/}
-      {/*        setLang(value);*/}
-      {/*        const nextLang = defaultLocale[value];*/}
-      {/*        Message.info(`${nextLang['message.lang.tips']}${value}`);*/}
-      {/*      }}*/}
-      {/*    />*/}
-      {/*  </li>*/}
-      {/*  <li>*/}
-      {/*    <MessageBox>*/}
-      {/*      <IconButton icon={<IconNotification />} />*/}
-      {/*    </MessageBox>*/}
-      {/*  </li>*/}
-      {/*  <li>*/}
-      {/*    <Tooltip*/}
-      {/*      content={*/}
-      {/*        theme === 'light'*/}
-      {/*          ? t['settings.navbar.theme.toDark']*/}
-      {/*          : t['settings.navbar.theme.toLight']*/}
-      {/*      }*/}
-      {/*    >*/}
-      {/*      <IconButton*/}
-      {/*        icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}*/}
-      {/*        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}*/}
-      {/*      />*/}
-      {/*    </Tooltip>*/}
-      {/*  </li>*/}
-      {/*  <Settings />*/}
-      {/*  {userInfo && (*/}
-      {/*    <li>*/}
-      {/*      <Dropdown droplist={droplist} position="br" disabled={userLoading}>*/}
-      {/*        <Avatar size={32} style={{ cursor: 'pointer' }}>*/}
-      {/*          {userLoading ? (*/}
-      {/*            <IconLoading />*/}
-      {/*          ) : (*/}
-      {/*            <img alt="avatar" src={userInfo.avatar} />*/}
-      {/*          )}*/}
-      {/*        </Avatar>*/}
-      {/*      </Dropdown>*/}
-      {/*    </li>*/}
-      {/*  )}*/}
-      {/*</ul>*/}
+      <ul className={styles.right}>
+        <li>
+          <Tooltip
+            content={
+              theme === 'light'
+                ? t['settings.navbar.theme.toDark']
+                : t['settings.navbar.theme.toLight']
+            }
+          >
+            <IconButton
+              icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            />
+          </Tooltip>
+        </li>
+        <Settings />
+        {userInfo && (
+          <li>
+            <Dropdown droplist={droplist} position="br" disabled={userLoading}>
+              <Avatar style={{ backgroundColor: '#14a9f8' }}>
+                {userName?.substring(0, 3)}
+              </Avatar>
+            </Dropdown>
+          </li>
+        )}
+      </ul>
     </div>
   );
 }

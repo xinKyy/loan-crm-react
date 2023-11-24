@@ -69,6 +69,7 @@ function SearchTable() {
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
     showTotal: true,
+    total: 0,
     pageSize: 10,
     current: 1,
     pageSizeChangeResetCurrent: true,
@@ -116,10 +117,16 @@ function SearchTable() {
     setLoading(true);
     APIGetCCOrderList({
       ...formParams,
+      page_size:pagination.pageSize,
+      page_num:pagination.current,
     })
       .then((resp: any) => {
         if (resp.result) {
           setData(resp.result.records);
+          setPatination({
+            ...pagination,
+            total:resp.result.total
+          })
         }
       })
       .finally(() => {
@@ -142,6 +149,7 @@ function SearchTable() {
 
   const openModal = () => {
     setModalVisible(true);
+    setVisible(false);
   };
 
   const cancelModal = () => {
@@ -152,10 +160,12 @@ function SearchTable() {
     setOrderActionDataLoading(true);
     APIOrderActionLog({
       orderId: record.orderNo,
-      type: 1,
+      type: 0,
     })
       .then((resp: any) => {
-        setOrderActionData(resp.result);
+        if(resp.result){
+          setOrderActionData(resp.result);
+        }
       })
       .finally(() => {
         setOrderActionDataLoading(false);
@@ -286,7 +296,7 @@ function SearchTable() {
                   <div className={styles.order_header_icon}></div>
                   <div style={{ margin: '15px' }}>
                     <div style={{ fontWeight: 600, fontSize: '20px' }}>
-                      得到订单
+                      充值基金订单
                     </div>
                     <div>订单编号：{currentRecord?.orderNo}</div>
                   </div>
@@ -408,11 +418,15 @@ function SearchTable() {
           title="订单审核"
           visible={modalVisible}
           onOk={() => accept(1)}
-          onCancel={() => accept(2)}
+          onCancel={() => setModalVisible(false)}
           okText={'审核通过'}
-          cancelText={'拒绝通过'}
+          hideCancel
           autoFocus={false}
           focusLock={true}
+          footer={<>
+            <Button onClick={()=>accept(2)} type={"default"}>拒绝通过</Button>
+            <Button onClick={()=>accept(1)} type={"primary"}>审核通过</Button>
+          </>}
         >
           <p>是否已确认订单详情</p>
         </Modal>

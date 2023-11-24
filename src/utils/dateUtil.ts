@@ -32,3 +32,12 @@ export function getStartOfDay(offset: number | string = 0): string {
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
+export function setCookie(name, value, daysToExpire) {
+  const expirationDate = new Date();
+  expirationDate.setDate(expirationDate.getDate() + daysToExpire);
+
+  const cookieString = `${name}=${encodeURIComponent(value)}; expires=${expirationDate.toUTCString()}; path=/`;
+
+  document.cookie = cookieString;
+}

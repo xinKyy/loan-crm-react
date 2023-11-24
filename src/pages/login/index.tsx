@@ -14,15 +14,15 @@ function Login() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.logo}>
-        <Logo />
-        <div className={styles['logo-text']}>Arco Design Pro</div>
-      </div>
-      <div className={styles.banner}>
-        <div className={styles['banner-inner']}>
-          <LoginBanner />
-        </div>
-      </div>
+      {/*<div className={styles.logo}>*/}
+      {/*  <Logo />*/}
+      {/*  <div className={styles['logo-text']}>Arco Design Pro</div>*/}
+      {/*</div>*/}
+      {/*<div className={styles.banner}>*/}
+      {/*  <div className={styles['banner-inner']}>*/}
+      {/*    <LoginBanner />*/}
+      {/*  </div>*/}
+      {/*</div>*/}
       <div className={styles.content}>
         <div className={styles['content-inner']}>
           <LoginForm />

@@ -17,6 +17,8 @@ import styles from './style/index.module.less';
 import { APIDoLogin } from '@/api/api';
 import { router } from 'next/client';
 import { useRouter } from 'next/router';
+import cookies from "next-cookies";
+import {setCookie} from "@/utils/dateUtil";
 
 export default function LoginForm() {
   const formRef = useRef<FormInstance>();
@@ -36,6 +38,7 @@ export default function LoginForm() {
     // 记录登录状态
     localStorage.setItem('userStatus', 'login');
     localStorage.setItem('token', params.result);
+    setCookie("satoken", params.result, 7);
     // 跳转首页
     window.location.href = '/';
   }
@@ -48,6 +51,7 @@ export default function LoginForm() {
   const login = (params) => {
     APIDoLogin(params).then((resp) => {
       afterLoginSuccess(resp);
+      localStorage.setItem("adminUserName", params.userName)
     });
   };
 
@@ -63,16 +67,12 @@ export default function LoginForm() {
 
   return (
     <div className={styles['login-form-wrapper']}>
-      <div className={styles['login-form-title']}>{t['login.form.title']}</div>
-      <div className={styles['login-form-sub-title']}>
-        {t['login.form.title']}
-      </div>
+      <div className={styles['login-form-title']}>登录LCC Admin</div>
       <div className={styles['login-form-error-msg']}>{errorMessage}</div>
       <Form
         className={styles['login-form']}
         layout="vertical"
         ref={formRef}
-        initialValues={{ userName: 'admin', password: 'admin' }}
       >
         <Form.Item
           field="userName"
@@ -97,19 +97,11 @@ export default function LoginForm() {
         <Space size={16} direction="vertical">
           <div className={styles['login-form-password-actions']}>
             <Checkbox checked={rememberPassword} onChange={setRememberPassword}>
-              {t['login.form.rememberPassword']}
+              记住密码
             </Checkbox>
-            <Link>{t['login.form.forgetPassword']}</Link>
           </div>
           <Button type="primary" long onClick={onSubmitClick} loading={loading}>
             {t['login.form.login']}
-          </Button>
-          <Button
-            type="text"
-            long
-            className={styles['login-form-register-btn']}
-          >
-            {t['login.form.register']}
           </Button>
         </Space>
       </Form>

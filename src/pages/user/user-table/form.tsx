@@ -30,6 +30,9 @@ function SearchForm(props: {
 
   const handleSubmit = () => {
     const values = form.getFieldsValue();
+    if(values.type === "all"){
+      delete values.type;
+    }
     props.onSearch(values);
   };
 
@@ -64,34 +67,36 @@ function SearchForm(props: {
         <Row gutter={24}>
           <Col>
             <Row>
-              <RadioGroup
-                type="button"
-                name="lang"
-                defaultValue="all"
-                style={{ marginRight: 20, marginBottom: 20 }}
-              >
-                <Radio value="all">全部用户</Radio>
-                <Radio value="p1">普通会员</Radio>
-                <Radio value="p2">钻石</Radio>
-                <Radio value="p3">大使</Radio>
-                <Radio value="p4">总裁</Radio>
-              </RadioGroup>
+              <Form.Item field={"type"}>
+                <RadioGroup
+                  type="button"
+                  name="lang"
+                  defaultValue="all"
+                  style={{ marginRight: 20, marginBottom: 20 }}
+                >
+                  <Radio value="all">全部用户</Radio>
+                  <Radio value="0">普通会员</Radio>
+                  <Radio value="1">钻石</Radio>
+                  <Radio value="2">大使</Radio>
+                  <Radio value="3">总裁</Radio>
+                </RadioGroup>
+              </Form.Item>
             </Row>
           </Col>
         </Row>
         <Row gutter={24}>
           <Col span={colSpan}>
-            <Form.Item label={'用户昵称'} field="id">
+            <Form.Item label={'用户昵称'} field="NickName">
               <Input placeholder={'请输入用户昵称'} allowClear />
             </Form.Item>
           </Col>
           <Col span={colSpan}>
-            <Form.Item label={'邮箱号'} field="name">
+            <Form.Item label={'邮箱号'} field="email">
               <Input allowClear placeholder={'请输入邮箱号'} />
             </Form.Item>
           </Col>
           <Col span={colSpan}>
-            <Form.Item label={'用户ID'} field="name">
+            <Form.Item label={'用户ID'} field="userId">
               <Input allowClear placeholder={'请输入用户ID'} />
             </Form.Item>
           </Col>

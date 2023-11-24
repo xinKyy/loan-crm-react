@@ -32,6 +32,7 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
+import {APIGetUserList} from "@/api/api";
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -77,7 +78,7 @@ function SearchTable() {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [formParams, setFormParams] = useState({});
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -85,7 +86,8 @@ function SearchTable() {
   const [editPasswordVisible, setEditPasswordVisible] = useState(false);
 
   useEffect(() => {
-    fetchData();
+    // fetchData();
+    getUserList();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
   function fetchData() {
@@ -133,11 +135,24 @@ function SearchTable() {
     setModalVisible(false);
   };
 
+  const getUserList = () => {
+    setLoading(true);
+    APIGetUserList({
+      ...formParams
+    }).then((resp:any)=>{
+      if(resp.result){
+        setData(resp.result);
+      }
+    }).finally(()=>{
+      setLoading(false);
+    })
+  }
+
   return (
     <Card>
       <SearchForm onSearch={handleSearch} />
       <Table
-        rowKey="id"
+        rowKey="Id"
         loading={loading}
         onChange={onChangeTable}
         pagination={pagination}
@@ -149,37 +164,15 @@ function SearchTable() {
               <Col>
                 <div className={styles.row}>
                   <div>
-                    <span>本金：</span>1000
+                    <span>首次访问：</span>{record?.Create_time}
                   </div>
                   <div>
-                    <span>赠送CC：</span>1000
+                    <span>近次访问：</span>{record?.Login_date}
                   </div>
                   <div>
-                    <span>消耗CC：</span>1000
-                  </div>
-                  <div>
-                    <span>付款地址：</span>
-                    0x650ee95accdce850f113c4cde717935f20c0c688
+                    <span>备注：</span>{record?.Remark}
                   </div>
                 </div>
-                <div className={styles.row}>
-                  <div>
-                    <span>订单创建时间：</span>2023-11-1
-                  </div>
-                  <div>
-                    <span>匹配时间：</span>2023-11-1
-                  </div>
-                  <div>
-                    <span>备注：</span>--
-                  </div>
-                  <div>
-                    <div>
-                      <span>付款地址：</span>
-                    </div>
-                    0x650ee95accdce850f113c4cde717935f20c0c688
-                  </div>
-                </div>
-                <Row></Row>
               </Col>
             </>
           );
