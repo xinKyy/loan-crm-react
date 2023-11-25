@@ -52,11 +52,13 @@ const { useForm } = Form;
 function SearchTable() {
   const t = useLocale(locale);
 
+  const [currentRecord, setCurrentRecord]: any = useState();
   const tableCallback = async (record, type, e) => {
-    console.log(record, type);
     if (e) e.stopPropagation();
+    console.log(record, currentRecord);
     if (!currentRecord || record.Id !== currentRecord?.Id) {
       setCurrentRecord(record);
+      console.log('修改');
     }
     if (type === 'edit') {
       openModal();
@@ -68,8 +70,6 @@ function SearchTable() {
       setEditPasswordVisible(true);
     }
   };
-  const [currentRecord, setCurrentRecord]: any = useState();
-  const columns = getColumns(t, tableCallback);
 
   const [data, setData] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
@@ -88,35 +88,15 @@ function SearchTable() {
   const [form] = useForm();
   const [passForm] = useForm();
   const [depositForm] = useForm();
+  const columns = useMemo(
+    () => getColumns(t, tableCallback),
+    [currentRecord, modalVisible]
+  );
 
   useEffect(() => {
     // fetchData();
     getUserList();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
-
-  function fetchData() {
-    const { current, pageSize } = pagination;
-    setLoading(true);
-    axios
-      .get('/api/list', {
-        params: {
-          page: current,
-          pageSize,
-          ...formParams,
-        },
-      })
-      .then((res) => {
-        console.log('aaa', res);
-        setData(res.data.list);
-        setPatination({
-          ...pagination,
-          current,
-          pageSize,
-          total: res.data.total,
-        });
-        setLoading(false);
-      });
-  }
 
   function onChangeTable({ current, pageSize }) {
     setPatination({
@@ -136,6 +116,7 @@ function SearchTable() {
   };
 
   const cancelModal = () => {
+    form.resetFields();
     setModalVisible(false);
   };
 
@@ -277,38 +258,38 @@ function SearchTable() {
         }}
       />
 
-      <Modal
-        title={
-          <span style={{ fontWeight: 'bold', textAlign: 'left' }}>编辑</span>
-        }
-        unmountOnExit={true}
-        visible={modalVisible}
-        wrapClassName={styles.table_modal_wrap}
-        onOk={() => editUser()}
-        onCancel={() => cancelModal()}
-        okText={'确定'}
-        hideCancel={true}
-        autoFocus={false}
-        focusLock={true}
-      >
-        <Form form={form}>
-          <Form.Item
-            label={'ID'}
-            initialValue={currentRecord?.Id}
-            field={'userId'}
-          >
-            <Input disabled />
-          </Form.Item>
-          <div style={{ height: 20 }} />
-          <Form.Item
-            label={'邮箱号'}
-            initialValue={currentRecord?.Email}
-            field={'email'}
-          >
-            <Input placeholder="请输入邮箱号" />
-          </Form.Item>
-          <div style={{ height: 20 }} />
-          <div style={{ display: 'flex' }}>
+      {modalVisible ? (
+        <Modal
+          title={
+            <span style={{ fontWeight: 'bold', textAlign: 'left' }}>编辑</span>
+          }
+          unmountOnExit={true}
+          visible={modalVisible}
+          wrapClassName={styles.table_modal_wrap}
+          onOk={() => editUser()}
+          onCancel={() => cancelModal()}
+          okText={'确定'}
+          hideCancel={true}
+          autoFocus={false}
+          focusLock={true}
+        >
+          <Form form={form}>
+            <Form.Item
+              label={'ID'}
+              initialValue={currentRecord?.Id}
+              field={'userId'}
+            >
+              <Input disabled />
+            </Form.Item>
+            <div style={{ height: 20 }} />
+            <Form.Item
+              label={'邮箱号'}
+              initialValue={currentRecord?.Email}
+              field={'email'}
+            >
+              <Input placeholder="请输入邮箱号" />
+            </Form.Item>
+            <div style={{ height: 20 }} />
             <Form.Item
               label={'备注'}
               initialValue={currentRecord?.Remark}
@@ -316,39 +297,39 @@ function SearchTable() {
             >
               <Input.TextArea placeholder="请输入备注" />
             </Form.Item>
-          </div>
-          <div style={{ height: 20 }} />
-          <div style={{ display: 'flex' }}>
-            <Form.Item
-              label={'状态'}
-              initialValue={currentRecord?.status}
-              field={'status'}
-            >
-              <RadioGroup defaultValue={currentRecord?.status}>
-                <Radio value="0">开启</Radio>
-                <Radio value="1">关闭</Radio>
-              </RadioGroup>
-            </Form.Item>
-          </div>
-          <div style={{ height: 20 }} />
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Form.Item label={'会员等级'} field={'membershiplevel'}>
-              <Dropdown droplist={dropList} position="br">
-                <Button type="default">
-                  {FilterType[currentRecord?.MemberLevel]}
-                  <IconDown />
-                </Button>
-              </Dropdown>
-            </Form.Item>
-          </div>
-          <div style={{ height: 20 }} />
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Form.Item label={'上级推广员'} field={'parentid'}>
-              <Input placeholder={'请输入上级的Email'}></Input>
-            </Form.Item>
-          </div>
-        </Form>
-      </Modal>
+            <div style={{ height: 20 }} />
+            <div style={{ display: 'flex' }}>
+              <Form.Item
+                label={'状态'}
+                initialValue={currentRecord?.status}
+                field={'status'}
+              >
+                <RadioGroup defaultValue={currentRecord?.status}>
+                  <Radio value="0">开启</Radio>
+                  <Radio value="1">关闭</Radio>
+                </RadioGroup>
+              </Form.Item>
+            </div>
+            <div style={{ height: 20 }} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Form.Item label={'会员等级'} field={'membershiplevel'}>
+                <Dropdown droplist={dropList} position="br">
+                  <Button type="default">
+                    {FilterType[currentRecord?.MemberLevel]}
+                    <IconDown />
+                  </Button>
+                </Dropdown>
+              </Form.Item>
+            </div>
+            <div style={{ height: 20 }} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Form.Item label={'上级推广员'} field={'parentid'}>
+                <Input placeholder={'请输入上级的Email'}></Input>
+              </Form.Item>
+            </div>
+          </Form>
+        </Modal>
+      ) : null}
 
       <Modal
         title={'修改用户CC基金'}

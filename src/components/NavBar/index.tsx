@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Tooltip,
   Input,
@@ -46,12 +46,12 @@ function Navbar({ show }: { show: boolean }) {
   const [role, setRole] = useStorage('userRole', 'admin');
 
   const { setLang, lang, theme, setTheme } = useContext(GlobalContext);
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState('');
 
   function logout() {
     setUserStatus('logout');
-    localStorage.removeItem("adminUserName");
-    localStorage.removeItem("token");
+    localStorage.removeItem('adminUserName');
+    localStorage.removeItem('token');
     window.location.href = '/login';
   }
 
@@ -64,8 +64,7 @@ function Navbar({ show }: { show: boolean }) {
   }
 
   useEffect(() => {
-
-    setUserName(localStorage.getItem("adminUserName"));
+    setUserName(localStorage.getItem('adminUserName'));
 
     dispatch({
       type: 'update-userInfo',
@@ -113,21 +112,21 @@ function Navbar({ show }: { show: boolean }) {
         </div>
       </div>
       <ul className={styles.right}>
-        <li>
-          <Tooltip
-            content={
-              theme === 'light'
-                ? t['settings.navbar.theme.toDark']
-                : t['settings.navbar.theme.toLight']
-            }
-          >
-            <IconButton
-              icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            />
-          </Tooltip>
-        </li>
-        <Settings />
+        {/*<li>*/}
+        {/*  <Tooltip*/}
+        {/*    content={*/}
+        {/*      theme === 'light'*/}
+        {/*        ? t['settings.navbar.theme.toDark']*/}
+        {/*        : t['settings.navbar.theme.toLight']*/}
+        {/*    }*/}
+        {/*  >*/}
+        {/*    <IconButton*/}
+        {/*      icon={theme !== 'dark' ? <IconMoonFill /> : <IconSunFill />}*/}
+        {/*      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}*/}
+        {/*    />*/}
+        {/*  </Tooltip>*/}
+        {/*</li>*/}
+        {/*<Settings />*/}
         {userInfo && (
           <li>
             <Dropdown droplist={droplist} position="br" disabled={userLoading}>
