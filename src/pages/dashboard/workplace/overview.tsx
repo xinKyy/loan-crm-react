@@ -158,34 +158,27 @@ function Overview() {
         <Card style={{ width: '100%' }}>
           <Row gutter={24}>
             <Space>
-              <Card
-                style={{ width: 300 }}
-                title="已赠送LCC数量"
-              >
+              <Card style={{ width: 300 }} title="已赠送LCC数量">
                 <Statistic
-                  extra={`今日赠送 ${homeData?.todayAllLcc}`}
+                  extra={`今日赠送 ${homeData?.todayAllLcc ?? '--'}`}
                   value={homeData?.allLcc}
                   groupSeparator
                   precision={2}
                 />
               </Card>
-              <Card
-                style={{ width: 300 }}
-                title="已充值CC总量"
-              >
+              <Card style={{ width: 300 }} title="已充值CC总量">
                 <Statistic
-                  extra={`今日充值 ${homeData?.todayAllChargeCc}`}
+                  extra={`今日充值 ${homeData?.todayAllChargeCc ?? '--'}`}
                   value={homeData?.allChargeCc}
                   groupSeparator
                   precision={2}
                 />
               </Card>
-              <Card
-                style={{ width: 300 }}
-                title="已提供帮助总量"
-              >
+              <Card style={{ width: 300 }} title="已提供帮助总量">
                 <Statistic
-                  extra={`今日提供帮助 ${homeData?.toDayOfferOrderSize}`}
+                  extra={`今日提供帮助 ${
+                    homeData?.toDayOfferOrderSize ?? '--'
+                  }`}
                   value={homeData?.allOffer}
                   groupSeparator
                   precision={2}
@@ -204,7 +197,7 @@ function Overview() {
                 <StatisticItem
                   icon={<IconCalendar />}
                   title={'用户管理'}
-                  count={"--"}
+                  count={'--'}
                   loading={loading}
                   unit={t['workplace.pecs']}
                 />
@@ -220,7 +213,7 @@ function Overview() {
                 <StatisticItem
                   icon={<IconContent />}
                   title={'订单管理'}
-                  count={"--"}
+                  count={'--'}
                   loading={loading}
                   unit={t['workplace.pecs']}
                 />
@@ -236,7 +229,7 @@ function Overview() {
                 <StatisticItem
                   icon={<IconComments />}
                   title={'分销管理'}
-                  count={"--"}
+                  count={'--'}
                   loading={loading}
                   unit={t['workplace.pecs']}
                 />
@@ -252,7 +245,7 @@ function Overview() {
                 <StatisticItem
                   icon={<IconIncrease />}
                   title={'文章管理'}
-                  count={"--"}
+                  count={'--'}
                   loading={loading}
                   unit={t['workplace.pecs']}
                 />
@@ -273,7 +266,9 @@ function Overview() {
                 <OverviewAreaLine data={data.chartData} loading={loading} />
               </div>
               <Card style={{ width: 360, flex: '1' }} title="数据统计">
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
                   <Statistic
                     title="当日订单数"
                     value={homeData?.toDayOfferOrderSize ?? '--'}
@@ -297,7 +292,9 @@ function Overview() {
                   />
                   <Interaction type="element-single-selected" />
                 </Chart>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
                   <Statistic
                     title="当月订单数"
                     value={homeData?.monthDayOfferOrderSize ?? '--'}
@@ -324,7 +321,9 @@ function Overview() {
                 <OverviewAreaLine data={obtainChartData} loading={loading} />
               </div>
               <Card style={{ width: 360, flex: '1' }} title="数据统计">
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
                   <Statistic
                     title="当日订单数"
                     value={homeData?.toDayObtainOrderSize ?? '--'}
@@ -348,7 +347,9 @@ function Overview() {
                   />
                   <Interaction type="element-single-selected" />
                 </Chart>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
                   <Statistic
                     title="当月订单数"
                     value={homeData?.monthDayObtainOrderSize ?? '--'}

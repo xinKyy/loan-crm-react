@@ -20,7 +20,9 @@ import {
   Radio,
   Dropdown,
   Menu,
-  InputNumber, Form,
+  InputNumber,
+  Form,
+  Message,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDown, IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -32,25 +34,21 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
-import {APIGetUserList} from "@/api/api";
+import {
+  APIEditUser,
+  APIEditUserCCBalance,
+  APIEditUserPassword,
+  APIGetUserList,
+} from '@/api/api';
 const Row = Grid.Row;
 const Col = Grid.Col;
 
 const { Title } = Typography;
 export const ContentType = ['图文', '横版短视频', '竖版短视频'];
-export const FilterType = ['规则筛选', '人工'];
 export const Status = ['已上线', '未上线'];
 const RadioGroup = Radio.Group;
-
-const dropList = (
-  <Menu>
-    <Menu.Item key="1">普通会员</Menu.Item>
-    <Menu.Item key="2">钻石</Menu.Item>
-    <Menu.Item key="3">大使</Menu.Item>
-    <Menu.Item key="3">总裁</Menu.Item>
-  </Menu>
-);
-
+export const FilterType = ['普通会员', '钻石', '大使', '总裁'];
+const { useForm } = Form;
 function SearchTable() {
   const t = useLocale(locale);
 
@@ -71,7 +69,7 @@ function SearchTable() {
     }
   };
   const [currentRecord, setCurrentRecord]: any = useState();
-  const columns = useMemo(() => getColumns(t, tableCallback), [t]);
+  const columns = getColumns(t, tableCallback);
 
   const [data, setData] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
@@ -87,6 +85,9 @@ function SearchTable() {
   const [modalVisible, setModalVisible] = useState(false);
   const [depositVisible, setDepositVisible] = useState(false);
   const [editPasswordVisible, setEditPasswordVisible] = useState(false);
+  const [form] = useForm();
+  const [passForm] = useForm();
+  const [depositForm] = useForm();
 
   useEffect(() => {
     // fetchData();
@@ -141,15 +142,102 @@ function SearchTable() {
   const getUserList = () => {
     setLoading(true);
     APIGetUserList({
-      ...formParams
-    }).then((resp:any)=>{
-      if(resp.result){
-        setData(resp.result);
-      }
-    }).finally(()=>{
-      setLoading(false);
+      ...formParams,
+      pageNum: pagination.current,
+      pageCount: pagination.pageSize,
     })
-  }
+      .then((resp: any) => {
+        if (resp.result) {
+          setData(resp.result.result);
+          setPatination({
+            ...pagination,
+            total: resp.result.Total,
+          });
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const clickMenu = (v) => {
+    setCurrentRecord({
+      ...currentRecord,
+      MemberLevel: v,
+    });
+  };
+
+  const dropList = (
+    <Menu>
+      <Menu.Item onClick={() => clickMenu(0)} key="0">
+        普通会员
+      </Menu.Item>
+      <Menu.Item onClick={() => clickMenu(1)} key="1">
+        钻石
+      </Menu.Item>
+      <Menu.Item onClick={() => clickMenu(2)} key="2">
+        大使
+      </Menu.Item>
+      <Menu.Item onClick={() => clickMenu(3)} key="3">
+        总裁
+      </Menu.Item>
+    </Menu>
+  );
+
+  const editUser = () => {
+    setModalVisible(false);
+    setLoading(true);
+    APIEditUser({
+      ...form.getFieldsValue(),
+      membershiplevel: currentRecord?.MemberLevel,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('修改用户成功！');
+          getUserList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const editUserPassword = () => {
+    const params = passForm.getFieldsValue();
+    if (params.pass !== params.rePassword) {
+      return Message.error('两次密码必须一致！');
+    }
+    setEditPasswordVisible(false);
+    setLoading(true);
+    APIEditUserPassword({
+      ...passForm.getFieldsValue(),
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('修改用户密码成功！');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const depositUserBalance = () => {
+    setDepositVisible(false);
+    setLoading(true);
+    APIEditUserCCBalance({
+      ...depositForm.getFieldsValue(),
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('修改用户余额成功！');
+          getUserList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <Card>
@@ -167,13 +255,16 @@ function SearchTable() {
               <Col>
                 <div className={styles.row}>
                   <div>
-                    <span>首次访问：</span>{record?.Create_time}
+                    <span>首次访问：</span>
+                    {record?.Create_time}
                   </div>
                   <div>
-                    <span>近次访问：</span>{record?.Login_date}
+                    <span>近次访问：</span>
+                    {record?.Login_date}
                   </div>
                   <div>
-                    <span>备注：</span>{record?.Remark}
+                    <span>备注：</span>
+                    {record?.Remark}
                   </div>
                 </div>
               </Col>
@@ -190,59 +281,72 @@ function SearchTable() {
         title={
           <span style={{ fontWeight: 'bold', textAlign: 'left' }}>编辑</span>
         }
+        unmountOnExit={true}
         visible={modalVisible}
         wrapClassName={styles.table_modal_wrap}
-        onOk={() => setModalVisible(false)}
+        onOk={() => editUser()}
         onCancel={() => cancelModal()}
         okText={'确定'}
         hideCancel={true}
         autoFocus={false}
         focusLock={true}
       >
-        <Form>
-          <Form.Item label={"ID"} field={"userId"}>
-            <Input
-              disabled
-            />
+        <Form form={form}>
+          <Form.Item
+            label={'ID'}
+            initialValue={currentRecord?.Id}
+            field={'userId'}
+          >
+            <Input disabled />
           </Form.Item>
-        <div style={{ height: 20 }} />
-          <Form.Item label={"邮箱号"} field={"email"}>
-            <Input  placeholder="请输入邮箱号" />
+          <div style={{ height: 20 }} />
+          <Form.Item
+            label={'邮箱号'}
+            initialValue={currentRecord?.Email}
+            field={'email'}
+          >
+            <Input placeholder="请输入邮箱号" />
           </Form.Item>
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex' }}>
-          <Form.Item label={"备注"} field={"remark"}>
-            <Input.TextArea placeholder="请输入备注" />
-          </Form.Item>
-        </div>
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex' }}>
-          <Form.Item label={"状态"} field={"status"}>
-            <RadioGroup defaultValue="open">
-              <Radio value="open">开启</Radio>
-              <Radio value="close">关闭</Radio>
-            </RadioGroup>
-          </Form.Item>
-        </div>
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Form.Item label={"会员等级"} field={"membershiplevel"}>
-            <Dropdown droplist={dropList} position="br">
-              <Button type="default">
-                普通会员
-                <IconDown />
-              </Button>
-            </Dropdown>
-          </Form.Item>
-        </div>
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Form.Item label={"上级推广员"} field={"parentid"}>
-            <Input placeholder={"请输入上级的Email"}>
-
-            </Input>
-          </Form.Item>
-        </div>
+          <div style={{ height: 20 }} />
+          <div style={{ display: 'flex' }}>
+            <Form.Item
+              label={'备注'}
+              initialValue={currentRecord?.Remark}
+              field={'remark'}
+            >
+              <Input.TextArea placeholder="请输入备注" />
+            </Form.Item>
+          </div>
+          <div style={{ height: 20 }} />
+          <div style={{ display: 'flex' }}>
+            <Form.Item
+              label={'状态'}
+              initialValue={currentRecord?.status}
+              field={'status'}
+            >
+              <RadioGroup defaultValue={currentRecord?.status}>
+                <Radio value="0">开启</Radio>
+                <Radio value="1">关闭</Radio>
+              </RadioGroup>
+            </Form.Item>
+          </div>
+          <div style={{ height: 20 }} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Form.Item label={'会员等级'} field={'membershiplevel'}>
+              <Dropdown droplist={dropList} position="br">
+                <Button type="default">
+                  {FilterType[currentRecord?.MemberLevel]}
+                  <IconDown />
+                </Button>
+              </Dropdown>
+            </Form.Item>
+          </div>
+          <div style={{ height: 20 }} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Form.Item label={'上级推广员'} field={'parentid'}>
+              <Input placeholder={'请输入上级的Email'}></Input>
+            </Form.Item>
+          </div>
         </Form>
       </Modal>
 
@@ -250,58 +354,76 @@ function SearchTable() {
         title={'修改用户CC基金'}
         visible={depositVisible}
         wrapClassName={styles.table_modal_wrap}
-        onOk={() => setDepositVisible(false)}
+        onOk={() => depositUserBalance()}
         onCancel={() => setDepositVisible(false)}
         okText={'确定'}
         hideCancel={true}
         autoFocus={false}
         focusLock={true}
       >
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex' }}>
-          <div style={{ width: 12 }} />
-          <div>
-            <span style={{ color: '#ff0000' }}>*</span>修改CC基金:
+        <Form form={depositForm}>
+          <div style={{ height: 20 }} />
+          <Form.Item
+            label={'ID'}
+            initialValue={currentRecord?.Id}
+            field={'userId'}
+          >
+            <Input disabled />
+          </Form.Item>
+          <div style={{ height: 20 }} />
+          <div style={{ display: 'flex' }}>
+            <Form.Item label={'修改CC基金'} initialValue={'0'} field={'Status'}>
+              <RadioGroup defaultValue="0">
+                <Radio value="0">增加</Radio>
+                <Radio value="1">减少</Radio>
+              </RadioGroup>
+            </Form.Item>
           </div>
-          <div style={{ width: 20 }} />
-          <RadioGroup defaultValue="add">
-            <Radio value="add">增加</Radio>
-            <Radio value="sub">减少</Radio>
-          </RadioGroup>
-        </div>
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ width: 12 }} />
-          <div>
-            <span style={{ color: '#ff0000' }}>*</span>CC基金:
-          </div>
-          <div style={{ width: 20 }} />
-          <InputNumber
-            mode="button"
-            defaultValue={500}
-            style={{ width: 160, margin: '10px 24px 10px 0' }}
-          />
-        </div>
+          <div style={{ height: 20 }} />
+          <Form.Item initialValue={0} label={'CC基金'} field={'ccAccount'}>
+            <InputNumber
+              mode="button"
+              defaultValue={500}
+              style={{ width: '150px' }}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
 
       <Modal
         title={'修改用户密码'}
         visible={editPasswordVisible}
         wrapClassName={styles.table_modal_wrap}
-        onOk={() => setEditPasswordVisible(false)}
+        onOk={() => {
+          editUserPassword();
+        }}
         onCancel={() => setEditPasswordVisible(false)}
         okText={'确定'}
         hideCancel={true}
         autoFocus={false}
         focusLock={true}
       >
-        <div style={{ height: 20 }} />
-        <Input
-          addBefore="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;密码"
-          placeholder="请输入密码"
-        />
-        <div style={{ height: 20 }} />
-        <Input addBefore="确认密码" placeholder="请再次输入密码" />
+        <Form form={passForm}>
+          <div style={{ height: 20 }} />
+          <Form.Item
+            label={'ID'}
+            initialValue={currentRecord?.Id}
+            field={'userId'}
+          >
+            <Input disabled />
+          </Form.Item>
+          <div style={{ height: 20 }} />
+          <Form.Item label={'密码'} field={'pass'}>
+            <Input.Password
+              value={currentRecord?.Id}
+              placeholder="请输入密码"
+            />
+          </Form.Item>
+          <div style={{ height: 20 }} />
+          <Form.Item label={'确认密码'} field={'rePassword'}>
+            <Input.Password placeholder="请再次输入密码" />
+          </Form.Item>
+        </Form>
       </Modal>
     </Card>
   );

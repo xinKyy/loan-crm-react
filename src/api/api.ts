@@ -132,7 +132,7 @@ export const APIHome = (params) => {
 
 // 获取用户列表
 export const APIGetUserList = (params) => {
-  return axios.get('/api/getUser', { params });
+  return axios.get('/adminUser/getUser2', { params });
 };
 
 // 获取会员等级列表
@@ -142,10 +142,20 @@ export const APIGetVipList = (params) => {
 
 // 更改会员等级
 export const APIEditVipList = (params) => {
-  return axios.post('api/v1/vip/update', params );
+  return axios.post('/api/v1/vip/update', params);
 };
 
 // 修改用户详情
 export const APIEditUser = (params) => {
-  return axios.put('/api/getUser', params );
+  return axios.get('/adminUser/getUser', { params });
+};
+
+// 修改用户密码
+export const APIEditUserPassword = (params) => {
+  return axios.get('/adminUser/api/updatePass', { params });
+};
+
+// 修改用户cc余额
+export const APIEditUserCCBalance = (params) => {
+  return axios.get('/adminUser/api/getUser', { params });
 };
