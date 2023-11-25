@@ -197,9 +197,7 @@ function Overview() {
                 <StatisticItem
                   icon={<IconCalendar />}
                   title={'用户管理'}
-                  count={'--'}
-                  loading={loading}
-                  unit={t['workplace.pecs']}
+                  loading={false}
                 />
               </div>
             </Col>
@@ -213,9 +211,7 @@ function Overview() {
                 <StatisticItem
                   icon={<IconContent />}
                   title={'订单管理'}
-                  count={'--'}
-                  loading={loading}
-                  unit={t['workplace.pecs']}
+                  loading={false}
                 />
               </div>
             </Col>
@@ -229,9 +225,9 @@ function Overview() {
                 <StatisticItem
                   icon={<IconComments />}
                   title={'分销管理'}
-                  count={'--'}
-                  loading={loading}
-                  unit={t['workplace.pecs']}
+                  loading={false}
+                  // count={'--'}
+                  // unit={t['workplace.pecs']}
                 />
               </div>
             </Col>
@@ -245,9 +241,7 @@ function Overview() {
                 <StatisticItem
                   icon={<IconIncrease />}
                   title={'文章管理'}
-                  count={'--'}
-                  loading={loading}
-                  unit={t['workplace.pecs']}
+                  loading={false}
                 />
               </div>
             </Col>

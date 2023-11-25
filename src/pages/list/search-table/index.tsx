@@ -17,7 +17,7 @@ import {
   Modal,
   Input,
   Message,
-  Spin,
+  Spin, Descriptions,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -36,6 +36,7 @@ import {
   APIOrderActionLog,
   getHelpOrderList,
 } from '@/api/api';
+import {splitWalletAddress} from "@/utils/dateUtil";
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -47,6 +48,7 @@ function SearchTable() {
   const t = useLocale(locale);
 
   const tableCallback = async (record, type, e) => {
+    setDrawerInfo(record);
     if (!currentRecord || record.orderNo !== currentRecord?.orderNo) {
       setCurrentRecord(record);
     }
@@ -85,6 +87,66 @@ function SearchTable() {
   const [orderActionData, setOrderActionData] = useState([]);
   const [orderActionDataLoading, setOrderActionDataLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
+  const [pageInfo, setPageInfo] = useState({
+    userInfo:[],
+    orderInfo:[],
+    orderQuestion:[],
+    record:{
+      status:0
+    },
+  });
+
+
+  const setDrawerInfo = (record) => {
+    const map = {
+      userInfo:[
+        {
+          label:"用户昵称",
+          value:record?.userName ?? '--'
+        },
+        {
+          label:"用户ID",
+          value:record?.userId ?? '--'
+        },
+        {
+          label:"绑定邮箱",
+          value:record?.email ?? '--'
+        },
+      ],
+      orderInfo:[
+        {
+          label:"本金",
+          value:record?.amount ?? '--'
+        },
+        {
+          label:"充值CC",
+          value:record?.amount ?? '--'
+        },
+        {
+          label:"充值哈希值",
+          value:<a target='_blank' href={`https://testnet.bscscan.com/tx/${record?.transferHash}`} rel="noreferrer">{splitWalletAddress(record?.transferHash)}</a>
+        },
+        {
+          label:"订单状态",
+          value:Status[record?.status]
+        },
+        {
+          label:"订单金额",
+          value:record?.amount ?? "--"
+        },
+        {
+          label:"创建时间",
+          value:record?.createTime ?? "--"
+        },
+      ],
+      orderQuestion:[],
+      record:record,
+    };
+    setPageInfo({
+      ...map
+    });
+  }
+
 
   useEffect(() => {
     getCCOrder();
@@ -303,13 +365,16 @@ function SearchTable() {
                 </div>
                 <div>
                   <Space>
-                    <Button
-                      style={{ width: '100px', marginRight: '20px' }}
-                      type="primary"
-                      onClick={openModal}
-                    >
-                      审核
-                    </Button>
+                    {
+                      pageInfo.record.status === 0 ?    <Button
+                        style={{ width: '100px', marginRight: '20px' }}
+                        type="primary"
+                        onClick={openModal}
+                      >
+                        审核
+                      </Button> : null
+                    }
+
                   </Space>
                   <Space>
                     <Button onClick={() => setRemarkModalVisible(true)}>
@@ -322,7 +387,7 @@ function SearchTable() {
                 <Col span={8}>
                   <Space direction={'vertical'} size={'small'}>
                     <div>订单状态</div>
-                    <Tag color={'#ff7d00'}>{Status[currentRecord?.status]}</Tag>
+                    <Tag color={'#ff7d00'}>{Status[pageInfo.record?.status]}</Tag>
                   </Space>
                 </Col>
                 <Col span={8}>
@@ -342,33 +407,10 @@ function SearchTable() {
               <div className={styles.order_body_wrap}>
                 <Tabs activeTab={activeTab} onChange={setActiveTab}>
                   <Tabs.TabPane key="1" title="订单信息">
-                    <Col>
-                      <div className={styles.title}>用户信息</div>
-                      <div className={styles.row_item}>
-                        <div>用户昵称：{currentRecord?.userName ?? '--'}</div>
-                        <div>用户ID：{currentRecord?.userId ?? '--'}</div>
-                        <div>绑定邮箱：{currentRecord?.email ?? '--'}</div>
-                      </div>
-                    </Col>
+                    <Descriptions colon=' :' layout='inline-horizontal' title='用户信息' data={pageInfo.userInfo} />
                     <Divider />
+                    <Descriptions colon=' :' layout='inline-horizontal' title='订单信息' data={pageInfo.orderInfo} />
                     <Col>
-                      <div className={styles.title}>订单信息</div>
-                      <Row className={styles.row_wrap}>
-                        <div className={styles.row_item}>
-                          <div>本金：{currentRecord?.amount ?? '--'}</div>
-                          <div>充值CC：{currentRecord?.amount ?? '--'}</div>
-                          <div>
-                            充值哈希值：{currentRecord?.transferHash ?? '--'}
-                          </div>
-                        </div>
-                      </Row>
-                      <Row className={styles.row_wrap}>
-                        <div className={styles.row_item}>
-                          <div>订单状态：{Status[currentRecord?.status]}</div>
-                          <div>订单编号：{currentRecord?.orderNo}</div>
-                          <div>创建时间：{currentRecord?.createTime}</div>
-                        </div>
-                      </Row>
                       <Row className={styles.row_wrap}>
                         <div style={{ display: 'flex' }}>
                           <div>充值凭证：</div>

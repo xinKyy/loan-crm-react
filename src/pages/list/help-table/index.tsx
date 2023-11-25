@@ -20,7 +20,7 @@ import {
   Statistic,
   Spin,
   Message,
-  InputNumber
+  InputNumber, Descriptions
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -38,6 +38,7 @@ import {
   getHelpOrderList,
   getMatchOrderList,
 } from '@/api/api';
+import {splitWalletAddress} from "@/utils/dateUtil";
 const Row = Grid.Row;
 const Col = Grid.Col;
 const Countdown = Statistic.Countdown;
@@ -59,6 +60,7 @@ function SearchTable() {
 
   const tableCallback = async (record, type, e) => {
     if (e) e.stopPropagation();
+    setDrawerInfo(record);
     if (!currentRecord || record.id !== currentRecord?.id) {
       setCurrentRecord(record);
     }
@@ -102,7 +104,14 @@ function SearchTable() {
   const [checkedAdmin, setCheckedAdmin] = useState(false);
   const [orderActionData, setOrderActionData] = useState([]);
   const [orderActionDataLoading, setOrderActionDataLoading] = useState(false);
-
+  const [pageInfo, setPageInfo] = useState({
+    userInfo:[],
+    orderInfo:[],
+    orderQuestion:[],
+    record:{
+      status:0
+    },
+  });
   const getHelpOrder = () => {
     setLoading(true);
     getHelpOrderList({
@@ -123,6 +132,71 @@ function SearchTable() {
         setLoading(false);
       });
   };
+
+  const setDrawerInfo = (record) => {
+    const map = {
+      userInfo:[
+        {
+          label:"用户昵称",
+          value:record?.userName ?? '--'
+        },
+        {
+          label:"用户ID",
+          value:record?.userId ?? '--'
+        },
+        {
+          label:"绑定邮箱",
+          value:record?.email ?? '--'
+        },
+      ],
+      orderInfo:[
+        {
+          label:"本金",
+          value: record?.orderType === 1
+            ? record?.offerAmount
+            : record?.amount
+        },
+        {
+          label:"赠送LCC",
+          value:record?.obtainLcc ?? '--'
+        },
+        {
+          label:"消耗CC",
+          value:record?.consumeLcc ?? '--'
+        },
+        {
+          label:"冻结周期",
+          value: `${record?.freezeDay ?? '--'}天`
+        },
+        {
+          label:"预计收益",
+          value:record?.expectationAmount ?? '--'
+        },
+        {
+          label:"匹配编号",
+          value:record?.orderNumMatch ?? '--'
+        },
+
+        {
+          label:"匹配时间",
+          value:record?.matchTime ?? '--'
+        },
+        {
+          label:"支付时间",
+          value:record?.payTime ?? '--'
+        },
+        {
+          label:"支付哈希值",
+          value:record?.hash ? <a target='_blank' href={`https://testnet.bscscan.com/tx/${record?.hash}`} rel="noreferrer">{splitWalletAddress(record?.hash)}</a> : "--"
+        },
+      ],
+      orderQuestion:[],
+      record:record,
+    };
+    setPageInfo({
+      ...map
+    });
+  }
 
   useEffect(() => {
     // fetchData();
@@ -385,51 +459,11 @@ function SearchTable() {
               <div className={styles.order_body_wrap}>
                 <Tabs activeTab={activeTab} onChange={setActiveTab}>
                   <Tabs.TabPane key="1" title="订单信息">
-                    <Col>
-                      <div className={styles.title}>用户信息</div>
-                      <div className={styles.row_item}>
-                        <div>用户昵称：{currentRecord?.userName}</div>
-                        <div>用户ID：{currentRecord?.userId}</div>
-                        <div>绑定邮箱：{'--'}</div>
-                      </div>
-                    </Col>
+                    <Descriptions colon=' :' layout='inline-horizontal' title='用户信息' data={pageInfo.userInfo} />
+                    <Divider />
+                    <Descriptions colon=' :' layout='inline-horizontal' title='订单信息' data={pageInfo.orderInfo} />
                     <Divider />
                     <Col>
-                      <div className={styles.title}>订单信息</div>
-                      <Row className={styles.row_wrap}>
-                        <div className={styles.row_item}>
-                          <div>
-                            本金：
-                            {currentRecord?.orderType === 1
-                              ? currentRecord?.offerAmount
-                              : currentRecord?.amount}
-                          </div>
-                          <div>赠送LCC：{currentRecord?.obtainLcc ?? '--'}</div>
-                          <div>消耗CC：{currentRecord?.consumeLcc ?? '--'}</div>
-                        </div>
-                      </Row>
-                      <Row className={styles.row_wrap}>
-                        <div className={styles.row_item}>
-                          <div>
-                            冻结周期：{currentRecord?.freezeDay ?? '--'}天
-                          </div>
-                          <div>
-                            预计收益：{currentRecord?.expectationAmount ?? '--'}
-                          </div>
-                          <div>
-                            匹配编号：{currentRecord?.orderNumMatch ?? '--'}
-                          </div>
-                        </div>
-                      </Row>
-                      <Row className={styles.row_wrap}>
-                        <div className={styles.row_item}>
-                          <div>
-                            匹配时间：{currentRecord?.matchTime ?? '--'}
-                          </div>
-                          <div>支付时间：{currentRecord?.payTime ?? '--'}</div>
-                          <div>支付哈希值：{currentRecord?.hash ?? '--'}</div>
-                        </div>
-                      </Row>
                       <Row className={styles.row_wrap}>
                         <div style={{ display: 'flex' }}>
                           <div>支付凭证：</div>

@@ -179,6 +179,7 @@ function SearchTable() {
         }
       })
       .finally(() => {
+        form.resetFields();
         setLoading(false);
       });
   };
@@ -199,6 +200,7 @@ function SearchTable() {
         }
       })
       .finally(() => {
+        passForm.resetFields();
         setLoading(false);
       });
   };
@@ -216,6 +218,7 @@ function SearchTable() {
         }
       })
       .finally(() => {
+        depositForm.resetFields();
         setLoading(false);
       });
   };
@@ -336,7 +339,10 @@ function SearchTable() {
         visible={depositVisible}
         wrapClassName={styles.table_modal_wrap}
         onOk={() => depositUserBalance()}
-        onCancel={() => setDepositVisible(false)}
+        onCancel={() => {
+          depositForm.resetFields();
+          setDepositVisible(false);
+        }}
         okText={'确定'}
         hideCancel={true}
         autoFocus={false}
@@ -378,7 +384,10 @@ function SearchTable() {
         onOk={() => {
           editUserPassword();
         }}
-        onCancel={() => setEditPasswordVisible(false)}
+        onCancel={() => {
+          passForm.resetFields();
+          setEditPasswordVisible(false);
+        }}
         okText={'确定'}
         hideCancel={true}
         autoFocus={false}

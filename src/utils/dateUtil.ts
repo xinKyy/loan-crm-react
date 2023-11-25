@@ -41,3 +41,11 @@ export function setCookie(name, value, daysToExpire) {
 
   document.cookie = cookieString;
 }
+
+export const splitWalletAddress = (address: string): string => {
+  if(!address) return "--";
+  if (address.length > 25) {
+    address = address.substring(0, 10) + "..." + address.substring(address.length - 7, address.length);
+  }
+  return address;
+};

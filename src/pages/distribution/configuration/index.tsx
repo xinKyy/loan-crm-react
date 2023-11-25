@@ -41,7 +41,8 @@ function Configuration() {
             <div className={styles.right}>
               <InputNumber
                 mode="button"
-                defaultValue={0}
+                defaultValue={5}
+                disabled
                 style={{ width: 160, margin: '10px 24px 10px 0' }}
               />
               <div className={styles.text}>
@@ -54,7 +55,8 @@ function Configuration() {
             <div className={styles.right}>
               <InputNumber
                 mode="button"
-                defaultValue={0}
+                defaultValue={1}
+                disabled
                 style={{ width: 160, margin: '10px 24px 10px 0' }}
               />
               <div className={styles.text}>
@@ -67,7 +69,8 @@ function Configuration() {
             <div className={styles.right}>
               <InputNumber
                 mode="button"
-                defaultValue={0}
+                defaultValue={0.3}
+                disabled
                 style={{ width: 160, margin: '10px 24px 10px 0' }}
               />
               <div className={styles.text}>
@@ -80,7 +83,8 @@ function Configuration() {
             <div className={styles.right}>
               <InputNumber
                 mode="button"
-                defaultValue={0}
+                defaultValue={0.1}
+                disabled
                 style={{ width: 160, margin: '10px 24px 10px 0' }}
               />
               <div className={styles.text}>
