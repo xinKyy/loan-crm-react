@@ -59,7 +59,6 @@ export function getColumns(
     {
       title: '昵称',
       dataIndex: 'contentType',
-      fixed: 'left',
       render: (value) => (
         <div className={styles['content-type']}>
           {ContentIcon[value]}
@@ -125,7 +124,6 @@ export function getColumns(
       title: '操作',
       dataIndex: 'operations',
       headerCellStyle: { paddingLeft: '40px' },
-      fixed: 'right',
       render: (_, record) => (
         <Space>
           <Button

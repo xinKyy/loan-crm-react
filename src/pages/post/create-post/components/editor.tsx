@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import BraftEditor from 'braft-editor';
+// import BraftEditor from 'braft-editor';
 import {
   Button,
   Card,
@@ -13,13 +13,16 @@ import {
 import { myUploadFn } from '@/utils/uploadFn';
 import { APICreatePost, APIGetPostDetail } from '@/api/api';
 import { useRouter } from 'next/router';
+import dynamic from "next/dynamic";
 const { Row, Col } = Grid;
 const RadioGroup = Radio.Group;
 const { useForm } = Form;
+let BraftEditor:any = dynamic(() => import('braft-editor').then((module: any) => {
+  BraftEditor = module.default // 这里进行对BraftEditor 进行覆盖
+  return module.default
+}), { ssr: false })
 const Editor = () => {
-  const [editorState, setEditorState]: any = useState(
-    BraftEditor.createEditorState(null)
-  );
+  const [editorState, setEditorState]: any = useState();
   const [loading, setLoading] = useState(false);
   const [id, setId] = useState();
   const [form] = useForm();
@@ -72,9 +75,11 @@ const Editor = () => {
       })
         .then((resp: any) => {
           if (resp.result) {
-            setEditorState(
-              BraftEditor.createEditorState(resp.result.noticeBody)
-            );
+            setTimeout(() => {
+              setEditorState(
+                BraftEditor.createEditorState(resp.result.noticeBody)
+              );
+            }, 500)
             form.setFieldsValue({
               title: resp.result.noticeTitle,
               status: resp.result.status.toString(),
@@ -85,6 +90,10 @@ const Editor = () => {
         .finally(() => {
           setLoading(false);
         });
+    } else {
+      setTimeout(() => {
+        setEditorState(BraftEditor.createEditorState(null))
+      }, 500)
     }
   };
 
