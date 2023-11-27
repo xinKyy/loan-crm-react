@@ -52,12 +52,12 @@ export default function MyApp({
       type: 'update-userInfo',
       payload: { userLoading: false },
     });
-    axios.get('/api/user/userInfo').then((res) => {
-      store.dispatch({
-        type: 'update-userInfo',
-        payload: { userInfo: res.data, userLoading: false },
-      });
-    });
+    // axios.get('/api/user/userInfo').then((res) => {
+    //   store.dispatch({
+    //     type: 'update-userInfo',
+    //     payload: { userInfo: res.data, userLoading: false },
+    //   });
+    // });
   }
 
   useEffect(() => {
