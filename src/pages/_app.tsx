@@ -50,7 +50,7 @@ export default function MyApp({
   function fetchUserInfo() {
     store.dispatch({
       type: 'update-userInfo',
-      payload: { userLoading: true },
+      payload: { userLoading: false },
     });
     axios.get('/api/user/userInfo').then((res) => {
       store.dispatch({
