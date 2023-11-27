@@ -17,6 +17,7 @@ export const Status = [
   '匹配中',
   '已支付',
   '完成',
+  '收益中',
 ];
 
 const ContentIcon = [

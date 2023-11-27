@@ -20,7 +20,8 @@ import {
   Statistic,
   Spin,
   Message,
-  InputNumber, Descriptions
+  InputNumber,
+  Descriptions,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -34,11 +35,12 @@ import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
 import {
   APIEditLccOrderNote,
-  APIMatchOrder, APIOrderActionLog,
+  APIMatchOrder,
+  APIOrderActionLog,
   getHelpOrderList,
   getMatchOrderList,
 } from '@/api/api';
-import {splitWalletAddress} from "@/utils/dateUtil";
+import { splitWalletAddress } from '@/utils/dateUtil';
 const Row = Grid.Row;
 const Col = Grid.Col;
 const Countdown = Statistic.Countdown;
@@ -53,6 +55,7 @@ export const Status = [
   '匹配中',
   '已支付',
   '完成',
+  '收益中',
 ];
 
 function SearchTable() {
@@ -100,32 +103,32 @@ function SearchTable() {
   const [activeTab, setActiveTab] = useState('1');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [matchAmount, setMatchAmount] = useState(0);
-  const [inputNumber, setInputNumber]:any = useState();
+  const [inputNumber, setInputNumber]: any = useState();
   const [checkedAdmin, setCheckedAdmin] = useState(false);
   const [orderActionData, setOrderActionData] = useState([]);
   const [orderActionDataLoading, setOrderActionDataLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState({
-    userInfo:[],
-    orderInfo:[],
-    orderQuestion:[],
-    record:{
-      status:0
+    userInfo: [],
+    orderInfo: [],
+    orderQuestion: [],
+    record: {
+      status: 0,
     },
   });
   const getHelpOrder = () => {
     setLoading(true);
     getHelpOrderList({
       ...formParams,
-      page_size:pagination.pageSize,
-      page_num:pagination.current,
+      page_size: pagination.pageSize,
+      page_num: pagination.current,
     })
       .then((resp: any) => {
         if (resp.result) {
           setData(resp.result.records);
           setPatination({
             ...pagination,
-            total:resp.result.total
-          })
+            total: resp.result.total,
+          });
         }
       })
       .finally(() => {
@@ -135,68 +138,76 @@ function SearchTable() {
 
   const setDrawerInfo = (record) => {
     const map = {
-      userInfo:[
+      userInfo: [
         {
-          label:"用户昵称",
-          value:record?.userName ?? '--'
+          label: '用户昵称',
+          value: record?.userName ?? '--',
         },
         {
-          label:"用户ID",
-          value:record?.userId ?? '--'
+          label: '用户ID',
+          value: record?.userId ?? '--',
         },
         {
-          label:"绑定邮箱",
-          value:record?.email ?? '--'
+          label: '绑定邮箱',
+          value: record?.email ?? '--',
         },
       ],
-      orderInfo:[
+      orderInfo: [
         {
-          label:"本金",
-          value: record?.orderType === 1
-            ? record?.offerAmount
-            : record?.amount
+          label: '本金',
+          value: record?.orderType === 1 ? record?.offerAmount : record?.amount,
         },
         {
-          label:"赠送LCC",
-          value:record?.obtainLcc ?? '--'
+          label: '赠送LCC',
+          value: record?.obtainLcc ?? '--',
         },
         {
-          label:"消耗CC",
-          value:record?.consumeLcc ?? '--'
+          label: '消耗CC',
+          value: record?.consumeLcc ?? '--',
         },
         {
-          label:"冻结周期",
-          value: `${record?.freezeDay ?? '--'}天`
+          label: '冻结周期',
+          value: `${record?.freezeDay ?? '--'}天`,
         },
         {
-          label:"预计收益",
-          value:record?.expectationAmount ?? '--'
+          label: '预计收益',
+          value: record?.expectationAmount ?? '--',
         },
         {
-          label:"匹配编号",
-          value:record?.orderNumMatch ?? '--'
+          label: '匹配编号',
+          value: record?.orderNumMatch ?? '--',
         },
 
         {
-          label:"匹配时间",
-          value:record?.matchTime ?? '--'
+          label: '匹配时间',
+          value: record?.matchTime ?? '--',
         },
         {
-          label:"支付时间",
-          value:record?.payTime ?? '--'
+          label: '支付时间',
+          value: record?.payTime ?? '--',
         },
         {
-          label:"支付哈希值",
-          value:record?.hash ? <a target='_blank' href={`https://testnet.bscscan.com/tx/${record?.hash}`} rel="noreferrer">{splitWalletAddress(record?.hash)}</a> : "--"
+          label: '支付哈希值',
+          value: record?.hash ? (
+            <a
+              target="_blank"
+              href={`https://testnet.bscscan.com/tx/${record?.hash}`}
+              rel="noreferrer"
+            >
+              {splitWalletAddress(record?.hash)}
+            </a>
+          ) : (
+            '--'
+          ),
         },
       ],
-      orderQuestion:[],
-      record:record,
+      orderQuestion: [],
+      record: record,
     };
     setPageInfo({
-      ...map
+      ...map,
     });
-  }
+  };
 
   useEffect(() => {
     // fetchData();
@@ -224,7 +235,7 @@ function SearchTable() {
       orderType: record.orderType === 1 ? 0 : 1,
     })
       .then((resp: any) => {
-        if(resp.result){
+        if (resp.result) {
           setChildData(resp.result.records);
         }
       })
@@ -270,7 +281,7 @@ function SearchTable() {
     APIMatchOrder({
       orderId: currentRecord.id,
       matchOrderIds: selectedRowKeys,
-      repairAdminAmount: checkedAdmin ? inputNumber : 0
+      repairAdminAmount: checkedAdmin ? inputNumber : 0,
     })
       .then((resp: any) => {
         if (resp.result) {
@@ -287,19 +298,21 @@ function SearchTable() {
       });
   };
 
-  const getOrderActionLogs = (record) =>{
+  const getOrderActionLogs = (record) => {
     setOrderActionDataLoading(true);
     APIOrderActionLog({
-      orderId:record.id,
-      type:1
-    }).then((resp:any) => {
-      if(resp.result){
-        setOrderActionData(resp.result);
-      }
-    }).finally(()=>{
-      setOrderActionDataLoading(false);
-    });
-  }
+      orderId: record.id,
+      type: 1,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          setOrderActionData(resp.result);
+        }
+      })
+      .finally(() => {
+        setOrderActionDataLoading(false);
+      });
+  };
 
   return (
     <Spin style={{ width: '100%' }} loading={pageLoading}>
@@ -459,9 +472,19 @@ function SearchTable() {
               <div className={styles.order_body_wrap}>
                 <Tabs activeTab={activeTab} onChange={setActiveTab}>
                   <Tabs.TabPane key="1" title="订单信息">
-                    <Descriptions colon=' :' layout='inline-horizontal' title='用户信息' data={pageInfo.userInfo} />
+                    <Descriptions
+                      colon=" :"
+                      layout="inline-horizontal"
+                      title="用户信息"
+                      data={pageInfo.userInfo}
+                    />
                     <Divider />
-                    <Descriptions colon=' :' layout='inline-horizontal' title='订单信息' data={pageInfo.orderInfo} />
+                    <Descriptions
+                      colon=" :"
+                      layout="inline-horizontal"
+                      title="订单信息"
+                      data={pageInfo.orderInfo}
+                    />
                     <Divider />
                     <Col>
                       <Row className={styles.row_wrap}>
@@ -499,7 +522,11 @@ function SearchTable() {
                     <Divider />
                   </Tabs.TabPane>
                   <Tabs.TabPane key="2" title="订单记录">
-                    <Table loading={orderActionDataLoading} columns={orderColumns} data={orderActionData} />
+                    <Table
+                      loading={orderActionDataLoading}
+                      columns={orderColumns}
+                      data={orderActionData}
+                    />
                   </Tabs.TabPane>
                 </Tabs>
               </div>
@@ -514,14 +541,28 @@ function SearchTable() {
               <span
                 style={{
                   color:
-                    currentRecord?.amount - (matchAmount ?? 0) - ((checkedAdmin && inputNumber) ? inputNumber : 0) === 0 ? 'green' : 'red',
+                    currentRecord?.amount -
+                      (matchAmount ?? 0) -
+                      (checkedAdmin && inputNumber ? inputNumber : 0) ===
+                    0
+                      ? 'green'
+                      : 'red',
                 }}
               >
-                {
-                  currentRecord?.amount - (matchAmount ?? 0) - ((checkedAdmin && inputNumber) ? inputNumber : 0) === 0 ?
-                    <span>匹配成功！</span> :
-                    <span>当前还需匹配{currentRecord?.amount - (matchAmount ?? 0) - ((checkedAdmin && inputNumber) ? inputNumber : 0)}金额</span>
-                }
+                {currentRecord?.amount -
+                  (matchAmount ?? 0) -
+                  (checkedAdmin && inputNumber ? inputNumber : 0) ===
+                0 ? (
+                  <span>匹配成功！</span>
+                ) : (
+                  <span>
+                    当前还需匹配
+                    {currentRecord?.amount -
+                      (matchAmount ?? 0) -
+                      (checkedAdmin && inputNumber ? inputNumber : 0)}
+                    金额
+                  </span>
+                )}
               </span>
             </span>
           }
@@ -531,7 +572,11 @@ function SearchTable() {
           onCancel={() => cancelModal()}
           okText={'确定'}
           okButtonProps={{
-            disabled: currentRecord?.amount - (matchAmount ?? 0) - ((checkedAdmin && inputNumber) ? inputNumber : 0) !== 0,
+            disabled:
+              currentRecord?.amount -
+                (matchAmount ?? 0) -
+                (checkedAdmin && inputNumber ? inputNumber : 0) !==
+              0,
           }}
           hideCancel={true}
           autoFocus={false}
@@ -559,7 +604,7 @@ function SearchTable() {
                   setSelectedRowKeys(selectedKeys);
                 },
                 onSelect: (selected, record, selectedRows) => {
-                  console.log("");
+                  console.log('');
                 },
               }}
             />
@@ -569,15 +614,20 @@ function SearchTable() {
             </div>
             <div className={styles.row}>
               <div style={{ flex: 1 }}>
-                <Checkbox onClick={() => setCheckedAdmin(!checkedAdmin)} checked={checkedAdmin}>4</Checkbox>
+                <Checkbox
+                  onClick={() => setCheckedAdmin(!checkedAdmin)}
+                  checked={checkedAdmin}
+                >
+                  4
+                </Checkbox>
               </div>
               <div style={{ flex: 2, margin: '0 20px' }}>
                 <InputNumber
-                  placeholder='可用余额99999'
+                  placeholder="可用余额99999"
                   min={0}
                   value={inputNumber}
                   style={{ width: 160, margin: '10px 24px 10px 0' }}
-                  onChange={v=>{
+                  onChange={(v) => {
                     setInputNumber(v);
                   }}
                 />
@@ -625,9 +675,13 @@ const orderColumns: TableColumnProps[] = [
   {
     title: '操作时间',
     dataIndex: 'createTime',
-    render:(v)=>{
-      return <div>{v.split("T")[0]} {v.split("T")[1].split("+")[0].split(".")[0]}</div>
-    }
+    render: (v) => {
+      return (
+        <div>
+          {v.split('T')[0]} {v.split('T')[1].split('+')[0].split('.')[0]}
+        </div>
+      );
+    },
   },
   {
     title: '操作角色',
