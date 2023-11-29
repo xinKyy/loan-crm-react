@@ -159,3 +159,33 @@ export const APIEditUserPassword = (params) => {
 export const APIEditUserCCBalance = (params) => {
   return axios.get('/adminUser/api/getUser', { params });
 };
+
+// 设置-得到账户列表
+export const APIGetHelpList = (params) => {
+  return axios.get('/adminUser/listBackUser', {params});
+};
+
+// 设置-提供帮助订单列表
+export const APIGetOfferOrderList = (params) => {
+  return axios.post('/api/v1/iccOrder/getAdminOfferOrder', params);
+};
+
+// 设置-匹配帮助订单
+export const APIMatchAdminOrder = (params) => {
+  return axios.post('/api/v1/iccOrder/backMatchOfferOfer', params);
+};
+
+// 设置-创建后台匹配账户
+export const APICreateBackUser = (params) => {
+  return axios.get('/adminUser/addBackUser', {params});
+};
+
+// 设置-获取匹配记录
+export const APIGetListBackOrder = (params) => {
+  return axios.get('/api/v1/iccOrder/listBackOrders', {params});
+};
+
+// 删除后台匹配账户
+export const APIDeleteBackUser = (params) => {
+  return axios.get('/adminUser/removeBackUser', { params });
+};

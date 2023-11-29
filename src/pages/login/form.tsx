@@ -27,7 +27,7 @@ export default function LoginForm() {
   const [loginParams, setLoginParams, removeLoginParams] =
     useStorage('loginParams');
   const t = useLocale(locale);
-  const [rememberPassword, setRememberPassword] = useState(!!loginParams);
+  const [rememberPassword, setRememberPassword] = useState(false);
   function afterLoginSuccess(params) {
     // 记住密码
     if (rememberPassword) {
@@ -49,9 +49,14 @@ export default function LoginForm() {
   }
 
   const login = (params) => {
-    APIDoLogin(params).then((resp) => {
-      afterLoginSuccess(resp);
-      localStorage.setItem("adminUserName", params.userName)
+    setLoading(true);
+    APIDoLogin(params).then((resp:any) => {
+      if(resp.result){
+        afterLoginSuccess(resp);
+        localStorage.setItem("adminUserName", params.userName)
+      }
+    }).finally(()=>{
+      setLoading(false);
     });
   };
 
@@ -76,32 +81,32 @@ export default function LoginForm() {
       >
         <Form.Item
           field="userName"
-          rules={[{ required: true, message: t['login.form.userName.errMsg'] }]}
+          rules={[{ required: true, message: "用户名不能为空" }]}
         >
           <Input
             prefix={<IconUser />}
-            placeholder={t['login.form.userName.placeholder']}
+            placeholder={"请输入用户名"}
             onPressEnter={onSubmitClick}
           />
         </Form.Item>
         <Form.Item
           field="password"
-          rules={[{ required: true, message: t['login.form.password.errMsg'] }]}
+          rules={[{ required: true, message: "密码不能为空" }]}
         >
           <Input.Password
             prefix={<IconLock />}
-            placeholder={t['login.form.password.placeholder']}
+            placeholder={"请输入密码"}
             onPressEnter={onSubmitClick}
           />
         </Form.Item>
         <Space size={16} direction="vertical">
           <div className={styles['login-form-password-actions']}>
-            <Checkbox checked={rememberPassword} onChange={setRememberPassword}>
+            <Checkbox checked={rememberPassword} onChange={()=>setRememberPassword(!rememberPassword)}>
               记住密码
             </Checkbox>
           </div>
           <Button type="primary" long onClick={onSubmitClick} loading={loading}>
-            {t['login.form.login']}
+           登录
           </Button>
         </Space>
       </Form>

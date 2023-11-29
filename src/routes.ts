@@ -34,7 +34,7 @@ export const routes: IRoute[] = [
     key: 'user/user-table',
   },
   {
-    name: 'menu.list',
+    name: '订单列表',
     key: 'list',
     children: [
       {
@@ -94,6 +94,10 @@ export const routes: IRoute[] = [
       {
         name: '权限管理',
         key: 'setting/auth-table',
+      },
+      {
+        name: '得到账户设置',
+        key: 'setting/get-help-table',
       },
       {
         name: '支付设置',

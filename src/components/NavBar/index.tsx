@@ -98,7 +98,7 @@ function Navbar({ show }: { show: boolean }) {
     <Menu onClickMenuItem={onMenuItemClick}>
       <Menu.Item key="logout">
         <IconPoweroff className={styles['dropdown-icon']} />
-        {t['navbar.logout']}
+        退出登录
       </Menu.Item>
     </Menu>
   );
