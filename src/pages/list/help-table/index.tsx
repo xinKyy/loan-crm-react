@@ -317,21 +317,23 @@ function SearchTable() {
       });
   };
 
-  const confirmQuestion = (type) =>{
+  const confirmQuestion = (type) => {
     setQuestionVisible(false);
     setLoading(true);
     APIConfirmQuestion({
-      orderId:currentRecord?.id,
-      flag:type
-    }).then((resp:any)=>{
-      if(resp.result){
-        Message.success("审核成功！");
-        getHelpOrder();
-      }
-    }).finally(()=>{
-      setLoading(false);
+      orderId: currentRecord?.id,
+      flag: type,
     })
-  }
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('审核成功！');
+          getHelpOrder();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <Spin style={{ width: '100%' }} loading={pageLoading}>
@@ -367,7 +369,13 @@ function SearchTable() {
                     </div>
                     <div>
                       <span>收款地址：</span>
-                      {record.toAddress ?? '--'}
+                      <a
+                        target="_blank"
+                        href={`https://testnet.bscscan.com/tx/${record.toAddress}`}
+                        rel="noreferrer"
+                      >
+                        {splitWalletAddress(record.toAddress)}
+                      </a>
                     </div>
                   </div>
                   <div className={styles.row}>
@@ -388,8 +396,14 @@ function SearchTable() {
                     <div>
                       <div>
                         <span>付款地址：</span>
+                        <a
+                          target="_blank"
+                          href={`https://testnet.bscscan.com/tx/${record.fromAddress}`}
+                          rel="noreferrer"
+                        >
+                          {splitWalletAddress(record.fromAddress)}
+                        </a>
                       </div>
-                      {record.fromAddress ?? '--'}
                     </div>
                   </div>
                   <Row></Row>
@@ -528,11 +542,21 @@ function SearchTable() {
                     </Col>
                     <Divider />
                     <Col>
-                      <div style={{display:"flex", justifyContent:"space-between"}}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
                         <div className={styles.title}>订单疑问</div>
-                        {
-                          !currentRecord?.question ? <Button onClick={()=>setQuestionVisible(true)} type={"primary"}>确认疑问</Button> : null
-                        }
+                        {currentRecord?.question ? (
+                          <Button
+                            onClick={() => setQuestionVisible(true)}
+                            type={'primary'}
+                          >
+                            确认疑问
+                          </Button>
+                        ) : null}
                       </div>
                       <Col>
                         <div className={styles.row_wrap}>
@@ -683,7 +707,6 @@ function SearchTable() {
           ></Input.TextArea>
         </Modal>
 
-
         <Modal
           title="确认疑问"
           visible={questionVisible}
@@ -691,10 +714,16 @@ function SearchTable() {
           hideCancel
           autoFocus={false}
           focusLock={true}
-          footer={<>
-            <Button onClick={()=>confirmQuestion(-1)} type={"default"}>拒绝通过</Button>
-            <Button onClick={()=>confirmQuestion(1)} type={"primary"}>审核通过</Button>
-          </>}
+          footer={
+            <>
+              <Button onClick={() => confirmQuestion(-1)} type={'default'}>
+                拒绝通过
+              </Button>
+              <Button onClick={() => confirmQuestion(1)} type={'primary'}>
+                审核通过
+              </Button>
+            </>
+          }
         >
           <p>是否已确认订单详情</p>
         </Modal>

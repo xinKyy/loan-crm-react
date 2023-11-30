@@ -17,7 +17,8 @@ import {
   Modal,
   Input,
   Message,
-  Spin, Descriptions,
+  Spin,
+  Descriptions,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -36,7 +37,7 @@ import {
   APIOrderActionLog,
   getHelpOrderList,
 } from '@/api/api';
-import {splitWalletAddress} from "@/utils/dateUtil";
+import { splitWalletAddress } from '@/utils/dateUtil';
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -88,65 +89,71 @@ function SearchTable() {
   const [orderActionDataLoading, setOrderActionDataLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState({
-    userInfo:[],
-    orderInfo:[],
-    orderQuestion:[],
-    record:{
-      status:0
+    userInfo: [],
+    orderInfo: [],
+    orderQuestion: [],
+    record: {
+      status: 0,
     },
   });
 
-
   const setDrawerInfo = (record) => {
     const map = {
-      userInfo:[
+      userInfo: [
         {
-          label:"用户昵称",
-          value:record?.userName ?? '--'
+          label: '用户昵称',
+          value: record?.userName ?? '--',
         },
         {
-          label:"用户ID",
-          value:record?.userId ?? '--'
+          label: '用户ID',
+          value: record?.userId ?? '--',
         },
         {
-          label:"绑定邮箱",
-          value:record?.email ?? '--'
-        },
-      ],
-      orderInfo:[
-        {
-          label:"本金",
-          value:record?.amount ?? '--'
-        },
-        {
-          label:"充值CC",
-          value:record?.amount ?? '--'
-        },
-        {
-          label:"充值哈希值",
-          value:<a target='_blank' href={`https://testnet.bscscan.com/tx/${record?.transferHash}`} rel="noreferrer">{splitWalletAddress(record?.transferHash)}</a>
-        },
-        {
-          label:"订单状态",
-          value:Status[record?.status]
-        },
-        {
-          label:"订单金额",
-          value:record?.amount ?? "--"
-        },
-        {
-          label:"创建时间",
-          value:record?.createTime ?? "--"
+          label: '绑定邮箱',
+          value: record?.email ?? '--',
         },
       ],
-      orderQuestion:[],
-      record:record,
+      orderInfo: [
+        {
+          label: '本金',
+          value: record?.amount ?? '--',
+        },
+        {
+          label: '充值CC',
+          value: record?.amount ?? '--',
+        },
+        {
+          label: '充值哈希值',
+          value: (
+            <a
+              target="_blank"
+              href={`https://testnet.bscscan.com/tx/${record?.transferHash}`}
+              rel="noreferrer"
+            >
+              {splitWalletAddress(record?.transferHash)}
+            </a>
+          ),
+        },
+        {
+          label: '订单状态',
+          value: Status[record?.status],
+        },
+        {
+          label: '订单金额',
+          value: record?.amount ?? '--',
+        },
+        {
+          label: '创建时间',
+          value: record?.createTime ?? '--',
+        },
+      ],
+      orderQuestion: [],
+      record: record,
     };
     setPageInfo({
-      ...map
+      ...map,
     });
-  }
-
+  };
 
   useEffect(() => {
     getCCOrder();
@@ -179,16 +186,16 @@ function SearchTable() {
     setLoading(true);
     APIGetCCOrderList({
       ...formParams,
-      page_size:pagination.pageSize,
-      page_num:pagination.current,
+      page_size: pagination.pageSize,
+      page_num: pagination.current,
     })
       .then((resp: any) => {
         if (resp.result) {
           setData(resp.result.records);
           setPatination({
             ...pagination,
-            total:resp.result.total
-          })
+            total: resp.result.total,
+          });
         }
       })
       .finally(() => {
@@ -225,7 +232,7 @@ function SearchTable() {
       type: 0,
     })
       .then((resp: any) => {
-        if(resp.result){
+        if (resp.result) {
           setOrderActionData(resp.result);
         }
       })
@@ -303,7 +310,13 @@ function SearchTable() {
                     </div>
                     <div>
                       <span>收款地址：</span>
-                      {record.walletAddress}
+                      <a
+                        target="_blank"
+                        href={`https://testnet.bscscan.com/tx/${record.walletAddress}`}
+                        rel="noreferrer"
+                      >
+                        {splitWalletAddress(record.walletAddress)}
+                      </a>
                     </div>
                   </div>
                   <div className={styles.row}>
@@ -313,7 +326,13 @@ function SearchTable() {
                     </div>
                     <div>
                       <span>付款地址：</span>
-                      {record.transferAddress}
+                      <a
+                        target="_blank"
+                        href={`https://testnet.bscscan.com/tx/${record.transferAddress}`}
+                        rel="noreferrer"
+                      >
+                        {splitWalletAddress(record.transferAddress)}
+                      </a>
                     </div>
                     <div>
                       <span>备注：</span>{' '}
@@ -365,16 +384,15 @@ function SearchTable() {
                 </div>
                 <div>
                   <Space>
-                    {
-                      pageInfo.record.status === 0 ?    <Button
+                    {pageInfo.record.status === 0 ? (
+                      <Button
                         style={{ width: '100px', marginRight: '20px' }}
                         type="primary"
                         onClick={openModal}
                       >
                         审核
-                      </Button> : null
-                    }
-
+                      </Button>
+                    ) : null}
                   </Space>
                   <Space>
                     <Button onClick={() => setRemarkModalVisible(true)}>
@@ -387,7 +405,9 @@ function SearchTable() {
                 <Col span={8}>
                   <Space direction={'vertical'} size={'small'}>
                     <div>订单状态</div>
-                    <Tag color={'#ff7d00'}>{Status[pageInfo.record?.status]}</Tag>
+                    <Tag color={'#ff7d00'}>
+                      {Status[pageInfo.record?.status]}
+                    </Tag>
                   </Space>
                 </Col>
                 <Col span={8}>
@@ -407,9 +427,19 @@ function SearchTable() {
               <div className={styles.order_body_wrap}>
                 <Tabs activeTab={activeTab} onChange={setActiveTab}>
                   <Tabs.TabPane key="1" title="订单信息">
-                    <Descriptions colon=' :' layout='inline-horizontal' title='用户信息' data={pageInfo.userInfo} />
+                    <Descriptions
+                      colon=" :"
+                      layout="inline-horizontal"
+                      title="用户信息"
+                      data={pageInfo.userInfo}
+                    />
                     <Divider />
-                    <Descriptions colon=' :' layout='inline-horizontal' title='订单信息' data={pageInfo.orderInfo} />
+                    <Descriptions
+                      colon=" :"
+                      layout="inline-horizontal"
+                      title="订单信息"
+                      data={pageInfo.orderInfo}
+                    />
                     <Col>
                       <Row className={styles.row_wrap}>
                         <div style={{ display: 'flex' }}>
@@ -465,10 +495,16 @@ function SearchTable() {
           hideCancel
           autoFocus={false}
           focusLock={true}
-          footer={<>
-            <Button onClick={()=>accept(2)} type={"default"}>拒绝通过</Button>
-            <Button onClick={()=>accept(1)} type={"primary"}>审核通过</Button>
-          </>}
+          footer={
+            <>
+              <Button onClick={() => accept(2)} type={'default'}>
+                拒绝通过
+              </Button>
+              <Button onClick={() => accept(1)} type={'primary'}>
+                审核通过
+              </Button>
+            </>
+          }
         >
           <p>是否已确认订单详情</p>
         </Modal>

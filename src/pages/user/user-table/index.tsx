@@ -55,7 +55,6 @@ function SearchTable() {
   const [currentRecord, setCurrentRecord]: any = useState();
   const tableCallback = async (record, type, e) => {
     if (e) e.stopPropagation();
-    console.log(record, currentRecord);
     if (!currentRecord || record.Id !== currentRecord?.Id) {
       setCurrentRecord(record);
       console.log('修改');

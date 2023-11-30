@@ -14,6 +14,7 @@ import IconVerticalVideo from './icons/vertical.svg';
 import dayjs from 'dayjs';
 import styles from './style/index.module.less';
 import { IconDown } from '@arco-design/web-react/icon';
+import { splitWalletAddress } from '@/utils/dateUtil';
 
 const { Text } = Typography;
 
@@ -49,6 +50,17 @@ export function getColumns(
     {
       title: '账户收款地址',
       dataIndex: 'address',
+      render: (_, record) => {
+        return (
+          <a
+            target="_blank"
+            href={`https://testnet.bscscan.com/tx/${_}`}
+            rel="noreferrer"
+          >
+            {splitWalletAddress(_)}
+          </a>
+        );
+      },
     },
     {
       title: '期初静态余额',

@@ -20,7 +20,9 @@ import {
   Radio,
   Dropdown,
   Menu,
-  InputNumber, Form, Message,
+  InputNumber,
+  Form,
+  Message,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDown, IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -32,7 +34,7 @@ import styles from './style/index.module.less';
 import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
-import {APIEditVipList, APIGetVipList} from "@/api/api";
+import { APIEditVipList, APIGetVipList } from '@/api/api';
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -102,36 +104,40 @@ function SearchTable() {
 
   const cancelModal = () => {
     setModalVisible(false);
+    form.resetFields();
   };
 
   const getVipList = () => {
     setLoading(true);
-    APIGetVipList({
-
-    }).then((resp:any)=>{
-      if(resp.result){
-        setData(resp.result);
-      }
-    }).finally(()=>{
-      setLoading(false);
-    })
-  }
+    APIGetVipList({})
+      .then((resp: any) => {
+        if (resp.result) {
+          setData(resp.result);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const editVipDesc = () => {
     setModalVisible(false);
     setLoading(true);
     APIEditVipList({
       ...form.getFieldsValue(),
-      id:currentRecord?.id
-    }).then((resp:any)=>{
-      if(resp.result){
-        Message.success("更新成功！");
-        getVipList();
-      }
-    }).finally(()=>{
-      setLoading(false);
-    });
-  }
+      id: currentRecord?.id,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('更新成功！');
+          getVipList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+        form.resetFields();
+      });
+  };
 
   return (
     <Card>
@@ -151,76 +157,94 @@ function SearchTable() {
         data={data}
       />
 
-      <Modal
-        title={
-          <span style={{ fontWeight: 'bold', textAlign: 'left' }}>
-            编辑分销员备注
-          </span>
-        }
-        visible={modalVisible}
-        wrapClassName={styles.table_modal_wrap}
-        onOk={() => editVipDesc()}
-        onCancel={() => cancelModal()}
-        okText={'确定'}
-        hideCancel={true}
-        autoFocus={false}
-        focusLock={true}
-      >
-        <Form form={form}>
-        <div style={{ height: 20 }} />
+      {modalVisible ? (
+        <Modal
+          title={
+            <span style={{ fontWeight: 'bold', textAlign: 'left' }}>
+              编辑分销员备注
+            </span>
+          }
+          visible={modalVisible}
+          wrapClassName={styles.table_modal_wrap}
+          onOk={() => editVipDesc()}
+          onCancel={() => cancelModal()}
+          okText={'确定'}
+          hideCancel={true}
+          autoFocus={false}
+          focusLock={true}
+        >
+          <Form form={form}>
+            <div style={{ height: 20 }} />
 
-          <Form.Item label={"等级名称"} initialValue={currentRecord?.rankname} field={"rankname"}>
-            <Input  placeholder="请输入等级名称" />
-          </Form.Item>
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ width: 12 }} />
-          <div>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{' '}
-            <span style={{ color: '#ff0000' }}>*</span>等级:
-          </div>
-          <div style={{ width: 20 }} />
-          <InputNumber
-            disabled
-            mode="button"
-            defaultValue={500}
-            style={{ width: 160 }}
-          />
-        </div>
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ width: 12 }} />
-          <div>
-            <span style={{ color: '#ff0000' }}>*</span>直推人数:
-          </div>
-          <div style={{ width: 20 }} />
-          <InputNumber
-            disabled
-            mode="button"
-            defaultValue={500}
-            style={{ width: 160 }}
-          />
-        </div>
-        <div style={{ height: 20 }} />
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ width: 12 }} />
-          <div>
-            <span style={{ color: '#ff0000' }}>*</span>团队人数:
-          </div>
-          <div style={{ width: 20 }} />
-          <InputNumber
-            disabled
-            mode="button"
-            defaultValue={500}
-            style={{ width: 160 }}
-          />
-        </div>
-        <div style={{ height: 20 }} />
-          <Form.Item label={"备注"} initialValue={currentRecord?.incomedescription} field={"incomedescription"}>
-            <Input.TextArea placeholder="请输入备注" />
-          </Form.Item>
-        </Form>
-      </Modal>
+            <Form.Item
+              label={'等级名称'}
+              initialValue={currentRecord?.rankname}
+              field={'rankname'}
+            >
+              <Input placeholder="请输入等级名称" />
+            </Form.Item>
+            <div style={{ height: 20 }} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ width: 12 }} />
+              <div>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{' '}
+                <span style={{ color: '#ff0000' }}>*</span>等级:
+              </div>
+              <div style={{ width: 20 }} />
+              <InputNumber
+                disabled
+                mode="button"
+                defaultValue={500}
+                style={{ width: 160 }}
+              />
+            </div>
+            <div style={{ height: 20 }} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ width: 12 }} />
+              <div>
+                <span style={{ color: '#ff0000' }}>*</span>直推人数:
+              </div>
+              <div style={{ width: 20 }} />
+              <InputNumber
+                disabled
+                mode="button"
+                defaultValue={500}
+                style={{ width: 160 }}
+              />
+            </div>
+            <div style={{ height: 20 }} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ width: 12 }} />
+              <div>
+                <span style={{ color: '#ff0000' }}>*</span>团队人数:
+              </div>
+              <div style={{ width: 20 }} />
+              <InputNumber
+                disabled
+                mode="button"
+                defaultValue={500}
+                style={{ width: 160 }}
+              />
+            </div>
+            <div style={{ height: 20 }} />
+            <Form.Item
+              label={'备注'}
+              initialValue={currentRecord?.incomedescription}
+              field={'incomedescription'}
+            >
+              <Input.TextArea autoSize placeholder="请输入备注" />
+            </Form.Item>
+            <div style={{ height: 20 }} />
+            <Form.Item
+              label={'等级描述'}
+              initialValue={currentRecord?.viprights}
+              field={'viprights'}
+            >
+              <Input.TextArea autoSize placeholder="请输入等级描述" />
+            </Form.Item>
+          </Form>
+        </Modal>
+      ) : null}
 
       <Modal
         title={'提示'}
