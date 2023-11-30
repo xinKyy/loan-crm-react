@@ -189,3 +189,13 @@ export const APIGetListBackOrder = (params) => {
 export const APIDeleteBackUser = (params) => {
   return axios.get('/adminUser/removeBackUser', { params });
 };
+
+// 订单疑问审核
+export const APIConfirmQuestion = (params) => {
+  return axios.get('/api/v1/iccOrder/checkListBackOrdersForCheck', { params });
+};
+
+// 获取后台审核订单列表
+export const APIGetBackList = (params) => {
+  return axios.get('/api/v1/iccOrder/listBackOrdersForCheck', { params });
+};

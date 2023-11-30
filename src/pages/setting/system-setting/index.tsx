@@ -8,7 +8,7 @@ import {
   InputNumber,
   Message,
   Modal,
-  Space,
+  Space, Statistic,
   Switch,
   Table,
   Tabs,
@@ -24,6 +24,7 @@ import {
 } from '@/api/api';
 const TabPane = Tabs.TabPane;
 const { useForm } = Form;
+const Countdown = Statistic.Countdown;
 function Configuration() {
   const bannerColumns = [
     {
@@ -41,7 +42,8 @@ function Configuration() {
     },
     {
       title: '跳转链接',
-      dataIndex: 'noticeTitle',
+      dataIndex: 'jumpUrl',
+      render:(_) => <a href={`/post/create-post?id=${_}`}>{_}</a>
     },
     {
       title: '添加时间',
@@ -101,6 +103,7 @@ function Configuration() {
     if (type === 'edit') {
       setEdit(true);
       setSelectedRowKeys([record.jumpUrl]);
+      form.resetFields();
       form.setFieldsValue({
         ...record,
         status: record.status === 1,
@@ -164,6 +167,7 @@ function Configuration() {
       })
       .finally(() => {
         setLoading(false);
+        form.resetFields();
       });
   };
 
@@ -263,7 +267,10 @@ function Configuration() {
         title="创建轮播图"
         visible={createBannerModal}
         onOk={() => createBanner()}
-        onCancel={() => setCreateBannerModal(false)}
+        onCancel={() => {
+          setCreateBannerModal(false);
+          form.resetFields();
+        }}
         okText={'确定'}
         hideCancel={true}
         autoFocus={false}
@@ -317,13 +324,15 @@ function Configuration() {
           </Form.Item>
           <Form.Item label={'跳转链接'} field={'jumpUrl'}>
             <Button onClick={() => setPostModal(true)}>
-              {selectedRowKeys
+              {selectedRowKeys.length
                 ? `https://${selectedRowKeys[0]}`
                 : '选择跳转链接'}
             </Button>
           </Form.Item>
           <Form.Item label={'是否显示'} field={'status'}>
-            <Switch checked={currentRecord?.status === 1}></Switch>
+            {
+              edit ?  <Switch onClick={()=>setCurrentRecord({...currentRecord, status:currentRecord.status === 1 ? 0 : 1})} checked={currentRecord.status === 1} ></Switch> :  <Switch ></Switch>
+            }
           </Form.Item>
         </Form>
       </Modal>

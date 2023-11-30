@@ -37,11 +37,13 @@ import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
 import {
+  APIConfirmQuestion,
   APICreateAdminUser, APICreateBackUser,
   APIDeleteAdminUser, APIDeleteBackUser,
   APIEditAdminUserPassword,
-  APIGetAdminUserList, APIGetHelpList, APIGetListBackOrder, APIGetOfferOrderList, APIMatchAdminOrder,
+  APIGetAdminUserList, APIGetBackList, APIGetHelpList, APIGetListBackOrder, APIGetOfferOrderList, APIMatchAdminOrder,
 } from '@/api/api';
+import {splitWalletAddress} from "@/utils/dateUtil";
 const Row = Grid.Row;
 const Col = Grid.Col;
 const { RangePicker } = DatePicker;
@@ -86,6 +88,7 @@ function SearchTable() {
   const [data, setData] = useState([]);
   const [childData, setChildData] = useState([]);
   const [matchOrderData, setMatchOrderData] = useState([]);
+  const [confirmListOrder, setConfirmListOrder] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
@@ -111,13 +114,103 @@ function SearchTable() {
   const [currentRecord, setCurrentRecord]: any = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [addAdminVisible, setAddAdminVisible] = useState(false);
+  const [confirmOrderListVisible, setConfirmOrderListVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [matchVisible, setMatchVisible] = useState(false);
-  const [logVisible, setLogVisible] = useState(false);
-  const [key, setKey] = useState("");
   const [editPasswordVisible, setEditPasswordVisible] = useState(false);
 
+  const [questionVisible, setQuestionVisible] = useState(false);
+
+  const [currentConfirmRecord, setCurrentConfirmRecord]: any = useState();
+
+  const confirmOrderColumns: TableColumnProps[] = [
+    {
+      title: 'Id',
+      dataIndex: 'id',
+    },
+    {
+      title: '订单金额',
+      dataIndex: 'amount',
+    },
+    {
+      title: '转账凭证',
+      dataIndex: 'transferImage',
+      render:(_, record)=><Image width={50} height={50} src={_}></Image>
+    },
+    {
+      title: '付款地址',
+      dataIndex: 'fromAddress',
+      render:(_, record)=>{
+        return      <a
+          target="_blank"
+          href={`https://testnet.bscscan.com/tx/${_}`}
+          rel="noreferrer"
+        >
+          {splitWalletAddress(_)}
+        </a>
+      }
+    },
+    {
+      title: '转账哈希',
+      dataIndex: 'hash',
+      render:(_, record)=>{
+        return      <a
+          target="_blank"
+          href={`https://testnet.bscscan.com/tx/${_}`}
+          rel="noreferrer"
+        >
+          {splitWalletAddress(_)}
+        </a>
+      }
+    },
+    {
+      title: '收款地址',
+      dataIndex: 'toAddress',
+      render:(_, record)=>{
+        return      <a
+          target="_blank"
+          href={`https://testnet.bscscan.com/tx/${_}`}
+          rel="noreferrer"
+        >
+          {splitWalletAddress(_)}
+        </a>
+      }
+    },
+    {
+      title: '操作',
+      dataIndex: 'deadLineTimeStamp',
+      render: (_, record) => (
+        <Space>
+          <Button
+            type="text"
+            size="small"
+            onClick={(e) => callback(record)}
+          >
+            审核
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const callback = (record) =>{
+    setCurrentConfirmRecord(record);
+    setQuestionVisible(true);
+  }
+
+  const getConfirmOrderList = () => {
+    setMatchLoading(true);
+    APIGetBackList({}).then((resp:any)=>{
+      if(resp.result){
+        setConfirmListOrder(resp.result);
+      }
+    }).finally(()=>{
+      setMatchLoading(false);
+    })
+  }
+
   useEffect(() => {
+    getConfirmOrderList();
     getAdminGetHelpList();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
@@ -254,12 +347,34 @@ function SearchTable() {
     })
   }
 
+  const confirmQuestion = (type) =>{
+    setQuestionVisible(false);
+    setMatchLoading(true);
+    APIConfirmQuestion({
+      orderId:currentConfirmRecord?.id,
+      flag:type
+    }).then((resp:any)=>{
+      if(resp.result){
+        Message.success("审核成功！");
+        getConfirmOrderList();
+      }
+    }).finally(()=>{
+      setMatchLoading(false);
+    })
+  }
+
   return (
     <Card>
       <Row>
         <Space>
           <Button onClick={() => setAddAdminVisible(true)} type={'primary'}>
             添加匹配账户
+          </Button>
+          <Button onClick={() => {
+            getConfirmOrderList();
+            setConfirmOrderListVisible(true)
+          }} type={'primary'}>
+            代核验订单({confirmListOrder.length})
           </Button>
         </Space>
       </Row>
@@ -404,10 +519,46 @@ function SearchTable() {
         <div style={{ height: 20 }} />
         <Table
           rowKey="id"
-          columns={mateColumns}
+          columns={mateHistoryColumns}
           data={matchOrderData}
           loading={matchLoading}
         />
+      </Modal>
+
+      <Modal
+        title={'待核验订单'}
+        visible={confirmOrderListVisible}
+        wrapClassName={styles.table_modal_wrap}
+        onOk={() => setConfirmOrderListVisible(false)}
+        onCancel={() => setConfirmOrderListVisible(false)}
+        okText={'确定'}
+        hideCancel={true}
+        autoFocus={false}
+        focusLock={true}
+      >
+        <div style={{ height: 20 }} />
+        <Table
+          rowKey="id"
+          columns={confirmOrderColumns}
+          data={confirmListOrder}
+          loading={matchLoading}
+        />
+      </Modal>
+
+
+      <Modal
+        title="待核验订单"
+        visible={questionVisible}
+        onCancel={() => setQuestionVisible(false)}
+        hideCancel
+        autoFocus={false}
+        focusLock={true}
+        footer={<>
+          <Button onClick={()=>confirmQuestion(-1)} type={"default"}>拒绝通过</Button>
+          <Button onClick={()=>confirmQuestion(1)} type={"primary"}>审核通过</Button>
+        </>}
+      >
+        <p>是否已确认订单详情</p>
       </Modal>
 
     </Card>
@@ -428,6 +579,40 @@ const mateColumns: TableColumnProps[] = [
     dataIndex: 'username',
     render: () => <div>用户</div>,
   },
+  {
+    title: '匹配剩余时间',
+    dataIndex: 'deadLineTimeStamp',
+    render: (v) => (
+      <Countdown
+        style={{ fontSize: '12px !important' }}
+        styleValue={{ fontSize: '12px !important' }}
+        value={v}
+        format="D 天 H 时 m 分 s 秒"
+        now={Date.now()}
+      />
+    ),
+  },
 ];
+
+const mateHistoryColumns: TableColumnProps[] = [
+  {
+    title: '订单编号',
+    dataIndex: 'id',
+  },
+  {
+    title: '订单金额',
+    dataIndex: 'amount',
+  },
+  {
+    title: '账户来源',
+    dataIndex: 'username',
+    render: () => <div>用户</div>,
+  },
+  {
+    title: '匹配时间',
+    dataIndex: 'deadLineTimeStamp',
+  },
+];
+
 
 export default SearchTable;

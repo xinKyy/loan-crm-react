@@ -18,6 +18,7 @@ export const Status = [
   '已支付',
   '完成',
   '收益中',
+  '待审核',
 ];
 
 const ContentIcon = [

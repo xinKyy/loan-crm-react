@@ -34,6 +34,7 @@ import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
 import {
+  APIConfirmQuestion,
   APIEditLccOrderNote,
   APIMatchOrder,
   APIOrderActionLog,
@@ -56,6 +57,7 @@ export const Status = [
   '已支付',
   '完成',
   '收益中',
+  '待审核',
 ];
 
 function SearchTable() {
@@ -98,6 +100,7 @@ function SearchTable() {
   const [modalLoading, setModalLoading] = useState(false);
   const [formParams, setFormParams] = useState({});
   const [visible, setVisible] = useState(false);
+  const [questionVisible, setQuestionVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [remarkModalVisible, setRemarkModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
@@ -314,6 +317,22 @@ function SearchTable() {
       });
   };
 
+  const confirmQuestion = (type) =>{
+    setQuestionVisible(false);
+    setLoading(true);
+    APIConfirmQuestion({
+      orderId:currentRecord?.id,
+      flag:type
+    }).then((resp:any)=>{
+      if(resp.result){
+        Message.success("审核成功！");
+        getHelpOrder();
+      }
+    }).finally(()=>{
+      setLoading(false);
+    })
+  }
+
   return (
     <Spin style={{ width: '100%' }} loading={pageLoading}>
       <Card>
@@ -509,7 +528,12 @@ function SearchTable() {
                     </Col>
                     <Divider />
                     <Col>
-                      <div className={styles.title}>订单备注</div>
+                      <div style={{display:"flex", justifyContent:"space-between"}}>
+                        <div className={styles.title}>订单疑问</div>
+                        {
+                          !currentRecord?.question ? <Button onClick={()=>setQuestionVisible(true)} type={"primary"}>确认疑问</Button> : null
+                        }
+                      </div>
                       <Col>
                         <div className={styles.row_wrap}>
                           疑问时间：{currentRecord?.questionTime ?? '--'}
@@ -657,6 +681,22 @@ function SearchTable() {
               })
             }
           ></Input.TextArea>
+        </Modal>
+
+
+        <Modal
+          title="确认疑问"
+          visible={questionVisible}
+          onCancel={() => setQuestionVisible(false)}
+          hideCancel
+          autoFocus={false}
+          focusLock={true}
+          footer={<>
+            <Button onClick={()=>confirmQuestion(-1)} type={"default"}>拒绝通过</Button>
+            <Button onClick={()=>confirmQuestion(1)} type={"primary"}>审核通过</Button>
+          </>}
+        >
+          <p>是否已确认订单详情</p>
         </Modal>
       </Card>
     </Spin>
