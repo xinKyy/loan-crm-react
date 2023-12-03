@@ -597,7 +597,7 @@ const mateColumns: TableColumnProps[] = [
 const mateHistoryColumns: TableColumnProps[] = [
   {
     title: '订单编号',
-    dataIndex: 'id',
+    dataIndex: 'orderId',
   },
   {
     title: '订单金额',
@@ -610,7 +610,7 @@ const mateHistoryColumns: TableColumnProps[] = [
   },
   {
     title: '匹配时间',
-    dataIndex: 'deadLineTimeStamp',
+    dataIndex: 'matchTime',
   },
 ];
 
