@@ -328,6 +328,7 @@ function SearchTable() {
         if (resp.result) {
           Message.success('审核成功！');
           getHelpOrder();
+          setVisible(false);
         }
       })
       .finally(() => {
@@ -549,7 +550,7 @@ function SearchTable() {
                         }}
                       >
                         <div className={styles.title}>订单疑问</div>
-                        {currentRecord?.question ? (
+                        {currentRecord?.question && currentRecord.status === 6 ? (
                           <Button
                             onClick={() => setQuestionVisible(true)}
                             type={'primary'}
@@ -717,10 +718,10 @@ function SearchTable() {
           footer={
             <>
               <Button onClick={() => confirmQuestion(-1)} type={'default'}>
-                拒绝通过
+                取消该订单
               </Button>
               <Button onClick={() => confirmQuestion(1)} type={'primary'}>
-                审核通过
+                完成该订单
               </Button>
             </>
           }
