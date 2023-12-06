@@ -194,7 +194,7 @@ function SearchTable() {
           value: record?.hash ? (
             <a
               target="_blank"
-              href={`https://testnet.bscscan.com/tx/${record?.hash}`}
+              href={`https://arbiscan.io/tx/${record?.hash}`}
               rel="noreferrer"
             >
               {splitWalletAddress(record?.hash)}
@@ -372,7 +372,7 @@ function SearchTable() {
                       <span>收款地址：</span>
                       <a
                         target="_blank"
-                        href={`https://testnet.bscscan.com/tx/${record.toAddress}`}
+                        href={`https://arbiscan.io/address/${record.toAddress}`}
                         rel="noreferrer"
                       >
                         {splitWalletAddress(record.toAddress)}
@@ -399,7 +399,7 @@ function SearchTable() {
                         <span>付款地址：</span>
                         <a
                           target="_blank"
-                          href={`https://testnet.bscscan.com/tx/${record.fromAddress}`}
+                          href={`https://arbiscan.io/address/${record.fromAddress}`}
                           rel="noreferrer"
                         >
                           {splitWalletAddress(record.fromAddress)}
@@ -550,7 +550,8 @@ function SearchTable() {
                         }}
                       >
                         <div className={styles.title}>订单疑问</div>
-                        {currentRecord?.question && currentRecord.status === 6 ? (
+                        {currentRecord?.question &&
+                        currentRecord.status === 6 ? (
                           <Button
                             onClick={() => setQuestionVisible(true)}
                             type={'primary'}

@@ -24,7 +24,8 @@ import {
   DatePicker,
   Switch,
   Form,
-  Message, Statistic,
+  Message,
+  Statistic,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDown, IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -38,12 +39,19 @@ import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
 import {
   APIConfirmQuestion,
-  APICreateAdminUser, APICreateBackUser,
-  APIDeleteAdminUser, APIDeleteBackUser,
+  APICreateAdminUser,
+  APICreateBackUser,
+  APIDeleteAdminUser,
+  APIDeleteBackUser,
   APIEditAdminUserPassword,
-  APIGetAdminUserList, APIGetBackList, APIGetHelpList, APIGetListBackOrder, APIGetOfferOrderList, APIMatchAdminOrder,
+  APIGetAdminUserList,
+  APIGetBackList,
+  APIGetHelpList,
+  APIGetListBackOrder,
+  APIGetOfferOrderList,
+  APIMatchAdminOrder,
 } from '@/api/api';
-import {splitWalletAddress} from "@/utils/dateUtil";
+import { splitWalletAddress } from '@/utils/dateUtil';
 const Row = Grid.Row;
 const Col = Grid.Col;
 const { RangePicker } = DatePicker;
@@ -99,14 +107,15 @@ function SearchTable() {
     pageSizeChangeResetCurrent: true,
   });
 
-  const [matchOrderPagination, setMatchOrderPatination] = useState<PaginationProps>({
-    sizeCanChange: true,
-    showTotal: true,
-    pageSize: 10,
-    total: 0,
-    current: 1,
-    pageSizeChangeResetCurrent: true,
-  });
+  const [matchOrderPagination, setMatchOrderPatination] =
+    useState<PaginationProps>({
+      sizeCanChange: true,
+      showTotal: true,
+      pageSize: 10,
+      total: 0,
+      current: 1,
+      pageSizeChangeResetCurrent: true,
+    });
 
   const [loading, setLoading] = useState(false);
   const [matchLoading, setMatchLoading] = useState(false);
@@ -135,57 +144,59 @@ function SearchTable() {
     {
       title: '转账凭证',
       dataIndex: 'transferImage',
-      render:(_, record)=><Image width={50} height={50} src={_}></Image>
+      render: (_, record) => <Image width={50} height={50} src={_}></Image>,
     },
     {
       title: '付款地址',
       dataIndex: 'fromAddress',
-      render:(_, record)=>{
-        return      <a
-          target="_blank"
-          href={`https://testnet.bscscan.com/tx/${_}`}
-          rel="noreferrer"
-        >
-          {splitWalletAddress(_)}
-        </a>
-      }
+      render: (_, record) => {
+        return (
+          <a
+            target="_blank"
+            href={`https://arbiscan.io/address/${_}`}
+            rel="noreferrer"
+          >
+            {splitWalletAddress(_)}
+          </a>
+        );
+      },
     },
     {
       title: '转账哈希',
       dataIndex: 'hash',
-      render:(_, record)=>{
-        return      <a
-          target="_blank"
-          href={`https://testnet.bscscan.com/tx/${_}`}
-          rel="noreferrer"
-        >
-          {splitWalletAddress(_)}
-        </a>
-      }
+      render: (_, record) => {
+        return (
+          <a
+            target="_blank"
+            href={`https://arbiscan.io/tx/${_}`}
+            rel="noreferrer"
+          >
+            {splitWalletAddress(_)}
+          </a>
+        );
+      },
     },
     {
       title: '收款地址',
       dataIndex: 'toAddress',
-      render:(_, record)=>{
-        return      <a
-          target="_blank"
-          href={`https://testnet.bscscan.com/tx/${_}`}
-          rel="noreferrer"
-        >
-          {splitWalletAddress(_)}
-        </a>
-      }
+      render: (_, record) => {
+        return (
+          <a
+            target="_blank"
+            href={`https://arbiscan.io/address/${_}`}
+            rel="noreferrer"
+          >
+            {splitWalletAddress(_)}
+          </a>
+        );
+      },
     },
     {
       title: '操作',
       dataIndex: 'deadLineTimeStamp',
       render: (_, record) => (
         <Space>
-          <Button
-            type="text"
-            size="small"
-            onClick={(e) => callback(record)}
-          >
+          <Button type="text" size="small" onClick={(e) => callback(record)}>
             审核
           </Button>
         </Space>
@@ -193,30 +204,36 @@ function SearchTable() {
     },
   ];
 
-  const callback = (record) =>{
+  const callback = (record) => {
     setCurrentConfirmRecord(record);
     setQuestionVisible(true);
-  }
+  };
 
   const getConfirmOrderList = () => {
     setMatchLoading(true);
-    APIGetBackList({}).then((resp:any)=>{
-      if(resp.result){
-        setConfirmListOrder(resp.result);
-      }
-    }).finally(()=>{
-      setMatchLoading(false);
-    })
-  }
+    APIGetBackList({})
+      .then((resp: any) => {
+        if (resp.result) {
+          setConfirmListOrder(resp.result);
+        }
+      })
+      .finally(() => {
+        setMatchLoading(false);
+      });
+  };
 
   useEffect(() => {
     getConfirmOrderList();
     getAdminGetHelpList();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getMatchOrderList();
-  },[matchOrderPagination.current, matchOrderPagination.pageSize, JSON.stringify(formParams)]);
+  }, [
+    matchOrderPagination.current,
+    matchOrderPagination.pageSize,
+    JSON.stringify(formParams),
+  ]);
 
   function onChangeTable({ current, pageSize }) {
     setPatination({
@@ -287,16 +304,18 @@ function SearchTable() {
     setLoading(true);
     setMatchVisible(false);
     APIMatchAdminOrder({
-      backUserId:currentRecord.id,
-      offerIds:selectedRowKeys
-    }).then((resp:any) =>{
-      if(resp.result){
-        Message.success("匹配成功！");
-      }
-    }).finally(()=>{
-      setLoading(false);
-    });
-  }
+      backUserId: currentRecord.id,
+      offerIds: selectedRowKeys,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('匹配成功！');
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const editAdminUserPassword = () => {
     if (currentRecord.passwordV2 !== currentRecord.rePassword) {
@@ -318,50 +337,56 @@ function SearchTable() {
       });
   };
 
-  const createBackUser = () =>{
+  const createBackUser = () => {
     setAddAdminVisible(false);
     setLoading(true);
     APICreateBackUser({
-      ...addForm.getFieldsValue()
-    }).then((resp: any) => {
-      if(resp.result) {
-        Message.success("增加后台匹配账户成功！");
-        getAdminGetHelpList();
-      }
-    }).finally(()=>{
-      setLoading(false);
-      addForm.resetFields();
+      ...addForm.getFieldsValue(),
     })
-  }
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('增加后台匹配账户成功！');
+          getAdminGetHelpList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+        addForm.resetFields();
+      });
+  };
 
-  const getListBackUserMatchListById = (record) =>{
+  const getListBackUserMatchListById = (record) => {
     setMatchLoading(true);
     APIGetListBackOrder({
-      id:record.id
-    }).then((resp :any)=>{
-      if(resp.result){
-        setMatchOrderData(resp.result);
-      }
-    }).finally(()=>{
-      setMatchLoading(false);
+      id: record.id,
     })
-  }
+      .then((resp: any) => {
+        if (resp.result) {
+          setMatchOrderData(resp.result);
+        }
+      })
+      .finally(() => {
+        setMatchLoading(false);
+      });
+  };
 
-  const confirmQuestion = (type) =>{
+  const confirmQuestion = (type) => {
     setQuestionVisible(false);
     setMatchLoading(true);
     APIConfirmQuestion({
-      orderId:currentConfirmRecord?.id,
-      flag:type
-    }).then((resp:any)=>{
-      if(resp.result){
-        Message.success("审核成功！");
-        getConfirmOrderList();
-      }
-    }).finally(()=>{
-      setMatchLoading(false);
+      orderId: currentConfirmRecord?.id,
+      flag: type,
     })
-  }
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('审核成功！');
+          getConfirmOrderList();
+        }
+      })
+      .finally(() => {
+        setMatchLoading(false);
+      });
+  };
 
   return (
     <Card>
@@ -370,10 +395,13 @@ function SearchTable() {
           <Button onClick={() => setAddAdminVisible(true)} type={'primary'}>
             添加匹配账户
           </Button>
-          <Button onClick={() => {
-            getConfirmOrderList();
-            setConfirmOrderListVisible(true)
-          }} type={'primary'}>
+          <Button
+            onClick={() => {
+              getConfirmOrderList();
+              setConfirmOrderListVisible(true);
+            }}
+            type={'primary'}
+          >
             代核验订单({confirmListOrder.length})
           </Button>
         </Space>
@@ -545,7 +573,6 @@ function SearchTable() {
         />
       </Modal>
 
-
       <Modal
         title="待核验订单"
         visible={questionVisible}
@@ -553,14 +580,19 @@ function SearchTable() {
         hideCancel
         autoFocus={false}
         focusLock={true}
-        footer={<>
-          <Button onClick={()=>confirmQuestion(-1)} type={"default"}>拒绝通过</Button>
-          <Button onClick={()=>confirmQuestion(1)} type={"primary"}>审核通过</Button>
-        </>}
+        footer={
+          <>
+            <Button onClick={() => confirmQuestion(-1)} type={'default'}>
+              拒绝通过
+            </Button>
+            <Button onClick={() => confirmQuestion(1)} type={'primary'}>
+              审核通过
+            </Button>
+          </>
+        }
       >
         <p>是否已确认订单详情</p>
       </Modal>
-
     </Card>
   );
 }
@@ -613,6 +645,5 @@ const mateHistoryColumns: TableColumnProps[] = [
     dataIndex: 'matchTime',
   },
 ];
-
 
 export default SearchTable;

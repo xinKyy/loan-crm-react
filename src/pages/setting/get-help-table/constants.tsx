@@ -54,7 +54,7 @@ export function getColumns(
         return (
           <a
             target="_blank"
-            href={`https://testnet.bscscan.com/tx/${_}`}
+            href={`https://arbiscan.io/tx/${_}`}
             rel="noreferrer"
           >
             {splitWalletAddress(_)}

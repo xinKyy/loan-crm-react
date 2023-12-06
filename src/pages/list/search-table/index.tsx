@@ -127,7 +127,7 @@ function SearchTable() {
           value: (
             <a
               target="_blank"
-              href={`https://testnet.bscscan.com/tx/${record?.transferHash}`}
+              href={`https://arbiscan.io/tx/${record?.transferHash}`}
               rel="noreferrer"
             >
               {splitWalletAddress(record?.transferHash)}
@@ -312,7 +312,7 @@ function SearchTable() {
                       <span>收款地址：</span>
                       <a
                         target="_blank"
-                        href={`https://testnet.bscscan.com/tx/${record.walletAddress}`}
+                        href={`https://arbiscan.io/address/${record.walletAddress}`}
                         rel="noreferrer"
                       >
                         {splitWalletAddress(record.walletAddress)}
@@ -328,7 +328,7 @@ function SearchTable() {
                       <span>付款地址：</span>
                       <a
                         target="_blank"
-                        href={`https://testnet.bscscan.com/tx/${record.transferAddress}`}
+                        href={`https://arbiscan.io/tx/${record.transferAddress}`}
                         rel="noreferrer"
                       >
                         {splitWalletAddress(record.transferAddress)}
