@@ -1,6 +1,21 @@
 .container {
   padding: 20px;
 
+  .card_wrapper {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  :global {
+    .card-custom-hover-style {
+      transition-property: all;
+    }
+
+    .card-custom-hover-style:hover {
+      transform: translateY(-4px);
+    }
+  }
+
   :global(.arco-divider-horizontal) {
     border-bottom: 1px solid var(--color-border-1);
   }

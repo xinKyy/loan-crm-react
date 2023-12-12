@@ -27,7 +27,7 @@ axiosInstance.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers = {
-        token:token,
+        token: token,
       };
     }
 
@@ -55,15 +55,15 @@ axiosInstance.interceptors.response.use(
       return resp;
     }
 
-    if (resp.resultCode === 10001) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userStatus');
-      window.location.href = '/login';
-      Message.info('登录过期');
-      return;
-    } else {
-      Message.error(resp.resultMessage);
-    }
+    // if (resp.resultCode === 10001) {
+    //   localStorage.removeItem('token');
+    //   localStorage.removeItem('userStatus');
+    //   window.location.href = '/login';
+    //   Message.info('登录过期');
+    //   return;
+    // } else {
+    //   Message.error(resp.resultMessage);
+    // }
 
     return response;
   },

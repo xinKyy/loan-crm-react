@@ -17,8 +17,8 @@ import styles from './style/index.module.less';
 import { APIDoLogin } from '@/api/api';
 import { router } from 'next/client';
 import { useRouter } from 'next/router';
-import cookies from "next-cookies";
-import {setCookie} from "@/utils/dateUtil";
+import cookies from 'next-cookies';
+import { setCookie } from '@/utils/dateUtil';
 
 export default function LoginForm() {
   const formRef = useRef<FormInstance>();
@@ -38,26 +38,34 @@ export default function LoginForm() {
     // 记录登录状态
     localStorage.setItem('userStatus', 'login');
     localStorage.setItem('token', params.result);
-    setCookie("satoken", params.result, 7);
+    setCookie('satoken', params.result, 7);
     // 跳转首页
     window.location.href = '/';
   }
   function onSubmitClick() {
     formRef.current.validate().then((values) => {
-      login(values);
+      // login(values);
+      // 记录登录状态
+      localStorage.setItem('userStatus', 'login');
+      localStorage.setItem('token', 'aaa');
+      setCookie('satoken', 'aaa', 7);
+      // 跳转首页
+      window.location.href = '/';
     });
   }
 
   const login = (params) => {
     setLoading(true);
-    APIDoLogin(params).then((resp:any) => {
-      if(resp.result){
-        afterLoginSuccess(resp);
-        localStorage.setItem("adminUserName", params.userName)
-      }
-    }).finally(()=>{
-      setLoading(false);
-    });
+    APIDoLogin(params)
+      .then((resp: any) => {
+        if (resp.result) {
+          afterLoginSuccess(resp);
+          localStorage.setItem('adminUserName', params.userName);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   // 读取 localStorage，设置初始值
@@ -72,41 +80,40 @@ export default function LoginForm() {
 
   return (
     <div className={styles['login-form-wrapper']}>
-      <div className={styles['login-form-title']}>登录LCC Admin</div>
+      <div className={styles['login-form-title']}>登录AI Space Admin</div>
       <div className={styles['login-form-error-msg']}>{errorMessage}</div>
-      <Form
-        className={styles['login-form']}
-        layout="vertical"
-        ref={formRef}
-      >
+      <Form className={styles['login-form']} layout="vertical" ref={formRef}>
         <Form.Item
           field="userName"
-          rules={[{ required: true, message: "用户名不能为空" }]}
+          rules={[{ required: true, message: '用户名不能为空' }]}
         >
           <Input
             prefix={<IconUser />}
-            placeholder={"请输入用户名"}
+            placeholder={'请输入用户名'}
             onPressEnter={onSubmitClick}
           />
         </Form.Item>
         <Form.Item
           field="password"
-          rules={[{ required: true, message: "密码不能为空" }]}
+          rules={[{ required: true, message: '密码不能为空' }]}
         >
           <Input.Password
             prefix={<IconLock />}
-            placeholder={"请输入密码"}
+            placeholder={'请输入密码'}
             onPressEnter={onSubmitClick}
           />
         </Form.Item>
         <Space size={16} direction="vertical">
           <div className={styles['login-form-password-actions']}>
-            <Checkbox checked={rememberPassword} onChange={()=>setRememberPassword(!rememberPassword)}>
+            <Checkbox
+              checked={rememberPassword}
+              onChange={() => setRememberPassword(!rememberPassword)}
+            >
               记住密码
             </Checkbox>
           </div>
           <Button type="primary" long onClick={onSubmitClick} loading={loading}>
-           登录
+            登录
           </Button>
         </Space>
       </Form>
