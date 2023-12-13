@@ -52,7 +52,7 @@ export const routes: IRoute[] = [
     ],
   },
   {
-    name: '分销',
+    name: '钱包配置',
     key: 'distribution',
     children: [
       {

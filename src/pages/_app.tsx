@@ -110,7 +110,7 @@ export default function MyApp({
           type="image/x-icon"
           href="https://unpkg.byted-static.com/latest/byted/arco-config/assets/favicon.ico"
         />
-        <title>Lcc Admin</title>
+        <title>AI Space Admin</title>
       </Head>
       <ConfigProvider
         locale={locale}
