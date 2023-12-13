@@ -42,7 +42,7 @@ function getIconFromKey(key) {
       return <IconSettings className={styles.icon} />;
     case 'profile':
       return <IconFile className={styles.icon} />;
-    case 'distribution':
+    case 'distribution/configuration':
       return <IconApps className={styles.icon} />;
     case 'post':
       return <IconCheckCircle className={styles.icon} />;
