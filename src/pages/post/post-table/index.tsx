@@ -146,12 +146,12 @@ function SearchTable() {
         <Input placeholder={'请输入名称'}></Input>
         <div style={{ width: 20 }}></div>
         <Space>
-          <Button type={'primary'}>搜索</Button>
+          {/*<Button type={'primary'}>搜索</Button>*/}
           <Button
             type={'primary'}
             onClick={() => router.push('/post/create-post')}
           >
-            添加文章
+            添加公告
           </Button>
         </Space>
       </div>

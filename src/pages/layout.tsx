@@ -36,7 +36,7 @@ function getIconFromKey(key) {
   switch (key) {
     case 'dashboard/workplace':
       return <IconDashboard className={styles.icon} />;
-    case 'list':
+    case 'list/amountManagement':
       return <IconList className={styles.icon} />;
     case 'setting':
       return <IconSettings className={styles.icon} />;
@@ -44,7 +44,7 @@ function getIconFromKey(key) {
       return <IconFile className={styles.icon} />;
     case 'distribution/configuration':
       return <IconApps className={styles.icon} />;
-    case 'post':
+    case 'ai-table/ai-invest-list':
       return <IconCheckCircle className={styles.icon} />;
     case 'exception':
       return <IconExclamationCircle className={styles.icon} />;

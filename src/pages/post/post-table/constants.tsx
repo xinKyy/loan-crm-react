@@ -44,27 +44,16 @@ export function getColumns(
       render: (value) => <Text copyable>{value}</Text>,
     },
     {
-      title: '文章图片',
+      title: '语言',
       dataIndex: 'image',
-      render: (value) => <Image width={100} height={100} src={value}></Image>,
     },
     {
-      title: '文章标题',
+      title: '公告标题',
       dataIndex: 'noticeTitle',
     },
     {
-      title: '时间',
+      title: '创建时间',
       dataIndex: 'createTime',
-    },
-    {
-      title: '推送',
-      dataIndex: 'status',
-      render: (x, record) => (
-        <Switch
-          onClick={(e) => callback(record, 'change', e)}
-          checked={x === 1}
-        />
-      ),
     },
     {
       title: '操作',

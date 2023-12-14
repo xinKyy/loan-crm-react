@@ -13,14 +13,18 @@ import {
 import { myUploadFn } from '@/utils/uploadFn';
 import { APICreatePost, APIGetPostDetail } from '@/api/api';
 import { useRouter } from 'next/router';
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
 const { Row, Col } = Grid;
 const RadioGroup = Radio.Group;
 const { useForm } = Form;
-let BraftEditor:any = dynamic(() => import('braft-editor').then((module: any) => {
-  BraftEditor = module.default // 这里进行对BraftEditor 进行覆盖
-  return module.default
-}), { ssr: false })
+let BraftEditor: any = dynamic(
+  () =>
+    import('braft-editor').then((module: any) => {
+      BraftEditor = module.default; // 这里进行对BraftEditor 进行覆盖
+      return module.default;
+    }),
+  { ssr: false }
+);
 const Editor = () => {
   const [editorState, setEditorState]: any = useState();
   const [loading, setLoading] = useState(false);
@@ -79,7 +83,7 @@ const Editor = () => {
               setEditorState(
                 BraftEditor.createEditorState(resp.result.noticeBody)
               );
-            }, 500)
+            }, 500);
             form.setFieldsValue({
               title: resp.result.noticeTitle,
               status: resp.result.status.toString(),
@@ -92,8 +96,8 @@ const Editor = () => {
         });
     } else {
       setTimeout(() => {
-        setEditorState(BraftEditor.createEditorState(null))
-      }, 500)
+        setEditorState(BraftEditor.createEditorState(null));
+      }, 500);
     }
   };
 
@@ -123,14 +127,11 @@ const Editor = () => {
             </Col>
             <Col span={24}>
               <div style={{ height: 20 }}></div>
-              <Form.Item
-                initialValue={'1'}
-                label={'是否推送：'}
-                field={'status'}
-              >
+              <Form.Item initialValue={'1'} label={'语言：'} field={'status'}>
                 <RadioGroup defaultValue="1">
-                  <Radio value="1">立即推送</Radio>
-                  <Radio value="0">暂不推送</Radio>
+                  <Radio value="1">英语</Radio>
+                  <Radio value="2">中文简体</Radio>
+                  <Radio value="3">中文繁体</Radio>
                 </RadioGroup>
               </Form.Item>
             </Col>

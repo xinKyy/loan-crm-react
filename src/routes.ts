@@ -35,44 +35,57 @@ export const routes: IRoute[] = [
   },
   {
     name: '订单列表',
-    key: 'list',
-    children: [
-      {
-        name: '帮助订单',
-        key: 'list/help-table',
-      },
-      {
-        name: '基金订单',
-        key: 'list/search-table',
-      },
-      // {
-      //   name: 'menu.list.cardList',
-      //   key: 'list/card',
-      // },
-    ],
+    key: 'list/amountManagement',
+    // children: [
+    //   {
+    //     name: '资金管理',
+    //     key: 'list/amountManagement',
+    //   },
+    //   {
+    //     name: '帮助订单',
+    //     key: 'list/help-table',
+    //   },
+    //   {
+    //     name: '基金订单',
+    //     key: 'list/search-table',
+    //   },
+    //   // {
+    //   //   name: 'menu.list.cardList',
+    //   //   key: 'list/card',
+    //   // },
+    // ],
   },
   {
     name: '钱包配置',
     key: 'distribution/configuration',
   },
   {
-    name: '文章',
-    key: 'post',
-    children: [
-      {
-        name: '文章管理',
-        key: 'post/post-table',
-      },
-      {
-        name: '发布文章',
-        key: 'post/create-post',
-      },
-    ],
+    name: 'AI投资记录',
+    // key: 'post',
+    key: 'ai-table/ai-invest-list',
+    // children: [
+    //   {
+    //     name: '文章管理',
+    //     key: 'post/post-table',
+    //   },
+    //   {
+    //     name: '发布文章',
+    //     key: 'post/create-post',
+    //   },
+    // ],
   },
   {
     name: '设置',
     key: 'setting',
     children: [
+      {
+        name: '公告',
+        key: 'post/post-table',
+      },
+      {
+        name: '添加公告',
+        key: 'post/create-post',
+      },
       {
         name: '系统设置',
         key: 'setting/system-setting',
