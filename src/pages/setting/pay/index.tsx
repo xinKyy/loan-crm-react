@@ -2,9 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Button,
   Card,
+  Form,
   Input,
   InputNumber,
   Message,
+  Space,
   Spin,
   Switch,
   Tabs,
@@ -18,6 +20,7 @@ import {
   APIPosFundsAddress,
   APISearchFundsAddress,
 } from '@/api/api';
+import TimerPriceTableComponents from '@/pages/setting/pay/timerPriceTableComponents';
 const TabPane = Tabs.TabPane;
 function Configuration() {
   const [configAddress, setConfigAddress] = useState(null);
@@ -172,293 +175,237 @@ function Configuration() {
 
   return (
     <Card style={{ height: '75vh' }}>
-      <Spin loading={loading}>
+      <Spin style={{ width: '100%' }} loading={loading}>
         <Tabs defaultActiveTab="1">
-          <TabPane key="1" title="差额账户配置">
-            <div style={{ height: 20 }}></div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div>当前差额补足账户钱包地址：</div>
-              <div style={{ width: '20px' }}></div>
-              <div>{currentConfigAddress ?? '未设置'}</div>
-            </div>
-            <div style={{ height: 20 }}></div>
-            <div
-              style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-            >
-              <div style={{ width: '100px', textAlign: 'end' }}>
-                <span style={{ color: 'red' }}>*</span>钱包余额
-              </div>
-              <div style={{ flex: '1', marginLeft: '30px' }}>
-                <Input disabled placeholder={'--'}></Input>
-              </div>
-            </div>
-
-            {/*<div style={{ height: 20 }}></div>*/}
-            {/*<div*/}
-            {/*  style={{ display: 'flex', width: '400px', alignItems: 'center' }}*/}
-            {/*>*/}
-            {/*  <div style={{ width: '100px', textAlign: 'end' }}>*/}
-            {/*    <span style={{ color: 'red' }}>*</span>钱包私钥*/}
-            {/*  </div>*/}
-            {/*  <div style={{ flex: '1', marginLeft: '30px' }}>*/}
-            {/*    <Input  placeholder={"请输入钱包私钥"}></Input>*/}
-            {/*    <div style={{ fontSize: 12, zoom: '0.8' }}>*/}
-            {/*      用于后台操作匹配提供帮助订单时，匹配的差额补足账户的私钥*/}
-            {/*    </div>*/}
-            {/*  </div>*/}
-            {/*</div>*/}
-
-            <div style={{ height: 20 }}></div>
-            <div
-              style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-            >
-              <div style={{ width: '100px', textAlign: 'end' }}>
-                <span style={{ color: 'red' }}>*</span>钱包地址
-              </div>
-              <div style={{ flex: '1', marginLeft: '30px' }}>
-                <Input
-                  value={configAddress}
-                  onChange={(v) => setConfigAddress(v)}
-                  placeholder={'请输入钱包地址'}
-                ></Input>
-                <div style={{ fontSize: 12, zoom: '0.8' }}>
-                  用于后台操作匹配提供帮助订单时，匹配的差额补足账户的钱包地址
-                </div>
-              </div>
-            </div>
-
-            <div style={{ height: 20 }}></div>
-            <div
-              style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-            >
-              <div style={{ width: '100px', textAlign: 'end' }}>
-                <span style={{ color: 'red' }}>*</span>差额补足启用
-              </div>
-              <div style={{ flex: '1', marginLeft: '30px' }}>
-                <Switch checked={true} />
-                <div style={{ fontSize: 12, zoom: '0.8' }}>
-                  差额补足功能是否开启。开启时会显示配置账户，关闭时不会显示配置账户
-                </div>
-              </div>
-            </div>
-
-            <div style={{ height: 50 }}></div>
-            <Button
-              type={'primary'}
-              onClick={() => submitAddress()}
-              style={{ width: 200, marginLeft: 50 }}
-            >
-              提交
-            </Button>
+          <TabPane key="1" title="币价配置">
+            <Form>
+              <Form.Item
+                style={{ width: '700px' }}
+                required
+                extra={'用于前端AIS币价展示'}
+                label={'AIS币价配置'}
+              >
+                <Input placeholder={'请输入价格'}></Input>
+              </Form.Item>
+            </Form>
+            <Space style={{ paddingLeft: '200px', paddingTop: '50px' }}>
+              <Button>重置</Button>
+              <Button type={'primary'}>提交</Button>
+            </Space>
           </TabPane>
-          <TabPane key="2" title="探索基金配置">
-            <div style={{ height: 20 }}></div>
-            <div
-              style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-            >
-              <div style={{ width: '130px', textAlign: 'end' }}>
-                <span style={{ color: 'red' }}>*</span>钱管理员地址
-              </div>
-              <div style={{ flex: '1', marginLeft: '30px' }}>
-                <Input
-                  value={seaAddress.adminAddress}
-                  onChange={(v) =>
-                    setSeaAddress({ ...seaAddress, adminAddress: v })
-                  }
-                  placeholder={'请输入钱管理员地址'}
-                ></Input>
-                <div style={{ fontSize: 12, zoom: '0.8' }}>
-                  控制探索基金地址的管理员地址
-                </div>
-              </div>
-            </div>
 
-            <div style={{ height: 20 }}></div>
-            <div
-              style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-            >
-              <div style={{ width: '130px', textAlign: 'end' }}>
-                <span style={{ color: 'red' }}>*</span>探索基金钱包地址
-              </div>
-              <div style={{ flex: '1', marginLeft: '30px' }}>
-                <Input
-                  value={seaAddress.address}
-                  onChange={(v) => setSeaAddress({ ...seaAddress, address: v })}
-                  placeholder={'请输入钱包地址'}
-                ></Input>
-                <div style={{ fontSize: 12, zoom: '0.8' }}>
-                  自动转入的探索基金地址的钱包私钥
-                </div>
-              </div>
-            </div>
-            <div style={{ height: 20 }}></div>
-            <div className={styles.row_flex}>
-              <div className={styles.left}>自动转入比例</div>
-              <div className={styles.right}>
-                <InputNumber
-                  disabled={true}
-                  mode="button"
-                  defaultValue={40}
-                  value={40}
-                  style={{ width: 160, margin: '10px 24px 10px 0' }}
-                />
-                <div className={styles.text}>
-                  订单支付成功后自动给探索基金地址转入的比例，例:0.5 =
-                  返订单金额的50%
-                </div>
-              </div>
-            </div>
-
-            <div style={{ height: 50 }}></div>
-            <Button
-              type={'primary'}
-              onClick={submitSearchFundsAddress}
-              style={{ width: 200, marginLeft: 50 }}
-            >
-              提交
-            </Button>
+          <TabPane key="2" title="定时调价">
+            <TimerPriceTableComponents></TimerPriceTableComponents>
           </TabPane>
-          <TabPane key="3" title="保本基金配置">
-            <div style={{ height: 20 }}></div>
-            <div
-              style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-            >
-              <div style={{ width: '130px', textAlign: 'end' }}>
-                <span style={{ color: 'red' }}>*</span>钱管理员地址
-              </div>
-              <div style={{ flex: '1', marginLeft: '30px' }}>
-                <Input
-                  value={grantFundsAddress.adminAddress}
-                  onChange={(v) =>
-                    setGrantFundsAddress({
-                      ...grantFundsAddress,
-                      adminAddress: v,
-                    })
-                  }
-                  placeholder={'请输入钱管理员地址'}
-                ></Input>
-                <div style={{ fontSize: 12, zoom: '0.8' }}>
-                  控制保本基金地址的管理员地址
-                </div>
-              </div>
-            </div>
 
-            <div style={{ height: 20 }}></div>
-            <div
-              style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-            >
-              <div style={{ width: '130px', textAlign: 'end' }}>
-                <span style={{ color: 'red' }}>*</span>保本基金钱包地址
-              </div>
-              <div style={{ flex: '1', marginLeft: '30px' }}>
-                <Input
-                  value={grantFundsAddress.address}
-                  onChange={(v) =>
-                    setGrantFundsAddress({ ...grantFundsAddress, address: v })
-                  }
-                  placeholder={'请输入钱包地址'}
-                ></Input>
-                <div style={{ fontSize: 12, zoom: '0.8' }}>
-                  自动转入的保本基金地址的钱包私钥
-                </div>
-              </div>
-            </div>
-            <div style={{ height: 20 }}></div>
-            <div className={styles.row_flex}>
-              <div className={styles.left}>自动转入比例</div>
-              <div className={styles.right}>
-                <InputNumber
-                  disabled={true}
-                  mode="button"
-                  defaultValue={40}
-                  value={40}
-                  style={{ width: 160, margin: '10px 24px 10px 0' }}
-                />
-                <div className={styles.text}>
-                  订单支付成功后自动给保本基金地址转入的比例，例:0.5 =
-                  返订单金额的50%
-                </div>
-              </div>
-            </div>
+          {/*<TabPane key="2" title="探索基金配置">*/}
+          {/*  <div style={{ height: 20 }}></div>*/}
+          {/*  <div*/}
+          {/*    style={{ display: 'flex', width: '400px', alignItems: 'center' }}*/}
+          {/*  >*/}
+          {/*    <div style={{ width: '130px', textAlign: 'end' }}>*/}
+          {/*      <span style={{ color: 'red' }}>*</span>钱管理员地址*/}
+          {/*    </div>*/}
+          {/*    <div style={{ flex: '1', marginLeft: '30px' }}>*/}
+          {/*      <Input*/}
+          {/*        value={seaAddress.adminAddress}*/}
+          {/*        onChange={(v) =>*/}
+          {/*          setSeaAddress({ ...seaAddress, adminAddress: v })*/}
+          {/*        }*/}
+          {/*        placeholder={'请输入钱管理员地址'}*/}
+          {/*      ></Input>*/}
+          {/*      <div style={{ fontSize: 12, zoom: '0.8' }}>*/}
+          {/*        控制探索基金地址的管理员地址*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
 
-            <div style={{ height: 50 }}></div>
-            <Button
-              type={'primary'}
-              onClick={submitGrantFundsAddress}
-              style={{ width: 200, marginLeft: 50 }}
-            >
-              提交
-            </Button>
-          </TabPane>
-          <TabPane key="4" title="共识基金配置">
-            <div style={{ height: 20 }}></div>
-            <div
-              style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-            >
-              <div style={{ width: '130px', textAlign: 'end' }}>
-                <span style={{ color: 'red' }}>*</span>钱管理员地址
-              </div>
-              <div style={{ flex: '1', marginLeft: '30px' }}>
-                <Input
-                  value={posFundsAddress.adminAddress}
-                  onChange={(v) =>
-                    setPosFundsAddress({ ...posFundsAddress, adminAddress: v })
-                  }
-                  placeholder={'请输入钱管理员地址'}
-                ></Input>
-                <div style={{ fontSize: 12, zoom: '0.8' }}>
-                  控制共识基金地址的管理员地址
-                </div>
-              </div>
-            </div>
+          {/*  <div style={{ height: 20 }}></div>*/}
+          {/*  <div*/}
+          {/*    style={{ display: 'flex', width: '400px', alignItems: 'center' }}*/}
+          {/*  >*/}
+          {/*    <div style={{ width: '130px', textAlign: 'end' }}>*/}
+          {/*      <span style={{ color: 'red' }}>*</span>探索基金钱包地址*/}
+          {/*    </div>*/}
+          {/*    <div style={{ flex: '1', marginLeft: '30px' }}>*/}
+          {/*      <Input*/}
+          {/*        value={seaAddress.address}*/}
+          {/*        onChange={(v) => setSeaAddress({ ...seaAddress, address: v })}*/}
+          {/*        placeholder={'请输入钱包地址'}*/}
+          {/*      ></Input>*/}
+          {/*      <div style={{ fontSize: 12, zoom: '0.8' }}>*/}
+          {/*        自动转入的探索基金地址的钱包私钥*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*  <div style={{ height: 20 }}></div>*/}
+          {/*  <div className={styles.row_flex}>*/}
+          {/*    <div className={styles.left}>自动转入比例</div>*/}
+          {/*    <div className={styles.right}>*/}
+          {/*      <InputNumber*/}
+          {/*        disabled={true}*/}
+          {/*        mode="button"*/}
+          {/*        defaultValue={40}*/}
+          {/*        value={40}*/}
+          {/*        style={{ width: 160, margin: '10px 24px 10px 0' }}*/}
+          {/*      />*/}
+          {/*      <div className={styles.text}>*/}
+          {/*        订单支付成功后自动给探索基金地址转入的比例，例:0.5 =*/}
+          {/*        返订单金额的50%*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
 
-            <div style={{ height: 20 }}></div>
-            <div
-              style={{ display: 'flex', width: '400px', alignItems: 'center' }}
-            >
-              <div style={{ width: '130px', textAlign: 'end' }}>
-                <span style={{ color: 'red' }}>*</span>共识基金钱包地址
-              </div>
-              <div style={{ flex: '1', marginLeft: '30px' }}>
-                <Input
-                  value={posFundsAddress.address}
-                  onChange={(v) =>
-                    setPosFundsAddress({ ...posFundsAddress, address: v })
-                  }
-                  placeholder={'请输入钱包地址'}
-                ></Input>
-                <div style={{ fontSize: 12, zoom: '0.8' }}>
-                  自动转入的共识基金地址的钱包地址
-                </div>
-              </div>
-            </div>
-            <div style={{ height: 20 }}></div>
-            <div className={styles.row_flex}>
-              <div className={styles.left}>自动转入比例</div>
-              <div className={styles.right}>
-                <InputNumber
-                  disabled={true}
-                  mode="button"
-                  defaultValue={20}
-                  value={20}
-                  style={{ width: 160, margin: '10px 24px 10px 0' }}
-                />
-                <div className={styles.text}>
-                  订单支付成功后自动给共识基金地址转入的比例，例:0.5 =
-                  返订单金额的50%
-                </div>
-              </div>
-            </div>
+          {/*  <div style={{ height: 50 }}></div>*/}
+          {/*  <Button*/}
+          {/*    type={'primary'}*/}
+          {/*    onClick={submitSearchFundsAddress}*/}
+          {/*    style={{ width: 200, marginLeft: 50 }}*/}
+          {/*  >*/}
+          {/*    提交*/}
+          {/*  </Button>*/}
+          {/*</TabPane>*/}
+          {/*<TabPane key="3" title="保本基金配置">*/}
+          {/*  <div style={{ height: 20 }}></div>*/}
+          {/*  <div*/}
+          {/*    style={{ display: 'flex', width: '400px', alignItems: 'center' }}*/}
+          {/*  >*/}
+          {/*    <div style={{ width: '130px', textAlign: 'end' }}>*/}
+          {/*      <span style={{ color: 'red' }}>*</span>钱管理员地址*/}
+          {/*    </div>*/}
+          {/*    <div style={{ flex: '1', marginLeft: '30px' }}>*/}
+          {/*      <Input*/}
+          {/*        value={grantFundsAddress.adminAddress}*/}
+          {/*        onChange={(v) =>*/}
+          {/*          setGrantFundsAddress({*/}
+          {/*            ...grantFundsAddress,*/}
+          {/*            adminAddress: v,*/}
+          {/*          })*/}
+          {/*        }*/}
+          {/*        placeholder={'请输入钱管理员地址'}*/}
+          {/*      ></Input>*/}
+          {/*      <div style={{ fontSize: 12, zoom: '0.8' }}>*/}
+          {/*        控制保本基金地址的管理员地址*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
 
-            <div style={{ height: 50 }}></div>
-            <Button
-              type={'primary'}
-              onClick={submitPosFundsAddress}
-              style={{ width: 200, marginLeft: 50 }}
-            >
-              提交
-            </Button>
-          </TabPane>
+          {/*  <div style={{ height: 20 }}></div>*/}
+          {/*  <div*/}
+          {/*    style={{ display: 'flex', width: '400px', alignItems: 'center' }}*/}
+          {/*  >*/}
+          {/*    <div style={{ width: '130px', textAlign: 'end' }}>*/}
+          {/*      <span style={{ color: 'red' }}>*</span>保本基金钱包地址*/}
+          {/*    </div>*/}
+          {/*    <div style={{ flex: '1', marginLeft: '30px' }}>*/}
+          {/*      <Input*/}
+          {/*        value={grantFundsAddress.address}*/}
+          {/*        onChange={(v) =>*/}
+          {/*          setGrantFundsAddress({ ...grantFundsAddress, address: v })*/}
+          {/*        }*/}
+          {/*        placeholder={'请输入钱包地址'}*/}
+          {/*      ></Input>*/}
+          {/*      <div style={{ fontSize: 12, zoom: '0.8' }}>*/}
+          {/*        自动转入的保本基金地址的钱包私钥*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*  <div style={{ height: 20 }}></div>*/}
+          {/*  <div className={styles.row_flex}>*/}
+          {/*    <div className={styles.left}>自动转入比例</div>*/}
+          {/*    <div className={styles.right}>*/}
+          {/*      <InputNumber*/}
+          {/*        disabled={true}*/}
+          {/*        mode="button"*/}
+          {/*        defaultValue={40}*/}
+          {/*        value={40}*/}
+          {/*        style={{ width: 160, margin: '10px 24px 10px 0' }}*/}
+          {/*      />*/}
+          {/*      <div className={styles.text}>*/}
+          {/*        订单支付成功后自动给保本基金地址转入的比例，例:0.5 =*/}
+          {/*        返订单金额的50%*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+
+          {/*  <div style={{ height: 50 }}></div>*/}
+          {/*  <Button*/}
+          {/*    type={'primary'}*/}
+          {/*    onClick={submitGrantFundsAddress}*/}
+          {/*    style={{ width: 200, marginLeft: 50 }}*/}
+          {/*  >*/}
+          {/*    提交*/}
+          {/*  </Button>*/}
+          {/*</TabPane>*/}
+          {/*<TabPane key="4" title="共识基金配置">*/}
+          {/*  <div style={{ height: 20 }}></div>*/}
+          {/*  <div*/}
+          {/*    style={{ display: 'flex', width: '400px', alignItems: 'center' }}*/}
+          {/*  >*/}
+          {/*    <div style={{ width: '130px', textAlign: 'end' }}>*/}
+          {/*      <span style={{ color: 'red' }}>*</span>钱管理员地址*/}
+          {/*    </div>*/}
+          {/*    <div style={{ flex: '1', marginLeft: '30px' }}>*/}
+          {/*      <Input*/}
+          {/*        value={posFundsAddress.adminAddress}*/}
+          {/*        onChange={(v) =>*/}
+          {/*          setPosFundsAddress({ ...posFundsAddress, adminAddress: v })*/}
+          {/*        }*/}
+          {/*        placeholder={'请输入钱管理员地址'}*/}
+          {/*      ></Input>*/}
+          {/*      <div style={{ fontSize: 12, zoom: '0.8' }}>*/}
+          {/*        控制共识基金地址的管理员地址*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+
+          {/*  <div style={{ height: 20 }}></div>*/}
+          {/*  <div*/}
+          {/*    style={{ display: 'flex', width: '400px', alignItems: 'center' }}*/}
+          {/*  >*/}
+          {/*    <div style={{ width: '130px', textAlign: 'end' }}>*/}
+          {/*      <span style={{ color: 'red' }}>*</span>共识基金钱包地址*/}
+          {/*    </div>*/}
+          {/*    <div style={{ flex: '1', marginLeft: '30px' }}>*/}
+          {/*      <Input*/}
+          {/*        value={posFundsAddress.address}*/}
+          {/*        onChange={(v) =>*/}
+          {/*          setPosFundsAddress({ ...posFundsAddress, address: v })*/}
+          {/*        }*/}
+          {/*        placeholder={'请输入钱包地址'}*/}
+          {/*      ></Input>*/}
+          {/*      <div style={{ fontSize: 12, zoom: '0.8' }}>*/}
+          {/*        自动转入的共识基金地址的钱包地址*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*  <div style={{ height: 20 }}></div>*/}
+          {/*  <div className={styles.row_flex}>*/}
+          {/*    <div className={styles.left}>自动转入比例</div>*/}
+          {/*    <div className={styles.right}>*/}
+          {/*      <InputNumber*/}
+          {/*        disabled={true}*/}
+          {/*        mode="button"*/}
+          {/*        defaultValue={20}*/}
+          {/*        value={20}*/}
+          {/*        style={{ width: 160, margin: '10px 24px 10px 0' }}*/}
+          {/*      />*/}
+          {/*      <div className={styles.text}>*/}
+          {/*        订单支付成功后自动给共识基金地址转入的比例，例:0.5 =*/}
+          {/*        返订单金额的50%*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+
+          {/*  <div style={{ height: 50 }}></div>*/}
+          {/*  <Button*/}
+          {/*    type={'primary'}*/}
+          {/*    onClick={submitPosFundsAddress}*/}
+          {/*    style={{ width: 200, marginLeft: 50 }}*/}
+          {/*  >*/}
+          {/*    提交*/}
+          {/*  </Button>*/}
+          {/*</TabPane>*/}
         </Tabs>
       </Spin>
     </Card>

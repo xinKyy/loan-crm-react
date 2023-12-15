@@ -8,7 +8,8 @@ import {
   InputNumber,
   Message,
   Modal,
-  Space, Statistic,
+  Space,
+  Statistic,
   Switch,
   Table,
   Tabs,
@@ -43,7 +44,7 @@ function Configuration() {
     {
       title: '跳转链接',
       dataIndex: 'jumpUrl',
-      render:(_) => <a href={`/post/create-post?id=${_}`}>{_}</a>
+      render: (_) => <a href={`/post/create-post?id=${_}`}>{_}</a>,
     },
     {
       title: '添加时间',
@@ -220,47 +221,6 @@ function Configuration() {
             data={data}
           />
         </TabPane>
-
-        <TabPane key="2" title="交易设置">
-          <div style={{ height: 20 }}></div>
-          <div className={styles.row_flex}>
-            <div className={styles.left}>订单自动关闭时间</div>
-            <div className={styles.right}>
-              <InputNumber
-                mode="button"
-                defaultValue={0}
-                style={{ width: 160, margin: '10px 24px 10px 0' }}
-              />
-              <div className={styles.text}>订单提交后待支付时长</div>
-            </div>
-          </div>
-          <div style={{ height: 20 }}></div>
-          <div className={styles.row_flex}>
-            <div className={styles.left}>系统匹配时间</div>
-            <div className={styles.right}>
-              <InputNumber
-                mode="button"
-                defaultValue={0}
-                style={{ width: 160, margin: '10px 24px 10px 0' }}
-              />
-              <div className={styles.text}>订单提交后待匹配时长</div>
-            </div>
-          </div>
-          <div style={{ height: 20 }}></div>
-          <div className={styles.row_flex}>
-            <div className={styles.left}>佣金冻结周期</div>
-            <div className={styles.right}>
-              <InputNumber
-                mode="button"
-                defaultValue={0}
-                style={{ width: 160, margin: '10px 24px 10px 0' }}
-              />
-              <div className={styles.text}>
-                冻结期从用户获得返佣时(确认收货后)开始计算，如设置5天，即确认收货5天后，佣金解冻可提现；如设置0天，则无冻结期
-              </div>
-            </div>
-          </div>
-        </TabPane>
       </Tabs>
 
       <Modal
@@ -330,9 +290,19 @@ function Configuration() {
             </Button>
           </Form.Item>
           <Form.Item label={'是否显示'} field={'status'}>
-            {
-              edit ?  <Switch onClick={()=>setCurrentRecord({...currentRecord, status:currentRecord.status === 1 ? 0 : 1})} checked={currentRecord.status === 1} ></Switch> :  <Switch ></Switch>
-            }
+            {edit ? (
+              <Switch
+                onClick={() =>
+                  setCurrentRecord({
+                    ...currentRecord,
+                    status: currentRecord.status === 1 ? 0 : 1,
+                  })
+                }
+                checked={currentRecord.status === 1}
+              ></Switch>
+            ) : (
+              <Switch></Switch>
+            )}
           </Form.Item>
         </Form>
       </Modal>

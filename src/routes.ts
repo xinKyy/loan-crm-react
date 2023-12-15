@@ -75,7 +75,11 @@ export const routes: IRoute[] = [
     // ],
   },
   {
-    name: '设置',
+    name: 'LP管理',
+    key: 'lp-managment',
+  },
+  {
+    name: '配置管理',
     key: 'setting',
     children: [
       {
@@ -87,19 +91,19 @@ export const routes: IRoute[] = [
         key: 'post/create-post',
       },
       {
-        name: '系统设置',
+        name: '轮播图',
         key: 'setting/system-setting',
       },
+      // {
+      //   name: '权限管理',
+      //   key: 'setting/auth-table',
+      // },
+      // {
+      //   name: '得到账户设置',
+      //   key: 'setting/get-help-table',
+      // },
       {
-        name: '权限管理',
-        key: 'setting/auth-table',
-      },
-      {
-        name: '得到账户设置',
-        key: 'setting/get-help-table',
-      },
-      {
-        name: '支付设置',
+        name: 'AIS币价配置',
         key: 'setting/pay',
       },
     ],

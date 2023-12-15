@@ -42,6 +42,8 @@ function getIconFromKey(key) {
       return <IconSettings className={styles.icon} />;
     case 'profile':
       return <IconFile className={styles.icon} />;
+    case 'lp-managment':
+      return <IconFile className={styles.icon} />;
     case 'distribution/configuration':
       return <IconApps className={styles.icon} />;
     case 'ai-table/ai-invest-list':
