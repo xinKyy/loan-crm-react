@@ -41,25 +41,16 @@ function Configuration() {
       dataIndex: 'image',
       render: (value) => <Image width={50} height={50} src={value}></Image>,
     },
-    {
-      title: '跳转链接',
-      dataIndex: 'jumpUrl',
-      render: (_) => <a href={`/post/create-post?id=${_}`}>{_}</a>,
-    },
-    {
-      title: '添加时间',
-      dataIndex: 'noticeTitle',
-    },
-    {
-      title: '是否显示',
-      dataIndex: 'status',
-      render: (v, record) => (
-        <Switch
-          onClick={() => changePostStatus(record)}
-          checked={v === 1}
-        ></Switch>
-      ),
-    },
+    // {
+    //   title: '是否显示',
+    //   dataIndex: 'status',
+    //   render: (v, record) => (
+    //     <Switch
+    //       onClick={() => changePostStatus(record)}
+    //       checked={v === 1}
+    //     ></Switch>
+    //   ),
+    // },
     {
       title: '操作',
       dataIndex: 'opt',
@@ -282,28 +273,28 @@ function Configuration() {
               )}
             </div>
           </Form.Item>
-          <Form.Item label={'跳转链接'} field={'jumpUrl'}>
-            <Button onClick={() => setPostModal(true)}>
-              {selectedRowKeys.length
-                ? `https://${selectedRowKeys[0]}`
-                : '选择跳转链接'}
-            </Button>
-          </Form.Item>
-          <Form.Item label={'是否显示'} field={'status'}>
-            {edit ? (
-              <Switch
-                onClick={() =>
-                  setCurrentRecord({
-                    ...currentRecord,
-                    status: currentRecord.status === 1 ? 0 : 1,
-                  })
-                }
-                checked={currentRecord.status === 1}
-              ></Switch>
-            ) : (
-              <Switch></Switch>
-            )}
-          </Form.Item>
+          {/*<Form.Item label={'跳转链接'} field={'jumpUrl'}>*/}
+          {/*  <Button onClick={() => setPostModal(true)}>*/}
+          {/*    {selectedRowKeys.length*/}
+          {/*      ? `https://${selectedRowKeys[0]}`*/}
+          {/*      : '选择跳转链接'}*/}
+          {/*  </Button>*/}
+          {/*</Form.Item>*/}
+          {/*<Form.Item label={'是否显示'} field={'status'}>*/}
+          {/*  {edit ? (*/}
+          {/*    <Switch*/}
+          {/*      onClick={() =>*/}
+          {/*        setCurrentRecord({*/}
+          {/*          ...currentRecord,*/}
+          {/*          status: currentRecord.status === 1 ? 0 : 1,*/}
+          {/*        })*/}
+          {/*      }*/}
+          {/*      checked={currentRecord.status === 1}*/}
+          {/*    ></Switch>*/}
+          {/*  ) : (*/}
+          {/*    <Switch></Switch>*/}
+          {/*  )}*/}
+          {/*</Form.Item>*/}
         </Form>
       </Modal>
 

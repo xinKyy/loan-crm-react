@@ -61,7 +61,7 @@ function SearchForm(props: {
         form={form}
         className={styles['search-form']}
         labelAlign="left"
-        labelCol={{ span: 5 }}
+        labelCol={{ span: 3 }}
         wrapperCol={{ span: 19 }}
       >
         <Row gutter={24}>
@@ -80,6 +80,25 @@ function SearchForm(props: {
               <Input allowClear placeholder={'请输入用户ID'} />
             </Form.Item>
           </Col>
+
+          <Col span={colSpan}>
+            <Form.Item label={'推荐人'} field="userId">
+              <Input allowClear placeholder={'请输入推荐人昵称'} />
+            </Form.Item>
+          </Col>
+
+          <Col span={colSpan}>
+            <Form.Item label={'接点人'} field="userId">
+              <Input allowClear placeholder={'请输入接点人昵称'} />
+            </Form.Item>
+          </Col>
+
+          <Col span={colSpan}>
+            <Form.Item label={'地址'} field="userId">
+              <Input allowClear placeholder={'请输入地址'} />
+            </Form.Item>
+          </Col>
+
         </Row>
       </Form>
       <div className={styles['right-button']}>

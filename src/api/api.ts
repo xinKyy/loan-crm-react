@@ -240,6 +240,19 @@ export const APIAddScheduled = (params) => {
 export const APIGetUsersList = (params) => {
   return axios.post(`/api/v1/adminUser/getUserLists`, params);
 };
+
 export const APIChangeUserStatus = (params) => {
   return axios.get(`/api/v1/adminUser/setStatus`, { params });
+};
+
+export const APIGetAISPriceConfigList = (params) => {
+  return axios.get(`/api/v1/aisConfig/getConfigList`, { params });
+};
+
+export const APIRemoveAisConfig = (params) => {
+  return axios.get(`/api/v1/aisConfig/removeConfig`, { params });
+};
+
+export const APIGetHomeData = (params) => {
+  return axios.get(`/api/v1/sysConfig/home`, { params });
 };

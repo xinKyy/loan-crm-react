@@ -7,7 +7,7 @@ import {
   Skeleton,
   Link,
   Statistic,
-  Space,
+  Space, Spin,
 } from '@arco-design/web-react';
 import { useSelector } from 'react-redux';
 import { IconCaretUp } from '@arco-design/web-react/icon';
@@ -21,7 +21,7 @@ import IconComments from './assets/comments.svg';
 import IconContent from './assets/content.svg';
 import IconIncrease from './assets/increase.svg';
 import { useRouter } from 'next/router';
-import { APIHome } from '@/api/api';
+import {APIGetHomeData, APIHome} from '@/api/api';
 import {
   Axis,
   Chart,
@@ -70,120 +70,74 @@ const overView = [
   {
     name: 'USDT充值总额',
     value: 0,
+    key:"totalChargeUsdt"
   },
   {
     name: 'AIS充值总额',
     value: 0,
+    key:"totalChargeAis"
   },
   {
     name: 'USDT提现成功总额',
     value: 0,
+    key:"totalWithDrawUsdt"
   },
   {
     name: 'AIS提现成功总额',
     value: 0,
+    key:"totalWithDrawAis"
   },
   {
     name: 'USDT可提现总余额',
     value: 0,
+    key:"totalWithDrawableUsdt"
   },
   {
     name: 'AIS可提现总余额',
     value: 0,
+    key:"totalWithDrawableAis"
   },
   {
     name: 'USDT不可提现总余额',
     value: 0,
+    key:"totalFreezeUsdt"
   },
   {
     name: 'AIS不可提现总余额',
     value: 0,
+    key:"totalFreezeAis"
   },
   {
     name: '待销毁AIS总数',
     value: 0,
+    key:"totalWaitBurnAis"
   },
   {
     name: '已销毁AIS总数',
     value: 0,
+    key:"totalBurnAis"
   },
 ];
 
 function Overview() {
-  const [data, setData] = useState<DataType>({});
+  const [overViewData, setOverViewData] = useState(overView);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const t = useLocale(locale);
 
-  const userInfo = useSelector((state: any) => state.userInfo || {});
-
-  const [homeData, setHomeData]: any = useState();
-  const [orderData, setOrderData]: any = useState([]);
-  const [obtainOrderData, setObtainOrderData]: any = useState([]);
-  const [obtainChartData, setObtainChartData] = useState([]);
-
-  const fetchData = () => {
-    setLoading(true);
-    axios
-      .get('/api/workplace/overview-content')
-      .then((res) => {
-        setData(res.data);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
 
   const getHome = () => {
     setLoading(true);
-    APIHome({})
+    APIGetHomeData({})
       .then((resp: any) => {
-        setHomeData(resp.result);
-        const data: DataType = {
-          chartData: [],
-        };
-        if (resp?.result?.offer) {
-          resp.result.offer.forEach((item) => {
-            data.chartData.push({
-              count: item.amount,
-              date: item.date,
-            });
-          });
-          setData(data);
+        if(resp.result){
+          const data = overView.map(item => {
+            return {
+              ...item,
+              value:resp.result[item.key]
+            }
+          })
+          setOverViewData(data);
         }
-
-        if (resp?.result?.obtain) {
-          const tempData = [];
-          resp.result.obtain.forEach((item) => {
-            tempData.push({
-              count: item.amount,
-              date: item.date,
-            });
-          });
-          setObtainChartData(tempData);
-        }
-
-        setOrderData([
-          {
-            type: '今日提供订单金额',
-            value: resp?.result?.toDayOffAmount,
-          },
-          {
-            type: '昨日提供订单金额',
-            value: resp?.result?.yesToDayOffAmount,
-          },
-        ]);
-
-        setObtainOrderData([
-          {
-            type: '今日得到订单金额',
-            value: resp?.result?.toDayObtainAmount,
-          },
-          {
-            type: '昨日得到订单金额',
-            value: resp?.result?.yesToDayObtainAmount,
-          },
-        ]);
       })
       .finally(() => {
         setLoading(false);
@@ -196,23 +150,25 @@ function Overview() {
   }, []);
 
   return (
-    <div className={'container'}>
-      <Space wrap>
-        {overView.map((item, index) => {
-          return (
-            <Card
-              key={index}
-              style={{ width: 300 }}
-              title={item.name}
-              extra={'今日数据'}
-              hoverable
-            >
-              <Statistic value={item.value} groupSeparator precision={2} />
-            </Card>
-          );
-        })}
-      </Space>
-    </div>
+    <Spin loading={loading}>
+      <div className={'container'}>
+        <Space wrap>
+          {overViewData.map((item, index) => {
+            return (
+              <Card
+                key={index}
+                style={{ width: 300 }}
+                title={item.name}
+                extra={'今日数据'}
+                hoverable
+              >
+                <Statistic value={item.value} groupSeparator precision={2} />
+              </Card>
+            );
+          })}
+        </Space>
+      </div>
+    </Spin>
   );
 }
 

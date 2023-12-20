@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Form,
   Input,
@@ -21,7 +21,7 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
-import { APIAddScheduled } from '@/api/api';
+import {APIAddScheduled, APIGetAISPriceConfigList, APIRemoveAisConfig} from '@/api/api';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -146,20 +146,39 @@ const columns = (callback) => {
     },
     {
       title: '标题',
-      dataIndex: 'userName',
+      dataIndex: 'scheduledName',
     },
     {
       title: '币价',
-      dataIndex: 'orderType',
+      dataIndex: 'price',
+    },
+    {
+      title: '开始时间',
+      dataIndex: 'startTime',
+      render:(_, record)=><div>{new Date(_).toLocaleString()}</div>
+    },
+    {
+      title: '结束时间',
+      dataIndex: 'endTime',
+      render:(_, record)=><div>{new Date(_).toLocaleString()}</div>
     },
     {
       title: '状态',
-      dataIndex: 'orderType',
+      dataIndex: 'status',
+      render:(_, record) => <div>{_ === 0 ? "未开始" : "已开始执行"}</div>
     },
     {
       title: '创建时间',
-      dataIndex: 'orderType',
+      dataIndex: 'createTime',
+      render:(_, record)=><div>{new Date(_).toLocaleString()}</div>
     },
+    {
+      title: "操作",
+      dataIndex: "createTime",
+      render:(_, record)=>{
+        return <Button type={"primary"} onClick={()=>callback(record)}>删除</Button>
+      }
+    }
   ];
 };
 
@@ -177,13 +196,16 @@ const TimerPriceTableComponents = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const [currentRecord, setCurrentRecord]: any = useState();
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
     setFormParams(params);
   }
 
-  const callBack = () => {
-    console.log('callBack');
+  const callBack = (record) => {
+    setCurrentRecord(record);
+    setDeleteVisible(true);
   };
 
   function onChangeTable({ current, pageSize }) {
@@ -192,6 +214,33 @@ const TimerPriceTableComponents = () => {
       current,
       pageSize,
     });
+  }
+
+  const getAisPriceTable = () =>{
+    APIGetAISPriceConfigList({
+
+    }).then((resp:any) =>{
+      if(resp.result){
+        setData(resp.result)
+      }
+    })
+  }
+
+  useEffect(()=>{
+    getAisPriceTable();
+  }, [])
+
+  const changePostStatus = (record) =>{
+    setLoading(true);
+    setDeleteVisible(false);
+    APIRemoveAisConfig({id:record.id}).then((resp:any)=>{
+      if(resp.result){
+        Message.success("删除成功");
+      }
+    }).finally(()=>{
+      setLoading(false);
+      getAisPriceTable();
+    })
   }
 
   return (
@@ -230,6 +279,7 @@ const TimerPriceTableComponents = () => {
             .then((resp: any) => {
               if (resp.result) {
                 Message.success('增加成功！');
+                getAisPriceTable();
               }
             })
             .finally(() => {
@@ -280,6 +330,24 @@ const TimerPriceTableComponents = () => {
           <div style={{ height: 20 }} />
         </Form>
       </Modal>
+
+      <Modal
+        title={'提示'}
+        visible={deleteVisible}
+        wrapClassName={styles.table_modal_wrap}
+        onOk={() => changePostStatus(currentRecord)}
+        onCancel={() => setDeleteVisible(false)}
+        okText={'确定'}
+        autoFocus={false}
+        focusLock={true}
+      >
+        <div style={{ height: 20 }} />
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className={styles.warning}></div>确认删除【
+          {currentRecord?.scheduledName}】吗？
+        </div>
+      </Modal>
+
     </div>
   );
 };

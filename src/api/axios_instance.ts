@@ -51,8 +51,11 @@ axiosInstance.interceptors.response.use(
     }
 
     if (resp.resultCode === 500) {
-      Message.error('服务器异常！');
-      Message.error(resp.resultMessage);
+      if(resp.resultMessage){
+        Message.error(resp.resultMessage);
+      } else  {
+        Message.error('网络异常！');
+      }
       return resp;
     }
 

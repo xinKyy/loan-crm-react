@@ -165,8 +165,8 @@ function Configuration() {
   }, []);
 
   return (
-    <Spin loading={loading}>
-      <Card>
+    <Spin style={{width:"100%"}}  loading={loading}>
+      <Card style={{width:"100%"}}>
         <Tabs defaultActiveTab="1">
           <TabPane key="1" title="提现配置">
             <Form
