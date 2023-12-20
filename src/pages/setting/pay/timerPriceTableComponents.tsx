@@ -12,6 +12,8 @@ import {
   Menu,
   PaginationProps,
   Table,
+  Modal,
+  Message,
 } from '@arco-design/web-react';
 import { GlobalContext } from '@/context';
 import useLocale from '@/utils/useLocale';
@@ -19,6 +21,7 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
+import { APIAddScheduled } from '@/api/api';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -170,8 +173,10 @@ const TimerPriceTableComponents = () => {
     pageSizeChangeResetCurrent: true,
   });
   const [formParams, setFormParams] = useState({});
+  const [addForm] = useForm();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [addVisible, setAddVisible] = useState(false);
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
     setFormParams(params);
@@ -193,7 +198,9 @@ const TimerPriceTableComponents = () => {
     <div>
       {/*<SearchForm onSearch={handleSearch}></SearchForm>*/}
       <div style={{ height: '10px' }}></div>
-      <Button type={'primary'}>添加定时</Button>
+      <Button type={'primary'} onClick={() => setAddVisible(true)}>
+        添加定时
+      </Button>
       <div style={{ height: '30px' }}></div>
       <Table
         rowKey="id"
@@ -203,6 +210,76 @@ const TimerPriceTableComponents = () => {
         columns={columns(callBack)}
         data={data}
       />
+
+      <Modal
+        title={'添加定时币价'}
+        visible={addVisible}
+        wrapClassName={styles.table_modal_wrap}
+        onOk={() => {
+          setLoading(true);
+          setAddVisible(false);
+          APIAddScheduled(
+            JSON.stringify({
+              ...addForm.getFieldsValue(),
+              time:
+                addForm.getFieldValue('time')[0] +
+                '|' +
+                addForm.getFieldValue('time')[1],
+            })
+          )
+            .then((resp: any) => {
+              if (resp.result) {
+                Message.success('增加成功！');
+              }
+            })
+            .finally(() => {
+              setLoading(false);
+              addForm.resetFields();
+            });
+        }}
+        onCancel={() => setAddVisible(false)}
+        okText={'提交'}
+        hideCancel={true}
+        autoFocus={false}
+        focusLock={true}
+      >
+        <Form form={addForm}>
+          <div style={{ height: 20 }} />
+          <Form.Item
+            rules={[{ required: true }]}
+            required
+            label={'定时标题'}
+            field={'title'}
+          >
+            <Input placeholder="请输入定时标题" />
+          </Form.Item>
+          <div style={{ height: 20 }} />
+          <Form.Item
+            rules={[{ required: true }]}
+            required
+            label={'币价'}
+            field={'price'}
+          >
+            <Input type={'number'} placeholder="请输入币价" />
+          </Form.Item>
+          <div style={{ height: 20 }} />
+          <Form.Item
+            required
+            rules={[{ required: true }]}
+            label={'执行时间'}
+            field={'time'}
+          >
+            <DatePicker.RangePicker
+              showTime={{
+                defaultValue: ['00:00', '00:00'],
+                format: 'HH:mm',
+              }}
+              format="YYYY-MM-DD HH:mm"
+            ></DatePicker.RangePicker>
+          </Form.Item>
+          <div style={{ height: 20 }} />
+        </Form>
+      </Modal>
     </div>
   );
 };

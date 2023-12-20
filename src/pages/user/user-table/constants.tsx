@@ -41,83 +41,53 @@ export function getColumns(
   return [
     {
       title: 'ID',
-      dataIndex: 'Id',
+      dataIndex: 'id',
       render: (value) => <Text copyable>{value}</Text>,
     },
     {
-      title: '头像',
-      dataIndex: 'Avatar',
-      render: (value) => <Image width={50} height={50} src={value}></Image>,
+      title: '用户昵称',
+      dataIndex: 'account',
     },
     {
-      title: '昵称',
-      dataIndex: 'UserName',
+      title: '邮箱号',
+      dataIndex: 'email',
     },
     {
-      title: '有效会员',
+      title: '收款地址',
       dataIndex: 'IsMember',
     },
     {
-      title: '会员等级',
-      dataIndex: 'MemberLevel',
-      render: (value) => FilterType[value],
+      title: '账户可提现',
+      dataIndex: 'withdrawableUsdt',
     },
     {
-      title: '推荐人',
-      dataIndex: 'ParentId',
+      title: '账户不可提现',
+      dataIndex: 'frezzUsdt',
     },
     {
-      title: 'USDT余额',
+      title: '总业绩USDT',
       dataIndex: 'Usdtbalance',
-      render: (v) => <div>{v.split('.')[0]}</div>,
+      // render: (v) => <div>{v.split('.')[0]}</div>,
     },
     {
-      title: '当前可用CC',
-      dataIndex: 'Ccbalance',
-      render: (v) => <div>{v.split('.')[0]}</div>,
+      title: '可对碰折合A',
+      dataIndex: 'crushSurplusA',
+      // render: (v) => <div>{v.split('.')[0]}</div>,
     },
     {
-      title: '操作',
-      dataIndex: 'operations',
-      headerCellStyle: { paddingLeft: '40px' },
-      render: (_, record) => {
-        const dropList = (
-          <Menu>
-            <Menu.Item
-              onClick={(e) => onItemClick(record, 'deposit', e)}
-              key="1"
-            >
-              充值CC基金
-            </Menu.Item>
-            <Menu.Item
-              onClick={(e) => onItemClick(record, 'editPassword', e)}
-              key="2"
-            >
-              修改登录密码
-            </Menu.Item>
-          </Menu>
-        );
-        return (
-          <Space>
-            <Button
-              type="text"
-              size="small"
-              onClick={(e) => callback(record, 'edit', e)}
-            >
-              编辑
-            </Button>
-            <Dropdown droplist={dropList} position="bl">
-              <Button
-                type="text"
-                size="small"
-                onClick={(e) => e.stopPropagation()}
-              >
-                更多 <IconDown />
-              </Button>
-            </Dropdown>
-          </Space>
-        );
-      },
+      title: '可对碰折合B',
+      dataIndex: 'crushSurplusB',
+      // render: (v) => <div>{v.split('.')[0]}</div>,
+    },
+    {
+      title: '是否绑定区域',
+      dataIndex: 'partitions',
+      // render: (v) => <div>{v.split('.')[0]}</div>,
+    },
+    {
+      title: '所在区',
+      dataIndex: 'partitions',
+      // render: (v) => <div>{v.split('.')[0]}</div>,
     },
   ];
 }

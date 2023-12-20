@@ -34,7 +34,7 @@ export const routes: IRoute[] = [
     key: 'user/user-table',
   },
   {
-    name: '订单列表',
+    name: '资金管理',
     key: 'list/amountManagement',
     // children: [
     //   {

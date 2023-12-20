@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Form,
@@ -20,6 +20,7 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
+import { APIGetChargeRecord } from '@/api/api';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -82,7 +83,7 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'操作类型：'} field={'status'}>
+            <Form.Item label={'操作类型：'} field={'check'}>
               <RadioGroup
                 type="button"
                 name="lang"
@@ -141,12 +142,12 @@ function SearchForm(props: {
         </div>
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="orderNo">
+            <Form.Item label={'用户昵称:'} field="account">
               <Input placeholder={'请输入用户昵称'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'提现地址:'} field="orderNo">
+            <Form.Item label={'提现地址:'} field="address">
               <Input placeholder={'请输入提现地址'} allowClear />
             </Form.Item>
           </Col>
@@ -172,31 +173,32 @@ const columns = (callback) => {
     },
     {
       title: '用户昵称',
-      dataIndex: 'userName',
+      dataIndex: 'account',
     },
     {
       title: '提现地址',
-      dataIndex: 'orderType',
+      dataIndex: 'address',
     },
     {
       title: '提现数量',
-      dataIndex: 'orderType',
+      dataIndex: 'amount',
     },
     {
       title: '手续费',
-      dataIndex: 'status',
+      dataIndex: 'fee',
     },
     {
       title: '币种',
-      dataIndex: 'status',
+      dataIndex: 'symbol',
     },
     {
       title: '状态',
       dataIndex: 'status',
+      render: (_, record) => <div>{_ === 0 ? '待审核' : '已审核'}</div>,
     },
     {
       title: '创建时间',
-      dataIndex: 'status',
+      dataIndex: 'createTime',
     },
     {
       title: '操作',
@@ -242,6 +244,29 @@ const WithdrawComponents = () => {
       pageSize,
     });
   }
+
+  useEffect(() => {
+    getData();
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+
+  const getData = () => {
+    APIGetChargeRecord(
+      {
+        ...formParams,
+        page_size: pagination.pageSize,
+        page_num: pagination.current,
+      },
+      'getWithdrawList'
+    ).then((resp: any) => {
+      if (resp.result) {
+        setData(resp.result.records);
+        setPatination({
+          ...pagination,
+          total: resp.result.total,
+        });
+      }
+    });
+  };
 
   return (
     <div>

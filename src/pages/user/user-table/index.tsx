@@ -23,6 +23,7 @@ import {
   InputNumber,
   Form,
   Message,
+  Switch,
 } from '@arco-design/web-react';
 import PermissionWrapper from '@/components/PermissionWrapper';
 import { IconDown, IconDownload, IconPlus } from '@arco-design/web-react/icon';
@@ -35,10 +36,12 @@ import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
 import {
+  APIChangeUserStatus,
   APIEditUser,
   APIEditUserCCBalance,
   APIEditUserPassword,
   APIGetUserList,
+  APIGetUsersList,
 } from '@/api/api';
 const Row = Grid.Row;
 const Col = Grid.Col;
@@ -121,17 +124,17 @@ function SearchTable() {
 
   const getUserList = () => {
     setLoading(true);
-    APIGetUserList({
+    APIGetUsersList({
       ...formParams,
       pageNum: pagination.current,
       pageCount: pagination.pageSize,
     })
       .then((resp: any) => {
         if (resp.result) {
-          setData(resp.result.result);
+          setData(resp.result.records);
           setPatination({
             ...pagination,
-            total: resp.result.Total,
+            total: resp.result.total,
           });
         }
       })
@@ -222,11 +225,28 @@ function SearchTable() {
       });
   };
 
+  const changeUserStatus = (record) => {
+    setLoading(true);
+    APIChangeUserStatus({
+      userId: record.id,
+      status: record.status === 1 ? 0 : 1,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('操作成功！');
+          getUserList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <Card>
       <SearchForm onSearch={handleSearch} />
       <Table
-        rowKey="Id"
+        rowKey="id"
         loading={loading}
         onChange={onChangeTable}
         pagination={pagination}
@@ -238,16 +258,23 @@ function SearchTable() {
               <Col>
                 <div className={styles.row}>
                   <div>
-                    <span>首次访问：</span>
-                    {record?.Create_time}
+                    <span>推荐人：</span>
+                    {record?.prentAccount}
                   </div>
                   <div>
-                    <span>近次访问：</span>
-                    {record?.Login_date}
-                  </div>
-                  <div>
-                    <span>备注：</span>
+                    <span>接点人：</span>
                     {record?.Remark}
+                  </div>
+                  <div>
+                    <span>状态：</span>
+                    <Switch
+                      onChange={(v) => changeUserStatus(record)}
+                      checked={record.status === 1}
+                    ></Switch>
+                  </div>
+                  <div>
+                    <span>创建时间：</span>
+                    {record?.createTime}
                   </div>
                 </div>
               </Col>

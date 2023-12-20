@@ -20,6 +20,7 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
+import WalletAddress from '@/components/WalletAddress';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -97,7 +98,7 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} field={'status'}>
+            <Form.Item label={'币种类型：'} field={'account'}>
               <RadioGroup
                 type="button"
                 name="lang"
@@ -143,7 +144,7 @@ function SearchForm(props: {
         </div>
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="orderNo">
+            <Form.Item label={'用户昵称:'} field="account">
               <Input placeholder={'请输入用户昵称'} allowClear />
             </Form.Item>
           </Col>
@@ -174,6 +175,7 @@ const columns = (callback) => {
     {
       title: '地址',
       dataIndex: 'userName',
+      render: (_, record) => <WalletAddress address={_}></WalletAddress>,
     },
     {
       title: '归集数量',
@@ -186,6 +188,9 @@ const columns = (callback) => {
     {
       title: '哈希值',
       dataIndex: 'status',
+      render: (_, record) => (
+        <WalletAddress address={_} pre={'tx'}></WalletAddress>
+      ),
     },
     {
       title: '创建时间',

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Form,
@@ -20,6 +20,7 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
+import { APIGetChargeRecord } from '@/api/api';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -39,6 +40,14 @@ const typeList = [
   '充值回收',
   '提现失败',
 ];
+
+const accountType = [
+  'USDT（不可提现）',
+  'USDT（可提现）',
+  'AIS不可提现',
+  'AIS可提现',
+];
+
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
@@ -97,7 +106,7 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} field={'status'}>
+            <Form.Item label={'币种类型：'} field={'symbol'}>
               <RadioGroup
                 type="button"
                 name="lang"
@@ -143,7 +152,7 @@ function SearchForm(props: {
         </div>
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="orderNo">
+            <Form.Item label={'用户昵称:'} field="account">
               <Input placeholder={'请输入用户昵称'} allowClear />
             </Form.Item>
           </Col>
@@ -169,31 +178,32 @@ const columns = (callback) => {
     },
     {
       title: '转账用户',
-      dataIndex: 'userName',
+      dataIndex: 'accountFrom',
     },
     {
       title: '收款用户',
-      dataIndex: 'userName',
+      dataIndex: 'accountTo',
     },
     {
       title: '互转数量',
-      dataIndex: 'userName',
+      dataIndex: 'amount',
     },
     {
       title: '手续费',
-      dataIndex: 'userName',
+      dataIndex: 'fee',
     },
     {
       title: '币种',
-      dataIndex: 'status',
+      dataIndex: 'symbol',
     },
     {
       title: '账户类型',
-      dataIndex: 'status',
+      dataIndex: 'type',
+      render: (_, record) => <div>{accountType[parseInt(_) + 1]}</div>,
     },
     {
       title: '创建时间',
-      dataIndex: 'status',
+      dataIndex: 'createTime',
     },
   ];
 };
@@ -226,6 +236,29 @@ const ConvertComponents = () => {
       pageSize,
     });
   }
+
+  useEffect(() => {
+    getData();
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+
+  const getData = () => {
+    APIGetChargeRecord(
+      {
+        ...formParams,
+        page_size: pagination.pageSize,
+        page_num: pagination.current,
+      },
+      'getTransferDetail'
+    ).then((resp: any) => {
+      if (resp.result) {
+        setData(resp.result.records);
+        setPatination({
+          ...pagination,
+          total: resp.result.total,
+        });
+      }
+    });
+  };
 
   return (
     <div>

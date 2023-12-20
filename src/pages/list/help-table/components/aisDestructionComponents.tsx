@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Form,
@@ -20,6 +20,8 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
+import WalletAddress from '@/components/WalletAddress';
+import { APIGetChargeRecord } from '@/api/api';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -97,15 +99,15 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'状态：'} field={'status'}>
+            <Form.Item label={'状态：'} field={'burnRecord'}>
               <RadioGroup
                 type="button"
                 name="lang"
                 defaultValue="0"
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value="0">已销毁</Radio>
-                <Radio value="1">待销毁</Radio>
+                <Radio value="1">已销毁</Radio>
+                <Radio value="0">待销毁</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
@@ -143,7 +145,7 @@ function SearchForm(props: {
         </div>
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="orderNo">
+            <Form.Item label={'用户昵称:'} field="account">
               <Input placeholder={'请输入用户昵称'} allowClear />
             </Form.Item>
           </Col>
@@ -169,20 +171,22 @@ const columns = (callback) => {
     },
     {
       title: '用户昵称',
-      dataIndex: 'userName',
+      dataIndex: 'account',
     },
     {
       title: '销毁数量',
-      dataIndex: 'userName',
+      dataIndex: 'amount',
     },
     {
       title: '状态',
-      dataIndex: 'userName',
-    },
-    {
-      title: '哈希值',
       dataIndex: 'status',
+      render: (_, record) => <div>{_ === 0 ? '待销毁' : '已销毁'}</div>,
     },
+    // {
+    //   title: '哈希值',
+    //   dataIndex: 'status',
+    //   render:(_, record)=><WalletAddress pre={"tx"} address={_}></WalletAddress>
+    // },
   ];
 };
 
@@ -214,6 +218,29 @@ const AISDestructionComponents = () => {
       pageSize,
     });
   }
+
+  useEffect(() => {
+    getData();
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+
+  const getData = () => {
+    APIGetChargeRecord(
+      {
+        ...formParams,
+        page_size: pagination.pageSize,
+        page_num: pagination.current,
+      },
+      'getAisBurnRecord'
+    ).then((resp: any) => {
+      if (resp.result) {
+        setData(resp.result.records);
+        setPatination({
+          ...pagination,
+          total: resp.result.total,
+        });
+      }
+    });
+  };
 
   return (
     <div>

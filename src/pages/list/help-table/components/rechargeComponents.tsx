@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Form,
@@ -20,6 +20,8 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
+import { APIGetChargeRecord } from '@/api/api';
+import WalletAddress from '@/components/WalletAddress';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -82,15 +84,15 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} field={'status'}>
+            <Form.Item label={'币种类型：'} field={'symbol'}>
               <RadioGroup
                 type="button"
                 name="lang"
-                defaultValue="0"
+                defaultValue="usdt"
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value="0">USDT</Radio>
-                <Radio value="1">AIS</Radio>
+                <Radio value="usdt">USDT</Radio>
+                <Radio value="ais">AIS</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
@@ -128,12 +130,12 @@ function SearchForm(props: {
         </div>
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="orderNo">
+            <Form.Item label={'用户昵称:'} field="account">
               <Input placeholder={'请输入用户昵称'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'充值地址:'} field="orderNo">
+            <Form.Item label={'充值地址:'} field="address">
               <Input placeholder={'请输入充值地址'} allowClear />
             </Form.Item>
           </Col>
@@ -159,27 +161,28 @@ const columns = (callback) => {
     },
     {
       title: '用户昵称',
-      dataIndex: 'userName',
+      dataIndex: 'account',
     },
     {
       title: '充值地址',
-      dataIndex: 'orderType',
+      dataIndex: 'address',
+      render: (_, record) => <WalletAddress address={_}></WalletAddress>,
     },
     {
       title: '充值金额',
-      dataIndex: 'orderType',
+      dataIndex: 'price',
     },
     {
       title: '余额',
-      dataIndex: 'status',
+      dataIndex: 'balance',
     },
     {
       title: '币种',
-      dataIndex: 'status',
+      dataIndex: 'symbol',
     },
     {
       title: '创建时间',
-      dataIndex: 'status',
+      dataIndex: 'createTime',
     },
   ];
 };
@@ -212,6 +215,30 @@ const RechargeComponents = () => {
       pageSize,
     });
   }
+
+  useEffect(() => {
+    getData();
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+
+  const getData = () => {
+    APIGetChargeRecord(
+      {
+        ...formParams,
+        page_size: pagination.pageSize,
+        page_num: pagination.current,
+      },
+      'getChargeRecord'
+    ).then((resp: any) => {
+      if (resp.result) {
+        setData(resp.result.records);
+        setPatination({
+          ...pagination,
+          total: resp.result.total,
+        });
+      }
+      console.log('Aa');
+    });
+  };
 
   return (
     <div>

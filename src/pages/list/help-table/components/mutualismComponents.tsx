@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Form,
@@ -20,6 +20,8 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
+import { APIGetChargeRecord } from '@/api/api';
+import WalletAddress from '@/components/WalletAddress';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -124,7 +126,7 @@ function SearchForm(props: {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} field={'status'}>
+            <Form.Item label={'币种类型：'} field={'symbol'}>
               <RadioGroup
                 type="button"
                 name="lang"
@@ -170,7 +172,7 @@ function SearchForm(props: {
         </div>
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="orderNo">
+            <Form.Item label={'用户昵称:'} field="account">
               <Input placeholder={'请输入用户昵称'} allowClear />
             </Form.Item>
           </Col>
@@ -196,11 +198,12 @@ const columns = (callback) => {
     },
     {
       title: '用户昵称',
-      dataIndex: 'userName',
+      dataIndex: 'account',
     },
     {
       title: '账户地址',
-      dataIndex: 'orderType',
+      dataIndex: 'address',
+      render: (_, record) => <WalletAddress address={_}></WalletAddress>,
     },
     {
       title: '类型',
@@ -208,23 +211,24 @@ const columns = (callback) => {
     },
     {
       title: '变动金额',
-      dataIndex: 'status',
+      dataIndex: 'price',
     },
     {
       title: '币种',
-      dataIndex: 'status',
+      dataIndex: 'symbol',
     },
     {
       title: '余额',
-      dataIndex: 'status',
+      dataIndex: 'balance',
     },
     {
       title: '账户类型',
       dataIndex: 'status',
+      render: () => <div>不可提现</div>,
     },
     {
       title: '创建时间',
-      dataIndex: 'status',
+      dataIndex: 'createTime',
     },
   ];
 };
@@ -257,6 +261,30 @@ const MutualismComponents = () => {
       pageSize,
     });
   }
+
+  useEffect(() => {
+    getData();
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+
+  const getData = () => {
+    APIGetChargeRecord(
+      {
+        ...formParams,
+        page_size: pagination.pageSize,
+        page_num: pagination.current,
+      },
+      'getIncomeDetail'
+    ).then((resp: any) => {
+      if (resp.result) {
+        setData(resp.result.records);
+        setPatination({
+          ...pagination,
+          total: resp.result.total,
+        });
+      }
+      console.log('Aa');
+    });
+  };
 
   return (
     <div>

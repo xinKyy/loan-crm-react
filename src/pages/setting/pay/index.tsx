@@ -14,14 +14,17 @@ import {
 import styles from './index.module.less';
 import {
   APIComplementAddress,
+  APIGetAISPrice,
   APIGetConfigAddress,
   APIGetConfigListRsp,
   APIGrantFundsAddress,
   APIPosFundsAddress,
   APISearchFundsAddress,
+  APISetAISPrice,
 } from '@/api/api';
 import TimerPriceTableComponents from '@/pages/setting/pay/timerPriceTableComponents';
 const TabPane = Tabs.TabPane;
+const { useForm } = Form;
 function Configuration() {
   const [configAddress, setConfigAddress] = useState(null);
   const [seaAddress, setSeaAddress] = useState({
@@ -41,70 +44,20 @@ function Configuration() {
 
   const [loading, setLoading] = useState(false);
 
-  const getConfigAddress = () => {
-    setLoading(true);
-    APIGetConfigAddress({
-      configKey: 'COMPLEMENT_ADDRESS',
-    })
-      .then((resp: any) => {
-        if (resp.result) {
-          setCurrentConfigAddress(resp.result.address);
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  const getConfigListRsp = () => {
-    setLoading(true);
-    APIGetConfigListRsp({})
-      .then((resp: any) => {
-        if (resp.result) {
-          resp.result.forEach((item) => {
-            if (item.key === 'COMPLEMENT_ADDRESS') {
-              setCurrentConfigAddress(item.fundsAddress);
-            }
-            if (item.key === 'GRANT_FUNDS') {
-              setGrantFundsAddress({
-                adminAddress: item.adminAddress,
-                address: item.fundsAddress,
-              });
-            }
-            if (item.key === 'SEARCH_FUNDS') {
-              setSeaAddress({
-                adminAddress: item.adminAddress,
-                address: item.fundsAddress,
-              });
-            }
-            if (item.key === 'POS_FUNDS') {
-              setPosFundsAddress({
-                adminAddress: item.adminAddress,
-                address: item.fundsAddress,
-              });
-            }
-          });
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const [form1] = useForm();
 
   useEffect(() => {
-    getConfigAddress();
-    getConfigListRsp();
+    getAisPrice();
   }, []);
 
-  const submitAddress = () => {
+  const setAisPrice = () => {
     setLoading(true);
-    APIComplementAddress({
-      complementAddress: configAddress,
+    APISetAISPrice({
+      ...form1.getFieldsValue(),
     })
       .then((resp: any) => {
         if (resp.result) {
-          setCurrentConfigAddress(configAddress);
-          Message.info('修改差额补足账户成功！');
+          Message.success('设置AIS价格成功！');
         }
       })
       .finally(() => {
@@ -112,65 +65,12 @@ function Configuration() {
       });
   };
 
-  const submitSearchFundsAddress = () => {
-    if (!seaAddress.address || !seaAddress.adminAddress) {
-      return Message.info('两个地址必须一起提交！');
-    }
-
-    setLoading(true);
-    APISearchFundsAddress({
-      searchFunds: seaAddress.address,
-      ...seaAddress,
-    })
-      .then((resp: any) => {
-        if (resp.result) {
-          Message.info('修改成功！');
-          getConfigListRsp();
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  const submitGrantFundsAddress = () => {
-    if (!grantFundsAddress.address || !grantFundsAddress.adminAddress) {
-      return Message.info('两个地址必须一起提交！');
-    }
-    setLoading(true);
-    APIGrantFundsAddress({
-      grantFunds: grantFundsAddress.address,
-      ...grantFundsAddress,
-    })
-      .then((resp: any) => {
-        if (resp.result) {
-          Message.info('修改成功！');
-          getConfigListRsp();
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  const submitPosFundsAddress = () => {
-    if (!posFundsAddress.address || !posFundsAddress.adminAddress) {
-      return Message.info('两个地址必须一起提交！');
-    }
-    setLoading(true);
-    APIPosFundsAddress({
-      posFunds: posFundsAddress.address,
-      ...posFundsAddress,
-    })
-      .then((resp: any) => {
-        if (resp.result) {
-          Message.info('修改成功！');
-          getConfigListRsp();
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+  const getAisPrice = () => {
+    APIGetAISPrice({}).then((resp: any) => {
+      if (resp.result) {
+        form1.setFieldValue('price', resp.result);
+      }
+    });
   };
 
   return (
@@ -178,20 +78,23 @@ function Configuration() {
       <Spin style={{ width: '100%' }} loading={loading}>
         <Tabs defaultActiveTab="1">
           <TabPane key="1" title="币价配置">
-            <Form>
+            <Form onSubmit={setAisPrice} form={form1}>
               <Form.Item
                 style={{ width: '700px' }}
                 required
                 extra={'用于前端AIS币价展示'}
+                field={'price'}
                 label={'AIS币价配置'}
               >
-                <Input placeholder={'请输入价格'}></Input>
+                <Input type={'number'} placeholder={'请输入价格'}></Input>
               </Form.Item>
+              <Space style={{ paddingLeft: '200px', paddingTop: '50px' }}>
+                <Button onClick={() => form1.resetFields()}>重置</Button>
+                <Button htmlType={'submit'} type={'primary'}>
+                  提交
+                </Button>
+              </Space>
             </Form>
-            <Space style={{ paddingLeft: '200px', paddingTop: '50px' }}>
-              <Button>重置</Button>
-              <Button type={'primary'}>提交</Button>
-            </Space>
           </TabPane>
 
           <TabPane key="2" title="定时调价">

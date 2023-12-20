@@ -162,7 +162,7 @@ export const APIEditUserCCBalance = (params) => {
 
 // 设置-得到账户列表
 export const APIGetHelpList = (params) => {
-  return axios.get('/adminUser/listBackUser', {params});
+  return axios.get('/adminUser/listBackUser', { params });
 };
 
 // 设置-提供帮助订单列表
@@ -177,12 +177,12 @@ export const APIMatchAdminOrder = (params) => {
 
 // 设置-创建后台匹配账户
 export const APICreateBackUser = (params) => {
-  return axios.get('/adminUser/addBackUser', {params});
+  return axios.get('/adminUser/addBackUser', { params });
 };
 
 // 设置-获取匹配记录
 export const APIGetListBackOrder = (params) => {
-  return axios.get('/api/v1/iccOrder/listBackOrders', {params});
+  return axios.get('/api/v1/iccOrder/listBackOrders', { params });
 };
 
 // 删除后台匹配账户
@@ -198,4 +198,48 @@ export const APIConfirmQuestion = (params) => {
 // 获取后台审核订单列表
 export const APIGetBackList = (params) => {
   return axios.get('/api/v1/iccOrder/listBackOrdersForCheck', { params });
+};
+
+//// 此处开始为 ais后台接口
+
+// 设置配置项
+export const APISetWithDrawConfig = (params) => {
+  return axios.get('/api/v1/sysConfig/setWithDrawConfig', { params });
+};
+
+export const APIGetWithDrawConfig = (params) => {
+  return axios.get('/api/v1/sysConfig/getWithdrawConfig', { params });
+};
+
+export const APISetUsdtWithDrawConfig = (params) => {
+  return axios.get('/api/v1/sysConfig/setUsdtWithDrawConfig', { params });
+};
+export const APIGetUsdtWithDrawConfig = (params) => {
+  return axios.get('/api/v1/sysConfig/getUsdtWithDrawConfig', { params });
+};
+
+export const APISetUsdtCollect = (params, url) => {
+  return axios.get(`/api/v1/sysConfig/${url}`, { params });
+};
+
+export const APIGetChargeRecord = (params, url) => {
+  return axios.post(`/api/v1/assert/${url}`, params);
+};
+
+export const APISetAISPrice = (params) => {
+  return axios.get(`/api/v1/aisConfig/setPrice`, { params });
+};
+
+export const APIGetAISPrice = (params) => {
+  return axios.get(`/api/v1/aisConfig/getPrice`, { params });
+};
+
+export const APIAddScheduled = (params) => {
+  return axios.post(`/api/v1/aisConfig/addScheduled`, params);
+};
+export const APIGetUsersList = (params) => {
+  return axios.post(`/api/v1/adminUser/getUserLists`, params);
+};
+export const APIChangeUserStatus = (params) => {
+  return axios.get(`/api/v1/adminUser/setStatus`, { params });
 };
