@@ -4,7 +4,7 @@ import {
   Checkbox,
   Link,
   Button,
-  Space,
+  Space, Message
 } from '@arco-design/web-react';
 import { FormInstance } from '@arco-design/web-react/es/Form';
 import { IconLock, IconUser } from '@arco-design/web-react/icon';
@@ -45,6 +45,11 @@ export default function LoginForm() {
   function onSubmitClick() {
     formRef.current.validate().then((values) => {
       // login(values);
+
+      if(values.userName !== "admin" || values.password !== "admin"){
+        return Message.error("账号或密码错误！");
+      }
+
       // 记录登录状态
       localStorage.setItem('userStatus', 'login');
       localStorage.setItem('token', 'aaa');
