@@ -256,3 +256,7 @@ export const APIRemoveAisConfig = (params) => {
 export const APIGetHomeData = (params) => {
   return axios.get(`/api/v1/sysConfig/home`, { params });
 };
+
+export const APIBurnAis = (params) => {
+  return axios.get(`/api/v1/assert/burnAis`, { params });
+};

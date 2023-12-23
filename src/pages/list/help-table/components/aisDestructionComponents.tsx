@@ -12,7 +12,7 @@ import {
   Dropdown,
   Menu,
   PaginationProps,
-  Table,
+  Table, Message
 } from '@arco-design/web-react';
 import { GlobalContext } from '@/context';
 import useLocale from '@/utils/useLocale';
@@ -21,8 +21,8 @@ import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
 import WalletAddress from '@/components/WalletAddress';
-import { APIGetChargeRecord } from '@/api/api';
-import { connectToMetaMask } from '@/utils/web3Util';
+import { APIBurnAis, APIGetChargeRecord } from '@/api/api';
+import { burnAis, connectToMetaMask } from '@/utils/web3Util';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -104,7 +104,6 @@ function SearchForm(props: {
               <RadioGroup
                 type="button"
                 name="lang"
-                defaultValue="0"
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
                 <Radio value="1">已销毁</Radio>
@@ -183,11 +182,13 @@ const columns = (callback) => {
       dataIndex: 'status',
       render: (_, record) => <div>{_ === 0 ? '待销毁' : '已销毁'}</div>,
     },
-    // {
-    //   title: '哈希值',
-    //   dataIndex: 'status',
-    //   render:(_, record)=><WalletAddress pre={"tx"} address={_}></WalletAddress>
-    // },
+    {
+      title: '操作',
+      dataIndex: 'status',
+      render:(_, record)=> _ === 0 ? <Button type={"primary"} onClick={()=>{
+        callback(record);
+      }}>销毁{record?.amount} AIS</Button> : null
+    },
   ];
 };
 
@@ -208,8 +209,23 @@ const AISDestructionComponents = () => {
     setFormParams(params);
   }
 
-  const callBack = () => {
-    console.log('callBack');
+  const callBack = (record) => {
+    setLoading(true);
+    burnAis(record?.amount).then(res=>{
+      if(res.result){
+        APIBurnAis({
+          id:record.id,
+          hash:res.result.transactionHash
+        }).then((resp:any)=>{
+          if(resp.result){
+            Message.success("销毁成功！");
+            getData();
+          }
+        }).finally(()=>{
+          setLoading(false);
+        })
+      }
+    });
   };
 
   function onChangeTable({ current, pageSize }) {

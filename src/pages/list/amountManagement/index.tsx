@@ -5,8 +5,8 @@ import RechargeComponents from '@/pages/list/help-table/components/rechargeCompo
 import MutualismComponents from '@/pages/list/help-table/components/mutualismComponents';
 import ConvertComponents from '@/pages/list/help-table/components/convertComponents';
 import ImputationComponents from '@/pages/list/help-table/components/imputationComponents';
-import AISDestructionComponents from '@/pages/list/help-table/components/aisDestructionComponents';
-
+import dynamic from 'next/dynamic';
+const AISDestructionComponents = dynamic(() => import('@/pages/list/help-table/components/aisDestructionComponents'), { ssr: false });
 const AmountManagement = () => {
   const [pageLoading, setPageLoading] = useState(false);
 

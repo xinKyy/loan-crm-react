@@ -1,11 +1,44 @@
 import Web3 from 'web3';
 import { Message } from '@arco-design/web-react';
-// 连接metamask
+
+const AISABI: any = [
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "transfer",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
+const web3 = new Web3(window.ethereum);
+const ethereum = window.ethereum;
+
+// const chainId = '0x38';  // bsc主网
+const chainId = '0x61'; // bsc测试网
+
+const tokenContractAddress = '0xDE680D903631C88768e80A0e12eC79EBE83A651f';
+const tokenContract = new web3.eth.Contract(AISABI, tokenContractAddress);
+let accountAddress: string | undefined;
+
 export async function connectToMetaMask(): Promise<string | boolean> {
   const web3 = new Web3(window.ethereum);
   const ethereum = window.ethereum;
-  let accountAddress: string | undefined;
-
   if (typeof window !== 'undefined') {
     // 在这里使用 window 对象
     if (window.ethereum) {
@@ -17,7 +50,6 @@ export async function connectToMetaMask(): Promise<string | boolean> {
         // 连接成功后，accounts 数组中将包含用户的账户地址
         accountAddress = accounts[0];
         const currentNetworkId = ethereum.chainId;
-        const chainId = '0x38';
         if (currentNetworkId !== chainId) {
           // 切换网络
           try {
@@ -48,6 +80,28 @@ export async function connectToMetaMask(): Promise<string | boolean> {
 
   return false;
 }
+
+
+export const burnAis = async (amount) =>{
+  try {
+    await connectToMetaMask();
+    const amountBN = web3.utils.toWei(amount + "", 'ether');
+    const gasPrice = await web3.eth.getGasPrice();
+    const transaction = await tokenContract.methods.transfer("0x0000000000000000000000000000000000000333", amountBN).send({
+      from: accountAddress,
+      gasPrice:gasPrice,
+    });
+    return {
+      result:transaction
+    };
+  } catch (e){
+    Message.error("交易失败！");
+    return {
+      result:false
+    };
+  }
+}
+
 
 declare global {
   interface Window {
