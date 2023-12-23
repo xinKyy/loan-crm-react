@@ -55,5 +55,8 @@ module.exports = withLess(
       ];
     },
     pageExtensions: ['tsx'],
+    experimental: {
+      concurrentFiles: 4,
+    },
   })
 );
