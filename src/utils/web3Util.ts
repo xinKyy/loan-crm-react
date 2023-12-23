@@ -3,43 +3,39 @@ import { Message } from '@arco-design/web-react';
 
 const AISABI: any = [
   {
-    "constant": false,
-    "inputs": [
+    constant: false,
+    inputs: [
       {
-        "name": "_to",
-        "type": "address"
+        name: '_to',
+        type: 'address',
       },
       {
-        "name": "_value",
-        "type": "uint256"
-      }
+        name: '_value',
+        type: 'uint256',
+      },
     ],
-    "name": "transfer",
-    "outputs": [
+    name: 'transfer',
+    outputs: [
       {
-        "name": "",
-        "type": "bool"
-      }
+        name: '',
+        type: 'bool',
+      },
     ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]
-const web3 = new Web3(window.ethereum);
-const ethereum = window.ethereum;
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];
 
 // const chainId = '0x38';  // bsc主网
 const chainId = '0x61'; // bsc测试网
 
-const tokenContractAddress = '0xDE680D903631C88768e80A0e12eC79EBE83A651f';
-const tokenContract = new web3.eth.Contract(AISABI, tokenContractAddress);
 let accountAddress: string | undefined;
 
 export async function connectToMetaMask(): Promise<string | boolean> {
-  const web3 = new Web3(window.ethereum);
-  const ethereum = window.ethereum;
   if (typeof window !== 'undefined') {
+    const web3 = new Web3(window?.ethereum);
+    const ethereum = window?.ethereum;
     // 在这里使用 window 对象
     if (window.ethereum) {
       try {
@@ -81,27 +77,36 @@ export async function connectToMetaMask(): Promise<string | boolean> {
   return false;
 }
 
-
-export const burnAis = async (amount) =>{
-  try {
-    await connectToMetaMask();
-    const amountBN = web3.utils.toWei(amount + "", 'ether');
-    const gasPrice = await web3.eth.getGasPrice();
-    const transaction = await tokenContract.methods.transfer("0x0000000000000000000000000000000000000333", amountBN).send({
-      from: accountAddress,
-      gasPrice:gasPrice,
-    });
-    return {
-      result:transaction
-    };
-  } catch (e){
-    Message.error("交易失败！");
-    return {
-      result:false
-    };
+export const burnAis = async (amount) => {
+  if (typeof window !== 'undefined') {
+    const web3 = new Web3(window?.ethereum);
+    const ethereum = window?.ethereum;
+    const tokenContractAddress = '0xDE680D903631C88768e80A0e12eC79EBE83A651f';
+    const tokenContract = new web3.eth.Contract(AISABI, tokenContractAddress);
+    try {
+      await connectToMetaMask();
+      const amountBN = web3.utils.toWei(amount + '', 'ether');
+      const gasPrice = await web3.eth.getGasPrice();
+      const transaction = await tokenContract.methods
+        .transfer('0x0000000000000000000000000000000000000333', amountBN)
+        .send({
+          from: accountAddress,
+          gasPrice: gasPrice,
+        });
+      return {
+        result: transaction,
+      };
+    } catch (e) {
+      Message.error('交易失败！');
+      return {
+        result: false,
+      };
+    }
   }
-}
-
+  return {
+    result: false,
+  };
+};
 
 declare global {
   interface Window {

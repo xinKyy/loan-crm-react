@@ -6,7 +6,12 @@ import MutualismComponents from '@/pages/list/help-table/components/mutualismCom
 import ConvertComponents from '@/pages/list/help-table/components/convertComponents';
 import ImputationComponents from '@/pages/list/help-table/components/imputationComponents';
 import dynamic from 'next/dynamic';
-const AISDestructionComponents = dynamic(() => import('@/pages/list/help-table/components/aisDestructionComponents'), { ssr: false });
+
+const AISDestructionComponents = dynamic(
+  () => import('../help-table/components/aisDestructionComponents'),
+  { ssr: false }
+);
+
 const AmountManagement = () => {
   const [pageLoading, setPageLoading] = useState(false);
 

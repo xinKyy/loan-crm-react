@@ -12,7 +12,8 @@ import {
   Dropdown,
   Menu,
   PaginationProps,
-  Table, Message
+  Table,
+  Message,
 } from '@arco-design/web-react';
 import { GlobalContext } from '@/context';
 import useLocale from '@/utils/useLocale';
@@ -185,9 +186,17 @@ const columns = (callback) => {
     {
       title: '操作',
       dataIndex: 'status',
-      render:(_, record)=> _ === 0 ? <Button type={"primary"} onClick={()=>{
-        callback(record);
-      }}>销毁{record?.amount} AIS</Button> : null
+      render: (_, record) =>
+        _ === 0 ? (
+          <Button
+            type={'primary'}
+            onClick={() => {
+              callback(record);
+            }}
+          >
+            销毁{record?.amount} AIS
+          </Button>
+        ) : null,
     },
   ];
 };
@@ -211,21 +220,25 @@ const AISDestructionComponents = () => {
 
   const callBack = (record) => {
     setLoading(true);
-    burnAis(record?.amount).then(res=>{
-      if(res.result){
-        APIBurnAis({
-          id:record.id,
-          hash:res.result.transactionHash
-        }).then((resp:any)=>{
-          if(resp.result){
-            Message.success("销毁成功！");
-            getData();
-          }
-        }).finally(()=>{
-          setLoading(false);
-        })
-      }
-    });
+    if (window != null) {
+      burnAis(record?.amount).then((res) => {
+        if (res.result) {
+          APIBurnAis({
+            id: record.id,
+            hash: res.result.transactionHash,
+          })
+            .then((resp: any) => {
+              if (resp.result) {
+                Message.success('销毁成功！');
+                getData();
+              }
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        }
+      });
+    }
   };
 
   function onChangeTable({ current, pageSize }) {
