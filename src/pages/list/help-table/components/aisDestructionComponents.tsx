@@ -22,6 +22,7 @@ import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
 import WalletAddress from '@/components/WalletAddress';
 import { APIGetChargeRecord } from '@/api/api';
+import { connectToMetaMask } from '@/utils/web3Util';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;

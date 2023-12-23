@@ -57,7 +57,7 @@ const Editor = () => {
       title: params.title,
       body: html,
       image: imgSrc,
-      status: params.status,
+      language: params.language,
       id: id,
     })
       .then((resp: any) => {
@@ -86,7 +86,7 @@ const Editor = () => {
             }, 500);
             form.setFieldsValue({
               title: resp.result.noticeTitle,
-              status: resp.result.status.toString(),
+              language: resp.result.language,
             });
             setId(resp.result.id);
           }
@@ -127,11 +127,11 @@ const Editor = () => {
             </Col>
             <Col span={24}>
               <div style={{ height: 20 }}></div>
-              <Form.Item initialValue={'1'} label={'语言：'} field={'status'}>
-                <RadioGroup defaultValue="1">
-                  <Radio value="1">英语</Radio>
-                  <Radio value="2">中文简体</Radio>
-                  <Radio value="3">中文繁体</Radio>
+              <Form.Item initialValue={'1'} label={'语言：'} field={'language'}>
+                <RadioGroup>
+                  <Radio value={0}>英语</Radio>
+                  <Radio value={1}>中文简体</Radio>
+                  <Radio value={2}>中文繁体</Radio>
                 </RadioGroup>
               </Form.Item>
             </Col>

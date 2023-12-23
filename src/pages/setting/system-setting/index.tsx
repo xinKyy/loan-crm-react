@@ -148,8 +148,7 @@ function Configuration() {
       id: edit ? currentRecord.id : null,
       bannerName: params.bannerName,
       image: edit && currentRecord.image ? currentRecord.image : params.image,
-      jumpUrl: `${selectedRowKeys[0]}`,
-      status: params.status ? '1' : '0',
+      status: 1,
     })
       .then((resp: any) => {
         if (resp.result) {
@@ -268,7 +267,7 @@ function Configuration() {
                   accept={'.png,.jpg,.jpeg,.webp'}
                   limit={1}
                   onChange={onChange}
-                  action="/api/upload/uploadPicUrl"
+                  action="/api/api/v1/common/uploadPicUrl"
                 />
               )}
             </div>

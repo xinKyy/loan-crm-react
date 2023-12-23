@@ -46,7 +46,7 @@ function SearchForm(props: {
 }) {
   const [form] = useForm();
 
-  const [orderType, setOrderType] = useState(2);
+  const [orderType, setOrderType] = useState(-1);
 
   const handleSubmit = () => {
     const values = form.getFieldsValue();
@@ -68,6 +68,13 @@ function SearchForm(props: {
       values.start = new Date(values.dateStartAndEnd[0]);
       values.end = new Date(values.dateStartAndEnd[1]);
     }
+
+    if (orderType !== -1) {
+      values.type = orderType;
+    } else {
+      delete values.type;
+    }
+
     props.onSearch(values);
   };
 
@@ -119,7 +126,7 @@ function SearchForm(props: {
                 position="br"
               >
                 <Button type="text">
-                  {typeList[orderType]}
+                  {orderType !== -1 ? typeList[orderType] : '全部'}
                   <IconDown />
                 </Button>
               </Dropdown>

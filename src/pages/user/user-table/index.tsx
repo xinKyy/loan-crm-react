@@ -43,6 +43,7 @@ import {
   APIGetUserList,
   APIGetUsersList,
 } from '@/api/api';
+
 const Row = Grid.Row;
 const Col = Grid.Col;
 
@@ -52,6 +53,7 @@ export const Status = ['已上线', '未上线'];
 const RadioGroup = Radio.Group;
 export const FilterType = ['普通会员', '钻石', '大使', '总裁'];
 const { useForm } = Form;
+
 function SearchTable() {
   const t = useLocale(locale);
 
@@ -263,7 +265,7 @@ function SearchTable() {
                   </div>
                   <div>
                     <span>接点人：</span>
-                    {record?.Remark}
+                    {record?.contractAccount}
                   </div>
                   <div>
                     <span>状态：</span>

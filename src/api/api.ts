@@ -87,7 +87,7 @@ export const APIPostList = (params) => {
 
 // 修改文章状态
 export const APIChangStatePost = (params) => {
-  return axios.get('/api/v1/notice/setStatus', { params });
+  return axios.get('/api/v1/notice/remove', { params });
 };
 
 // 获取文章详情

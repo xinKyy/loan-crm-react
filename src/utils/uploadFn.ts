@@ -1,4 +1,4 @@
-const upLoadImageUrl = '/api/upload/uploadPicUrl';
+const upLoadImageUrl = '/api/api/v1/common/uploadPicUrl';
 
 interface UploadParams {
   file: File;

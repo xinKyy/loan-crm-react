@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Form,
@@ -20,6 +20,7 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
+import { APIGetChargeRecord } from '@/api/api';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -113,13 +114,8 @@ function SearchForm(props: {
         </div>
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="orderNo">
+            <Form.Item label={'用户昵称:'} field="account">
               <Input placeholder={'请输入用户昵称'} allowClear />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label={'订单号:'} field="orderNo">
-              <Input placeholder={'请输入订单号'} allowClear />
             </Form.Item>
           </Col>
         </Row>
@@ -138,69 +134,72 @@ function SearchForm(props: {
 
 const columns = (callback) => {
   return [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-    },
+    // {
+    //   title: 'ID',
+    //   dataIndex: 'id',
+    // },
     {
       title: '用户昵称',
-      dataIndex: 'userName',
+      dataIndex: 'account',
     },
-    {
-      title: '订单号',
-      dataIndex: 'orderType',
-    },
+    // {
+    //   title: '订单号',
+    //   dataIndex: 'orderType',
+    // },
     {
       title: '订单价值（USDT）',
-      dataIndex: 'orderType',
+      dataIndex: 'orderPrice',
     },
     {
       title: '消耗USDT数量',
-      dataIndex: 'status',
+      dataIndex: 'comsumerUsdt',
     },
     {
       title: '消耗AIS数量',
-      dataIndex: 'status',
+      dataIndex: 'comsumerAis',
     },
     {
       title: 'AIS币价',
-      dataIndex: 'status',
+      dataIndex: 'aisPrice',
     },
     {
       title: '杠杆倍数',
-      dataIndex: 'status',
+      dataIndex: 'times',
     },
     {
       title: '日益率（%）',
       dataIndex: 'status',
+      render: () => <div>0.5%</div>,
     },
     {
       title: '是否首次投资',
-      dataIndex: 'status',
+      dataIndex: 'isFirst',
+      render: (_, record) => <div>{_ === 1 ? '是' : '否'}</div>,
     },
     {
       title: 'USDT累计收益',
-      dataIndex: 'status',
+      dataIndex: 'usdtTotal',
     },
     {
       title: 'AIS累计收益',
-      dataIndex: 'status',
+      dataIndex: 'aisTotal',
     },
     {
       title: '价值累计收益（USDT）',
-      dataIndex: 'status',
+      dataIndex: 'total',
     },
     {
       title: '最高可收益价值（USDT）',
-      dataIndex: 'status',
+      dataIndex: 'maxIncome',
     },
     {
       title: '是否结束',
-      dataIndex: 'status',
+      dataIndex: 'isEnd',
+      render: (_, record) => <div>{_ ? '是' : '否'}</div>,
     },
     {
       title: '创建时间',
-      dataIndex: 'status',
+      dataIndex: 'createTime',
     },
   ];
 };
@@ -234,6 +233,29 @@ const AiInvestTableComponents = () => {
     });
   }
 
+  useEffect(() => {
+    getData();
+  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
+
+  const getData = () => {
+    APIGetChargeRecord(
+      {
+        ...formParams,
+        page_size: pagination.pageSize,
+        page_num: pagination.current,
+      },
+      'aiResubRecord'
+    ).then((resp: any) => {
+      if (resp.result) {
+        setData(resp.result.records);
+        setPatination({
+          ...pagination,
+          total: resp.result.total,
+        });
+      }
+    });
+  };
+
   return (
     <div>
       <SearchForm onSearch={handleSearch}></SearchForm>
@@ -242,6 +264,9 @@ const AiInvestTableComponents = () => {
         loading={loading}
         onChange={onChangeTable}
         pagination={pagination}
+        scroll={{
+          x: 2000,
+        }}
         columns={columns(callBack)}
         data={data}
       />

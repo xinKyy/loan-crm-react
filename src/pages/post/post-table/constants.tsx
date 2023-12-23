@@ -49,7 +49,7 @@ export function getColumns(
     },
     {
       title: '公告标题',
-      dataIndex: 'noticeTitle',
+      dataIndex: 'title',
     },
     {
       title: '创建时间',

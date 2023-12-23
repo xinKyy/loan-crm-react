@@ -13,7 +13,7 @@ const AmountManagement = () => {
   return (
     <Spin style={{ width: '100%' }} loading={pageLoading}>
       <Card>
-        <Tabs defaultActiveTab="1">
+        <Tabs destroyOnHide={true} defaultActiveTab="1">
           <Tabs.TabPane key="1" title="提现配置">
             <WithdrawComponents></WithdrawComponents>
           </Tabs.TabPane>

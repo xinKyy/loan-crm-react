@@ -124,7 +124,6 @@ function SearchTable() {
     setDeleteVisible(false);
     APIChangStatePost({
       id: record.id,
-      status: deleteStatus ?? (record.status === 1 ? 0 : 1),
     })
       .then((resp: any) => {
         if (resp.result) {
@@ -142,9 +141,9 @@ function SearchTable() {
   return (
     <Card>
       <div style={{ width: 550, display: 'flex', alignItems: 'center' }}>
-        <div style={{ width: 200 }}>文章标题：</div>
-        <Input placeholder={'请输入名称'}></Input>
-        <div style={{ width: 20 }}></div>
+        {/*<div style={{ width: 200 }}>文章标题：</div>*/}
+        {/*<Input placeholder={'请输入名称'}></Input>*/}
+        {/*<div style={{ width: 20 }}></div>*/}
         <Space>
           {/*<Button type={'primary'}>搜索</Button>*/}
           <Button
@@ -254,7 +253,8 @@ function SearchTable() {
       >
         <div style={{ height: 20 }} />
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div className={styles.warning}></div>确认删除【文章标题】文章吗？
+          <div className={styles.warning}></div>确认删除【{currentRecord?.title}
+          】公告吗？
         </div>
       </Modal>
     </Card>

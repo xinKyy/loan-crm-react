@@ -76,7 +76,7 @@ function Configuration() {
   return (
     <Card style={{ height: '75vh' }}>
       <Spin style={{ width: '100%' }} loading={loading}>
-        <Tabs defaultActiveTab="1">
+        <Tabs destroyOnHide={true} defaultActiveTab="1">
           <TabPane key="1" title="币价配置">
             <Form onSubmit={setAisPrice} form={form1}>
               <Form.Item
