@@ -12,7 +12,9 @@ import {
   Dropdown,
   Menu,
   PaginationProps,
-  Table, Modal, Message
+  Table,
+  Modal,
+  Message,
 } from '@arco-design/web-react';
 import { GlobalContext } from '@/context';
 import useLocale from '@/utils/useLocale';
@@ -20,7 +22,11 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
-import { APIConfirmQuestion, APIConfirmWithdraw, APIGetChargeRecord } from '@/api/api';
+import {
+  APIConfirmQuestion,
+  APIConfirmWithdraw,
+  APIGetChargeRecord,
+} from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
@@ -195,7 +201,9 @@ const columns = (callback) => {
     {
       title: '状态',
       dataIndex: 'status',
-      render: (_, record) => <div>{_ === 0 ? '待审核' : _ === 1 ? '已审核' : '已拒绝'}</div>,
+      render: (_, record) => (
+        <div>{_ === 0 ? '待审核' : _ === 1 ? '已审核' : '已拒绝'}</div>
+      ),
     },
     {
       title: '创建时间',
@@ -204,15 +212,12 @@ const columns = (callback) => {
     {
       title: '操作',
       dataIndex: 'status',
-      render: (_, record) => (
-        _ === 0 ?        <Button
-          type="text"
-          size="small"
-          onClick={(e) => callback(record)}
-        >
-          审核
-        </Button> : null
-      ),
+      render: (_, record) =>
+        _ === 0 ? (
+          <Button type="text" size="small" onClick={(e) => callback(record)}>
+            审核
+          </Button>
+        ) : null,
     },
   ];
 };
@@ -277,7 +282,7 @@ const WithdrawComponents = () => {
     setQuestionVisible(false);
     setLoading(true);
 
-    if(type === -1){
+    if (type === -1) {
       APIConfirmWithdraw({
         id: currentConfirmRecord?.id,
         status: type,
@@ -292,8 +297,11 @@ const WithdrawComponents = () => {
           setLoading(false);
         });
     } else {
-      withDrawUSDT("0x2727317717f68BB16888a0164688f16FB32e2ca6", currentConfirmRecord.amount).then(resp =>{
-        if(resp.result){
+      withDrawUSDT(
+        currentConfirmRecord.address,
+        currentConfirmRecord.amount
+      ).then((resp) => {
+        if (resp.result) {
           APIConfirmWithdraw({
             id: currentConfirmRecord?.id,
             status: type,
@@ -310,7 +318,7 @@ const WithdrawComponents = () => {
         } else {
           setLoading(false);
         }
-      })
+      });
     }
   };
 
@@ -325,7 +333,6 @@ const WithdrawComponents = () => {
         columns={columns(callBack)}
         data={data}
       />
-
 
       <Modal
         title="提现订单"
@@ -347,7 +354,6 @@ const WithdrawComponents = () => {
       >
         <p>同意提现申请并打款</p>
       </Modal>
-
     </div>
   );
 };
