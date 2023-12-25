@@ -12,7 +12,7 @@ import {
   Dropdown,
   Menu,
   PaginationProps,
-  Table,
+  Table, Modal, Message
 } from '@arco-design/web-react';
 import { GlobalContext } from '@/context';
 import useLocale from '@/utils/useLocale';
@@ -20,7 +20,8 @@ import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from '../style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
-import { APIGetChargeRecord } from '@/api/api';
+import { APIConfirmQuestion, APIConfirmWithdraw, APIGetChargeRecord } from '@/api/api';
+import { withDrawUSDT } from '@/utils/web3Util';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -194,7 +195,7 @@ const columns = (callback) => {
     {
       title: '状态',
       dataIndex: 'status',
-      render: (_, record) => <div>{_ === 0 ? '待审核' : '已审核'}</div>,
+      render: (_, record) => <div>{_ === 0 ? '待审核' : _ === 1 ? '已审核' : '已拒绝'}</div>,
     },
     {
       title: '创建时间',
@@ -202,15 +203,15 @@ const columns = (callback) => {
     },
     {
       title: '操作',
-      dataIndex: 'operations',
+      dataIndex: 'status',
       render: (_, record) => (
-        <Button
+        _ === 0 ?        <Button
           type="text"
           size="small"
-          onClick={(e) => callback(record, '审核', e)}
+          onClick={(e) => callback(record)}
         >
           审核
-        </Button>
+        </Button> : null
       ),
     },
   ];
@@ -228,13 +229,17 @@ const WithdrawComponents = () => {
   const [formParams, setFormParams] = useState({});
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [questionVisible, setQuestionVisible] = useState(false);
+  const [currentConfirmRecord, setCurrentConfirmRecord]: any = useState();
+
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
     setFormParams(params);
   }
 
-  const callBack = () => {
-    console.log('callBack');
+  const callBack = (record) => {
+    setCurrentConfirmRecord(record);
+    setQuestionVisible(true);
   };
 
   function onChangeTable({ current, pageSize }) {
@@ -268,6 +273,47 @@ const WithdrawComponents = () => {
     });
   };
 
+  const confirmQuestion = (type) => {
+    setQuestionVisible(false);
+    setLoading(true);
+
+    if(type === -1){
+      APIConfirmWithdraw({
+        id: currentConfirmRecord?.id,
+        status: type,
+      })
+        .then((resp: any) => {
+          if (resp.result) {
+            Message.success('已拒绝该笔提现');
+            getData();
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      withDrawUSDT("0x2727317717f68BB16888a0164688f16FB32e2ca6", currentConfirmRecord.amount).then(resp =>{
+        if(resp.result){
+          APIConfirmWithdraw({
+            id: currentConfirmRecord?.id,
+            status: type,
+          })
+            .then((resp: any) => {
+              if (resp.result) {
+                Message.success('同意提现成功！');
+                getData();
+              }
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        } else {
+          setLoading(false);
+        }
+      })
+    }
+  };
+
   return (
     <div>
       <SearchForm onSearch={handleSearch}></SearchForm>
@@ -279,6 +325,29 @@ const WithdrawComponents = () => {
         columns={columns(callBack)}
         data={data}
       />
+
+
+      <Modal
+        title="提现订单"
+        visible={questionVisible}
+        onCancel={() => setQuestionVisible(false)}
+        hideCancel
+        autoFocus={false}
+        focusLock={true}
+        footer={
+          <>
+            <Button onClick={() => confirmQuestion(-1)} type={'default'}>
+              拒绝通过
+            </Button>
+            <Button onClick={() => confirmQuestion(1)} type={'primary'}>
+              审核通过
+            </Button>
+          </>
+        }
+      >
+        <p>同意提现申请并打款</p>
+      </Modal>
+
     </div>
   );
 };

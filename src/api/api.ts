@@ -260,3 +260,7 @@ export const APIGetHomeData = (params) => {
 export const APIBurnAis = (params) => {
   return axios.get(`/api/v1/assert/burnAis`, { params });
 };
+
+export const APIConfirmWithdraw = (params) => {
+  return axios.get('/api/v1/assert/checkinWithDraw',  {params});
+};

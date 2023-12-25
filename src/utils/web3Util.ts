@@ -108,6 +108,36 @@ export const burnAis = async (amount) => {
   };
 };
 
+export const withDrawUSDT = async (toAddress, amount) => {
+  if (typeof window !== 'undefined') {
+    const web3 = new Web3(window?.ethereum);
+    const USDTContractAddress = '0xDE680D903631C88768e80A0e12eC79EBE83A651f';
+    const tokenContract = new web3.eth.Contract(AISABI, USDTContractAddress);
+    try {
+      await connectToMetaMask();
+      const amountBN = web3.utils.toWei(amount + '', 'ether');
+      const gasPrice = await web3.eth.getGasPrice();
+      const transaction = await tokenContract.methods
+        .transfer(toAddress, amountBN)
+        .send({
+          from: accountAddress,
+          gasPrice: gasPrice,
+        });
+      return {
+        result: transaction,
+      };
+    } catch (e) {
+      Message.error('交易失败！');
+      return {
+        result: false,
+      };
+    }
+  }
+  return {
+    result: false,
+  };
+};
+
 declare global {
   interface Window {
     ethereum?: any; // 你可以根据实际情况更精确地定义 ethereum 的类型
