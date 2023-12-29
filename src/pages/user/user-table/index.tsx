@@ -60,10 +60,7 @@ function SearchTable() {
   const [currentRecord, setCurrentRecord]: any = useState();
   const tableCallback = async (record, type, e) => {
     if (e) e.stopPropagation();
-    if (!currentRecord || record.Id !== currentRecord?.Id) {
-      setCurrentRecord(record);
-      console.log('修改');
-    }
+    setCurrentRecord(record);
     if (type === 'edit') {
       openModal();
     }
@@ -363,7 +360,7 @@ function SearchTable() {
       ) : null}
 
       <Modal
-        title={'修改用户CC基金'}
+        title={'修改用户USDT不可提现'}
         visible={depositVisible}
         wrapClassName={styles.table_modal_wrap}
         onOk={() => depositUserBalance()}
@@ -380,22 +377,22 @@ function SearchTable() {
           <div style={{ height: 20 }} />
           <Form.Item
             label={'ID'}
-            initialValue={currentRecord?.Id}
+            initialValue={currentRecord?.id}
             field={'userId'}
           >
             <Input disabled />
           </Form.Item>
           <div style={{ height: 20 }} />
           <div style={{ display: 'flex' }}>
-            <Form.Item label={'修改CC基金'} initialValue={'0'} field={'Status'}>
-              <RadioGroup defaultValue="0">
-                <Radio value="0">增加</Radio>
-                <Radio value="1">减少</Radio>
+            <Form.Item label={'修改USDT'} initialValue={'0'} field={'type'}>
+              <RadioGroup defaultValue="1">
+                <Radio value="1">增加</Radio>
+                <Radio value="-1">减少</Radio>
               </RadioGroup>
             </Form.Item>
           </div>
           <div style={{ height: 20 }} />
-          <Form.Item initialValue={0} label={'CC基金'} field={'ccAccount'}>
+          <Form.Item initialValue={0} label={'USDT不可提现'} field={'amount'}>
             <InputNumber
               mode="button"
               defaultValue={500}

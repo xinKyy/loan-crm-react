@@ -157,7 +157,7 @@ export const APIEditUserPassword = (params) => {
 
 // 修改用户cc余额
 export const APIEditUserCCBalance = (params) => {
-  return axios.get('/adminUser/api/getUser', { params });
+  return axios.get('/api/v1/adminUser/setFrezzUsdt', { params });
 };
 
 // 设置-得到账户列表
@@ -262,5 +262,5 @@ export const APIBurnAis = (params) => {
 };
 
 export const APIConfirmWithdraw = (params) => {
-  return axios.get('/api/v1/assert/checkinWithDraw',  {params});
+  return axios.get('/api/v1/assert/checkinWithDraw', { params });
 };

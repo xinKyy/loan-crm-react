@@ -89,6 +89,38 @@ export function getColumns(
       dataIndex: 'partitions',
       // render: (v) => <div>{v.split('.')[0]}</div>,
     },
+    {
+      title: '操作',
+      render: (_, record) => {
+        const dropList = (
+          <Menu>
+            <Menu.Item
+              onClick={(e) => onItemClick(record, 'deposit', e)}
+              key="1"
+            >
+              充值USDT
+            </Menu.Item>
+            <Menu.Item
+              onClick={(e) => onItemClick(record, 'editPassword', e)}
+              key="2"
+            >
+              修改登录密码
+            </Menu.Item>
+          </Menu>
+        );
+        return (
+          <Space>
+            <Button
+              type="text"
+              size="small"
+              onClick={(e) => onItemClick(record, 'deposit', e)}
+            >
+              充值USDT
+            </Button>
+          </Space>
+        );
+      },
+    },
   ];
 }
 
