@@ -125,8 +125,8 @@ function SearchTable() {
     setLoading(true);
     APIGetUsersList({
       ...formParams,
-      pageNum: pagination.current,
-      pageCount: pagination.pageSize,
+      page_num: pagination.current,
+      page_size: pagination.pageSize,
     })
       .then((resp: any) => {
         if (resp.result) {
