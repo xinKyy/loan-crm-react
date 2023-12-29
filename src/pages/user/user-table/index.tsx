@@ -67,6 +67,9 @@ function SearchTable() {
     if (type === 'deposit') {
       setDepositVisible(true);
     }
+    if (type === 'depositAIS') {
+      setDepositAISVisible(true);
+    }
     if (type === 'editPassword') {
       setEditPasswordVisible(true);
     }
@@ -85,6 +88,7 @@ function SearchTable() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [depositVisible, setDepositVisible] = useState(false);
+  const [depositAISVisible, setDepositAISVisible] = useState(false);
   const [editPasswordVisible, setEditPasswordVisible] = useState(false);
   const [form] = useForm();
   const [passForm] = useForm();
@@ -206,11 +210,16 @@ function SearchTable() {
       });
   };
 
-  const depositUserBalance = () => {
-    setDepositVisible(false);
+  const depositUserBalance = (coin) => {
+    if (coin === 0) {
+      setDepositVisible(false);
+    } else {
+      setDepositAISVisible(false);
+    }
     setLoading(true);
     APIEditUserCCBalance({
       ...depositForm.getFieldsValue(),
+      coin: coin,
     })
       .then((resp: any) => {
         if (resp.result) {
@@ -363,7 +372,7 @@ function SearchTable() {
         title={'修改用户USDT不可提现'}
         visible={depositVisible}
         wrapClassName={styles.table_modal_wrap}
-        onOk={() => depositUserBalance()}
+        onOk={() => depositUserBalance(0)}
         onCancel={() => {
           depositForm.resetFields();
           setDepositVisible(false);
@@ -393,6 +402,49 @@ function SearchTable() {
           </div>
           <div style={{ height: 20 }} />
           <Form.Item initialValue={0} label={'USDT不可提现'} field={'amount'}>
+            <InputNumber
+              mode="button"
+              defaultValue={500}
+              style={{ width: '150px' }}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title={'修改用户AIS余额'}
+        visible={depositAISVisible}
+        wrapClassName={styles.table_modal_wrap}
+        onOk={() => depositUserBalance(1)}
+        onCancel={() => {
+          depositForm.resetFields();
+          setDepositAISVisible(false);
+        }}
+        okText={'确定'}
+        hideCancel={true}
+        autoFocus={false}
+        focusLock={true}
+      >
+        <Form form={depositForm}>
+          <div style={{ height: 20 }} />
+          <Form.Item
+            label={'ID'}
+            initialValue={currentRecord?.id}
+            field={'userId'}
+          >
+            <Input disabled />
+          </Form.Item>
+          <div style={{ height: 20 }} />
+          <div style={{ display: 'flex' }}>
+            <Form.Item label={'修改AIS'} initialValue={'0'} field={'type'}>
+              <RadioGroup defaultValue="1">
+                <Radio value="1">增加</Radio>
+                <Radio value="-1">减少</Radio>
+              </RadioGroup>
+            </Form.Item>
+          </div>
+          <div style={{ height: 20 }} />
+          <Form.Item initialValue={0} label={'AIS数量'} field={'amount'}>
             <InputNumber
               mode="button"
               defaultValue={500}

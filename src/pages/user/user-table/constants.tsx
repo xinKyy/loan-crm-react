@@ -70,6 +70,11 @@ export function getColumns(
       // render: (v) => <div>{v.split('.')[0]}</div>,
     },
     {
+      title: 'AIS余额',
+      dataIndex: 'withdrawableAis',
+      // render: (v) => <div>{v.split('.')[0]}</div>,
+    },
+    {
       title: '可对碰折合A',
       dataIndex: 'crushSurplusA',
       // render: (v) => <div>{v.split('.')[0]}</div>,
@@ -116,6 +121,13 @@ export function getColumns(
               onClick={(e) => onItemClick(record, 'deposit', e)}
             >
               充值USDT
+            </Button>
+            <Button
+              type="text"
+              size="small"
+              onClick={(e) => onItemClick(record, 'depositAIS', e)}
+            >
+              充值AIS
             </Button>
           </Space>
         );
