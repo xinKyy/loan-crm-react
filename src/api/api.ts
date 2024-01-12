@@ -264,3 +264,7 @@ export const APIBurnAis = (params) => {
 export const APIConfirmWithdraw = (params) => {
   return axios.get('/api/v1/assert/checkinWithDraw', { params });
 };
+
+export const APIUserAdminLogin = (params) => {
+  return axios.post('/api/v1/adminUser/doLogin',  params);
+};

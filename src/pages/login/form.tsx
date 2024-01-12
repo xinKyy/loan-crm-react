@@ -14,7 +14,7 @@ import useStorage from '@/utils/useStorage';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
-import { APIDoLogin } from '@/api/api';
+import { APIDoLogin, APIUserAdminLogin } from '@/api/api';
 import { router } from 'next/client';
 import { useRouter } from 'next/router';
 import cookies from 'next-cookies';
@@ -44,24 +44,24 @@ export default function LoginForm() {
   }
   function onSubmitClick() {
     formRef.current.validate().then((values) => {
-      // login(values);
+      login(values);
 
-      if(values.userName !== "admin" || values.password !== "admin"){
-        return Message.error("账号或密码错误！");
-      }
+      // if(values.userName !== "admin" || values.password !== "admin"){
+      //   return Message.error("账号或密码错误！");
+      // }
 
-      // 记录登录状态
-      localStorage.setItem('userStatus', 'login');
-      localStorage.setItem('token', 'aaa');
-      setCookie('satoken', 'aaa', 7);
-      // 跳转首页
-      window.location.href = '/';
+      // // 记录登录状态
+      // localStorage.setItem('userStatus', 'login');
+      // localStorage.setItem('token', 'aaa');
+      // setCookie('satoken', 'aaa', 7);
+      // // 跳转首页
+      // window.location.href = '/';
     });
   }
 
   const login = (params) => {
     setLoading(true);
-    APIDoLogin(params)
+    APIUserAdminLogin(params)
       .then((resp: any) => {
         if (resp.result) {
           afterLoginSuccess(resp);
