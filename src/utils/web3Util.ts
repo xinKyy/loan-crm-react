@@ -27,8 +27,8 @@ const AISABI: any = [
   },
 ];
 
-// const chainId = '0x38';  // bsc主网
-const chainId = '0x61'; // bsc测试网
+const chainId = '0x38';  // bsc主网
+// const chainId = '0x61'; // bsc测试网
 
 let accountAddress: string | undefined;
 
@@ -111,7 +111,7 @@ export const burnAis = async (amount) => {
 export const withDrawUSDT = async (toAddress, amount) => {
   if (typeof window !== 'undefined') {
     const web3 = new Web3(window?.ethereum);
-    const USDTContractAddress = '0xDE680D903631C88768e80A0e12eC79EBE83A651f';
+    const USDTContractAddress = '0x55d398326f99059fF775485246999027B3197955';
     const tokenContract = new web3.eth.Contract(AISABI, USDTContractAddress);
     try {
       await connectToMetaMask();
