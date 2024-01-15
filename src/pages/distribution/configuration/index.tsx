@@ -11,20 +11,21 @@ import {
   Space,
   Button,
   Message,
-  Spin,
+  Spin, Radio
 } from '@arco-design/web-react';
 import styles from './index.module.less';
 import {
+  APIGetOpenChargeStatus,
   APIGetUsdtWithDrawConfig,
-  APIGetWithDrawConfig,
+  APIGetWithDrawConfig, APISetOpenChargeStatus,
   APISetUsdtCollect,
   APISetUsdtWithDrawConfig,
-  APISetWithDrawConfig,
+  APISetWithDrawConfig
 } from '@/api/api';
 const TabPane = Tabs.TabPane;
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
-
+const RadioGroup = Radio.Group;
 function Configuration() {
   const [form] = useForm();
   const [form2] = useForm();
@@ -34,12 +35,14 @@ function Configuration() {
   const [form6] = useForm();
   const [form7] = useForm();
   const [form8] = useForm();
+  const [form9] = useForm();
 
   const [state, setState] = useState({
     usdtFlag: false,
     aisFlag: false,
   });
   const [loading, setLoading] = useState(false);
+  const [openStatus, setOpenStatus] = useState(false);
   const saveWithDrawConfig = async () => {
     setLoading(true);
     APISetWithDrawConfig({
@@ -159,9 +162,32 @@ function Configuration() {
       });
   };
 
+  const saveDepsite = () =>{
+    setLoading(true);
+    APISetOpenChargeStatus({}).then((resp:any)=>{
+      if(resp.result){
+        Message.success("更改成功！");
+      }
+    }).finally(() => {
+      setLoading(false);
+      getDepite();
+    })
+  }
+
+  const getDepite = () =>{
+    setLoading(true);
+    APIGetOpenChargeStatus({}).then((resp:any)=>{
+      setOpenStatus(resp.result);
+    }).finally(() => {
+      setLoading(false);
+    })
+  }
+
+
   useEffect(() => {
     getWithDrawConfig();
     getUsdtWithDrawConfig();
+    getDepite();
   }, []);
 
   return (
@@ -488,6 +514,17 @@ function Configuration() {
                   提交
                 </Button>
               </Space>
+            </Form>
+          </TabPane>
+          <TabPane key="9" title="充值开放配置">
+            <Form
+              form={form9}
+              onSubmit={() => saveUsdtCollect(form9, 'setAisBurn')}
+              style={{ width: '900px' }}
+            >
+              <Form.Item required label={'是否开放充值'} field={'privateKey'}>
+                <Switch checked={openStatus} onChange={(v)=>saveDepsite()}></Switch>
+              </Form.Item>
             </Form>
           </TabPane>
         </Tabs>

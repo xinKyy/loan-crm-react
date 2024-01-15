@@ -268,3 +268,11 @@ export const APIConfirmWithdraw = (params) => {
 export const APIUserAdminLogin = (params) => {
   return axios.post('/api/v1/adminUser/doLogin',  params);
 };
+
+export const APISetOpenChargeStatus = (params) => {
+  return axios.get(`/api/v1/adminUser/setOpenChargeStatus`, { params });
+};
+
+export const APIGetOpenChargeStatus = (params) => {
+  return axios.get(`/api/v1/adminUser/getOpenChargeStatus`, { params });
+};
