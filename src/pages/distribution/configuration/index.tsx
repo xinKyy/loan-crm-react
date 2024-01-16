@@ -282,8 +282,8 @@ function Configuration() {
               <Form.Item
                 required
                 rules={[{ required: true }]}
-                label={'AIS提现手续费（固额）'}
-                extra="每次提现扣除手续费，计费方式AIS固定额度"
+                label={'AIS提现手续费（比例）'}
+                extra="每次提现扣除手续费，计费方式AIS比例"
                 field={'AIS_LOW_WITHDRAW_FEE'}
               >
                 <InputNumber
