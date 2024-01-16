@@ -75,7 +75,12 @@ function SearchForm(props: {
 
   const handleReset = () => {
     form.resetFields();
-    props.onSearch({});
+    form.setFieldsValue({
+      status: 0,
+    });
+    props.onSearch({
+      status: 0,
+    });
   };
 
   function onSelect(dateString, date) {
@@ -101,14 +106,15 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'状态：'} field={'burnRecord'}>
+            <Form.Item label={'状态：'} field={'status'}>
               <RadioGroup
                 type="button"
                 name="lang"
+                defaultValue={0}
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value="1">已销毁</Radio>
-                <Radio value="0">待销毁</Radio>
+                <Radio value={1}>已销毁</Radio>
+                <Radio value={0}>待销毁</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
@@ -210,7 +216,9 @@ const AISDestructionComponents = () => {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [formParams, setFormParams] = useState({});
+  const [formParams, setFormParams] = useState({
+    status: 0,
+  });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   function handleSearch(params) {
@@ -254,6 +262,7 @@ const AISDestructionComponents = () => {
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
   const getData = () => {
+    setLoading(true);
     APIGetChargeRecord(
       {
         ...formParams,
@@ -261,15 +270,19 @@ const AISDestructionComponents = () => {
         page_num: pagination.current,
       },
       'getAisBurnRecord'
-    ).then((resp: any) => {
-      if (resp.result) {
-        setData(resp.result.records);
-        setPatination({
-          ...pagination,
-          total: resp.result.total,
-        });
-      }
-    });
+    )
+      .then((resp: any) => {
+        if (resp.result) {
+          setData(resp.result.records);
+          setPatination({
+            ...pagination,
+            total: resp.result.total,
+          });
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
