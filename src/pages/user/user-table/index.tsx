@@ -352,7 +352,7 @@ function SearchTable() {
               <Input placeholder="请输入邮箱号" />
             </Form.Item>
             <div style={{ height: 20 }} />
-            <Form.Item label={'密码'} field={'password'}>
+            <Form.Item label={'登录密码'} field={'password'}>
               <Input.Password
                 value={currentRecord?.Id}
                 placeholder="请输入密码"
