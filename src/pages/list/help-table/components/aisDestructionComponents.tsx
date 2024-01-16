@@ -76,10 +76,10 @@ function SearchForm(props: {
   const handleReset = () => {
     form.resetFields();
     form.setFieldsValue({
-      status: 0,
+      burnRecord: 0,
     });
     props.onSearch({
-      status: 0,
+      burnRecord: 0,
     });
   };
 
@@ -106,7 +106,7 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'状态：'} field={'status'}>
+            <Form.Item label={'状态：'} field={'burnRecord'}>
               <RadioGroup
                 type="button"
                 name="lang"
@@ -217,7 +217,7 @@ const AISDestructionComponents = () => {
     pageSizeChangeResetCurrent: true,
   });
   const [formParams, setFormParams] = useState({
-    status: 0,
+    burnRecord: 0,
   });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
