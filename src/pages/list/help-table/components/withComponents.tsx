@@ -64,7 +64,14 @@ function SearchForm(props: {
 
   const handleReset = () => {
     form.resetFields();
-    props.onSearch({});
+    form.setFieldsValue({
+      check:0,
+      symbol:"USDT"
+    })
+    props.onSearch({
+      check:0,
+      symbol:"USDT"
+    });
   };
 
   function onSelect(dateString, date) {
@@ -94,24 +101,24 @@ function SearchForm(props: {
               <RadioGroup
                 type="button"
                 name="lang"
-                defaultValue="3"
+                defaultValue={0}
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value="0">待审核</Radio>
-                <Radio value="1">已审核</Radio>
+                <Radio value={0}>待审核</Radio>
+                <Radio value={1}>已审核</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} field={'status'}>
+            <Form.Item label={'币种类型：'} field={'symbol'}>
               <RadioGroup
                 type="button"
                 name="lang"
-                defaultValue="0"
+                defaultValue="USDT"
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value="0">USDT</Radio>
-                <Radio value="1">AIS</Radio>
+                <Radio value="USDT">USDT</Radio>
+                <Radio value="AIS">AIS</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
@@ -231,7 +238,10 @@ const WithdrawComponents = () => {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [formParams, setFormParams] = useState({});
+  const [formParams, setFormParams] = useState({
+    check:0,
+    symbol:"USDT"
+  });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [questionVisible, setQuestionVisible] = useState(false);
@@ -259,7 +269,9 @@ const WithdrawComponents = () => {
     getData();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
-  const getData = () => {
+
+  const getData = (loading?) => {
+    if(!loading) setLoading(true);
     APIGetChargeRecord(
       {
         ...formParams,
@@ -275,6 +287,8 @@ const WithdrawComponents = () => {
           total: resp.result.total,
         });
       }
+    }).finally(()=>{
+      setLoading(false);
     });
   };
 
