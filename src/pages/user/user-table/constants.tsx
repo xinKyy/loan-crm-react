@@ -118,6 +118,13 @@ export function getColumns(
             <Button
               type="text"
               size="small"
+              onClick={(e) => onItemClick(record, 'edit', e)}
+            >
+              编辑用户
+            </Button>
+            <Button
+              type="text"
+              size="small"
               onClick={(e) => onItemClick(record, 'deposit', e)}
             >
               充值USDT

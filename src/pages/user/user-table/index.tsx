@@ -36,12 +36,13 @@ import './mock';
 import { getColumns } from './constants';
 import qrPng from '../../../../src/imgs/qrcode.png';
 import {
+  APIChangeUserActive,
   APIChangeUserStatus,
   APIEditUser,
   APIEditUserCCBalance,
   APIEditUserPassword,
   APIGetUserList,
-  APIGetUsersList,
+  APIGetUsersList
 } from '@/api/api';
 
 const Row = Grid.Row;
@@ -62,6 +63,9 @@ function SearchTable() {
     if (e) e.stopPropagation();
     setCurrentRecord(record);
     if (type === 'edit') {
+      form.setFieldsValue({
+        ...record,
+      })
       openModal();
     }
     if (type === 'deposit') {
@@ -175,7 +179,6 @@ function SearchTable() {
     setLoading(true);
     APIEditUser({
       ...form.getFieldsValue(),
-      membershiplevel: currentRecord?.MemberLevel,
     })
       .then((resp: any) => {
         if (resp.result) {
@@ -250,6 +253,23 @@ function SearchTable() {
       });
   };
 
+  const changeUserActive = (record) => {
+    setLoading(true);
+    APIChangeUserActive({
+      userId: record.id,
+      active: record.active === 1 ? 0 : 1,
+    })
+      .then((resp: any) => {
+        if (resp.result) {
+          Message.success('操作成功！');
+          getUserList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <Card>
       <SearchForm onSearch={handleSearch} />
@@ -281,6 +301,13 @@ function SearchTable() {
                     ></Switch>
                   </div>
                   <div>
+                    <span>限制资金状态：</span>
+                    <Switch
+                      onChange={(v) => changeUserActive(record)}
+                      checked={record.active === 1}
+                    ></Switch>
+                  </div>
+                  <div>
                     <span>创建时间：</span>
                     {record?.createTime}
                   </div>
@@ -291,7 +318,7 @@ function SearchTable() {
         }}
         expandProps={{
           expandRowByClick: true,
-          rowExpandable: (record) => true,
+          rowExpandable: (record) => true
         }}
       />
 
@@ -313,57 +340,28 @@ function SearchTable() {
           <Form form={form}>
             <Form.Item
               label={'ID'}
-              initialValue={currentRecord?.Id}
-              field={'userId'}
+              field={'id'}
             >
               <Input disabled />
             </Form.Item>
             <div style={{ height: 20 }} />
             <Form.Item
               label={'邮箱号'}
-              initialValue={currentRecord?.Email}
               field={'email'}
             >
               <Input placeholder="请输入邮箱号" />
             </Form.Item>
             <div style={{ height: 20 }} />
-            <Form.Item
-              label={'备注'}
-              initialValue={currentRecord?.Remark}
-              field={'remark'}
-            >
-              <Input.TextArea placeholder="请输入备注" />
+            <Form.Item label={'密码'} field={'password'}>
+              <Input.Password
+                value={currentRecord?.Id}
+                placeholder="请输入密码"
+              />
             </Form.Item>
             <div style={{ height: 20 }} />
-            <div style={{ display: 'flex' }}>
-              <Form.Item
-                label={'状态'}
-                initialValue={currentRecord?.status}
-                field={'status'}
-              >
-                <RadioGroup defaultValue={currentRecord?.status}>
-                  <Radio value="0">开启</Radio>
-                  <Radio value="1">关闭</Radio>
-                </RadioGroup>
-              </Form.Item>
-            </div>
-            <div style={{ height: 20 }} />
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Form.Item label={'会员等级'} field={'membershiplevel'}>
-                <Dropdown droplist={dropList} position="br">
-                  <Button type="default">
-                    {FilterType[currentRecord?.MemberLevel]}
-                    <IconDown />
-                  </Button>
-                </Dropdown>
-              </Form.Item>
-            </div>
-            <div style={{ height: 20 }} />
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Form.Item label={'上级推广员'} field={'parentid'}>
-                <Input placeholder={'请输入上级的Email'}></Input>
-              </Form.Item>
-            </div>
+            <Form.Item label={'支付密码'} field={'payPassword'}>
+              <Input.Password placeholder="请输入支付密码" />
+            </Form.Item>
           </Form>
         </Modal>
       ) : null}

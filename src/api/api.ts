@@ -147,7 +147,7 @@ export const APIEditVipList = (params) => {
 
 // 修改用户详情
 export const APIEditUser = (params) => {
-  return axios.get('/adminUser/getUser', { params });
+  return axios.post('/api/v1/adminUser/setBaseInfo', params);
 };
 
 // 修改用户密码
@@ -243,6 +243,10 @@ export const APIGetUsersList = (params) => {
 
 export const APIChangeUserStatus = (params) => {
   return axios.get(`/api/v1/adminUser/setStatus`, { params });
+};
+
+export const APIChangeUserActive = (params) => {
+  return axios.get(`/api/v1/adminUser/setActive`, { params });
 };
 
 export const APIGetAISPriceConfigList = (params) => {
