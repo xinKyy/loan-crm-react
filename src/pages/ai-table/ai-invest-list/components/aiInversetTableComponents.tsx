@@ -134,10 +134,10 @@ function SearchForm(props: {
 
 const columns = (callback) => {
   return [
-    // {
-    //   title: 'ID',
-    //   dataIndex: 'id',
-    // },
+    {
+      title: 'ID',
+      dataIndex: 'id',
+    },
     {
       title: '用户昵称',
       dataIndex: 'account',

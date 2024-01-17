@@ -48,8 +48,6 @@ export function getColumns(
     {
       title: '用户昵称',
       dataIndex: 'account',
-      fixed: 'left',
-      width: 140,
     },
     {
       title: '邮箱号',
@@ -58,17 +56,19 @@ export function getColumns(
     {
       title: '收款地址',
       dataIndex: 'address',
-      render:(_)=><WalletAddress address={_}></WalletAddress>
+      render: (_) => <WalletAddress address={_}></WalletAddress>,
     },
     {
       title: '账户可提现',
       dataIndex: 'withdrawableUsdt',
-      render:(_, record)=>{
-        return <div style={{fontSize:"12px"}}>
-          <div>USDT: {record.withdrawableUsdt}</div>
-          <div>&nbsp;&nbsp;AIS: {record.withdrawableAis}</div>
-        </div>
-      }
+      render: (_, record) => {
+        return (
+          <div style={{ fontSize: '12px' }}>
+            <div>USDT: {record.withdrawableUsdt}</div>
+            <div>&nbsp;&nbsp;AIS: {record.withdrawableAis}</div>
+          </div>
+        );
+      },
     },
     {
       title: '账户不可提现USDT',
@@ -78,28 +78,32 @@ export function getColumns(
       title: '总业绩USDT',
       dataIndex: 'Usdtbalance',
       // render: (v) => <div>{v.split('.')[0]}</div>,
-      render:(_, record)=>{
-        return <div style={{fontSize:"12px"}}>
-          <div>A: {record.partAtotal}</div>
-          <div>B: {record.partBtotal}</div>
-        </div>
-      }
+      render: (_, record) => {
+        return (
+          <div style={{ fontSize: '12px' }}>
+            <div>A: {record.partAtotal}</div>
+            <div>B: {record.partBtotal}</div>
+          </div>
+        );
+      },
     },
     {
       title: '可对碰折合',
       dataIndex: 'crushSurplusA',
-      render:(_, record)=>{
-        return <div style={{fontSize:"12px"}}>
-          <div>A: {record.crushSurplusA}</div>
-          <div>B: {record.crushSurplusB}</div>
-        </div>
-      }
+      render: (_, record) => {
+        return (
+          <div style={{ fontSize: '12px' }}>
+            <div>A: {record.crushSurplusA}</div>
+            <div>B: {record.crushSurplusB}</div>
+          </div>
+        );
+      },
       // render: (v) => <div>{v.split('.')[0]}</div>,
     },
     {
       title: '是否绑定区域',
       dataIndex: 'partitions',
-      render: (v) => <div>{v ? "是" : "否"}</div>,
+      render: (v) => <div>{v ? '是' : '否'}</div>,
     },
     {
       title: '所在区',
