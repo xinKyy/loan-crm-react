@@ -279,6 +279,9 @@ function SearchTable() {
         onChange={onChangeTable}
         pagination={pagination}
         columns={columns}
+        scroll={{
+          x:"900px"
+        }}
         data={data}
         expandedRowRender={(record) => {
           return (

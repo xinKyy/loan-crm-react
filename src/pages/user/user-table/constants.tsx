@@ -16,6 +16,7 @@ import dayjs from 'dayjs';
 import styles from './style/index.module.less';
 import { IconDown } from '@arco-design/web-react/icon';
 import { number } from 'prop-types';
+import WalletAddress from '@/components/WalletAddress';
 
 const { Text } = Typography;
 
@@ -54,40 +55,49 @@ export function getColumns(
     },
     {
       title: '收款地址',
-      dataIndex: 'IsMember',
+      dataIndex: 'address',
+      render:(_)=><WalletAddress address={_}></WalletAddress>
     },
     {
       title: '账户可提现',
       dataIndex: 'withdrawableUsdt',
+      render:(_, record)=>{
+        return <div style={{fontSize:"12px"}}>
+          <div>USDT: {record.withdrawableUsdt}</div>
+          <div>&nbsp;&nbsp;AIS: {record.withdrawableAis}</div>
+        </div>
+      }
     },
     {
-      title: '账户不可提现',
+      title: '账户不可提现USDT',
       dataIndex: 'frezzUsdt',
     },
     {
       title: '总业绩USDT',
       dataIndex: 'Usdtbalance',
       // render: (v) => <div>{v.split('.')[0]}</div>,
+      render:(_, record)=>{
+        return <div style={{fontSize:"12px"}}>
+          <div>A: {record.partAtotal}</div>
+          <div>B: {record.partBtotal}</div>
+        </div>
+      }
     },
     {
-      title: 'AIS余额',
-      dataIndex: 'withdrawableAis',
-      // render: (v) => <div>{v.split('.')[0]}</div>,
-    },
-    {
-      title: '可对碰折合A',
+      title: '可对碰折合',
       dataIndex: 'crushSurplusA',
-      // render: (v) => <div>{v.split('.')[0]}</div>,
-    },
-    {
-      title: '可对碰折合B',
-      dataIndex: 'crushSurplusB',
+      render:(_, record)=>{
+        return <div style={{fontSize:"12px"}}>
+          <div>A: {record.crushSurplusA}</div>
+          <div>B: {record.crushSurplusB}</div>
+        </div>
+      }
       // render: (v) => <div>{v.split('.')[0]}</div>,
     },
     {
       title: '是否绑定区域',
       dataIndex: 'partitions',
-      // render: (v) => <div>{v.split('.')[0]}</div>,
+      render: (v) => <div>{v ? "是" : "否"}</div>,
     },
     {
       title: '所在区',
