@@ -45,7 +45,10 @@ export function getColumns(
     },
     {
       title: '语言',
-      dataIndex: 'image',
+      dataIndex: 'language',
+      render:(_)=>{
+        return <div>{_ === 0 ? "英语" : _ === 1 ? "中文简体" : "中文繁体"}</div>
+      }
     },
     {
       title: '公告标题',
