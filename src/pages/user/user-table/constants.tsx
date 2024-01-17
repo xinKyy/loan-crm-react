@@ -48,6 +48,8 @@ export function getColumns(
     {
       title: '用户昵称',
       dataIndex: 'account',
+      fixed: 'left',
+      width: 140,
     },
     {
       title: '邮箱号',
