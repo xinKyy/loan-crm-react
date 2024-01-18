@@ -238,6 +238,7 @@ const AiInvestTableComponents = () => {
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
   const getData = () => {
+    setLoading(true);
     APIGetChargeRecord(
       {
         ...formParams,
@@ -253,6 +254,8 @@ const AiInvestTableComponents = () => {
           total: resp.result.total,
         });
       }
+    }).finally(()=>{
+      setLoading(false);
     });
   };
 
