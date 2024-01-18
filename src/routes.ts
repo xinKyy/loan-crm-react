@@ -60,19 +60,19 @@ export const routes: IRoute[] = [
     key: 'distribution/configuration',
   },
   {
-    name: 'AI投资记录',
+    name: 'AI投资',
     // key: 'post',
     key: 'ai-table/ai-invest-list',
-    // children: [
-    //   {
-    //     name: '文章管理',
-    //     key: 'post/post-table',
-    //   },
-    //   {
-    //     name: '发布文章',
-    //     key: 'post/create-post',
-    //   },
-    // ],
+    children: [
+      {
+        name: 'AI投资记录',
+        key: 'ai-table/ai-invest-list',
+      },
+      {
+        name: '收益领取记录',
+        key: 'ai-table/ai-amount-get-table',
+      },
+    ],
   },
   {
     name: 'LP管理',
