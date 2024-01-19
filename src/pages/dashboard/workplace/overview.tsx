@@ -159,7 +159,6 @@ function Overview() {
                 key={index}
                 style={{ width: 300 }}
                 title={item.name}
-                extra={'今日数据'}
                 hoverable
               >
                 <Statistic value={item.value} groupSeparator precision={2} />
