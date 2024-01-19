@@ -137,23 +137,19 @@ const columns = (callback) => {
     },
     {
       title: '领取USDT数量',
-      dataIndex: 'amount'
+      dataIndex: 'usdt'
     },
     {
       title: '领取AIS数量',
-      dataIndex: 'fee'
+      dataIndex: 'ais'
     },
     {
       title: '更新后USDT数量',
-      dataIndex: 'fee'
+      dataIndex: 'afterUsdt'
     },
     {
       title: '更新后AIS数量',
-      dataIndex: 'fee'
-    },
-    {
-      title: '币种',
-      dataIndex: 'symbol'
+      dataIndex: 'afterAis'
     },
     {
       title: '创建时间',
