@@ -12,7 +12,7 @@ interface CustomAxiosError<T = any> {
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: '/api', // 你的API的基本URL
-  timeout: 10000, // 请求超时时间
+  timeout: 30000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json',
     // 你可能还想在这里添加其他全局头部信息
