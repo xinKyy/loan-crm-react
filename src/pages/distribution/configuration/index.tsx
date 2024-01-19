@@ -385,7 +385,7 @@ function Configuration() {
               style={{ width: '500px' }}
             >
               <Form.Item required label={'私钥'} field={'privateKey'}>
-                <Input placeholder={'请输入私钥'}></Input>
+                <Input.Password  placeholder={'请输入私钥'}></Input.Password>
               </Form.Item>
               <Form.Item required label={'地址'} field={'address'}>
                 <Input placeholder={'请输入地址'}></Input>
