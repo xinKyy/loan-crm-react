@@ -175,31 +175,31 @@ const columns = (callback) => {
     },
     {
       title: '用户昵称',
-      dataIndex: 'userName',
+      dataIndex: 'account',
     },
     {
       title: '地址',
-      dataIndex: 'userName',
+      dataIndex: 'address',
       render: (_, record) => <WalletAddress address={_}></WalletAddress>,
     },
     {
       title: '归集数量',
-      dataIndex: 'userName',
+      dataIndex: 'amount',
     },
     {
       title: '币种',
-      dataIndex: 'status',
+      dataIndex: 'symbol',
     },
     {
       title: '哈希值',
-      dataIndex: 'status',
+      dataIndex: 'hx',
       render: (_, record) => (
         <WalletAddress address={_} pre={'tx'}></WalletAddress>
       ),
     },
     {
       title: '创建时间',
-      dataIndex: 'status',
+      dataIndex: 'createTime',
     },
   ];
 };

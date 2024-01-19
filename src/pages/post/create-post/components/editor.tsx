@@ -108,6 +108,16 @@ const Editor = () => {
         <Row gutter={24}>
           <Form labelCol={{ span: 2 }} wrapperCol={{ span: 22 }} form={form}>
             <Col span={24}>
+              <div style={{ height: 20 }}></div>
+              <Form.Item initialValue={1} label={'语言：'} field={'language'}>
+                <RadioGroup>
+                  <Radio value={0}>英语</Radio>
+                  <Radio value={1}>中文简体</Radio>
+                  <Radio value={2}>中文繁体</Radio>
+                </RadioGroup>
+              </Form.Item>
+            </Col>
+            <Col span={24}>
               <Form.Item label={'标题：'} field={'title'}>
                 <Input placeholder={'请输入文章标题'}></Input>
               </Form.Item>
@@ -125,16 +135,7 @@ const Editor = () => {
                 </div>
               </div>
             </Col>
-            <Col span={24}>
-              <div style={{ height: 20 }}></div>
-              <Form.Item initialValue={'1'} label={'语言：'} field={'language'}>
-                <RadioGroup>
-                  <Radio value={0}>英语</Radio>
-                  <Radio value={1}>中文简体</Radio>
-                  <Radio value={2}>中文繁体</Radio>
-                </RadioGroup>
-              </Form.Item>
-            </Col>
+
             <div style={{ display: 'flex', justifyContent: 'end' }}>
               <Button
                 type={'primary'}

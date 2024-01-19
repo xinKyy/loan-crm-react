@@ -341,7 +341,7 @@ function Configuration() {
               </Space>
             </Form>
           </TabPane>
-          <TabPane key="2" title="USDT提现配置">
+          <TabPane key="2" disabled title="USDT提现配置">
             <Form
               onSubmit={saveUsdtWithDrawConfig}
               form={form2}
@@ -398,7 +398,7 @@ function Configuration() {
               </Space>
             </Form>
           </TabPane>
-          <TabPane key="5" title="AIS提现配置">
+          <TabPane key="5" disabled title="AIS提现配置">
             <Form
               form={form5}
               onSubmit={() => saveUsdtCollect(form5, 'setAisWithDraw')}
