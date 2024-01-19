@@ -110,11 +110,10 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} initialValue={"USDT"} field={'symbol'}>
+            <Form.Item label={'币种类型：'} field={'symbol'}>
               <RadioGroup
                 type="button"
                 name="lang"
-                defaultValue="USDT"
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
                 <Radio onClick={()=>handleSubmit({key:"symbol", value:"USDT"})} value="USDT">USDT</Radio>
