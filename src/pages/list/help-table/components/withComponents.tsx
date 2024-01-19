@@ -39,9 +39,11 @@ function SearchForm(props: {
   const [form] = useForm();
   const [orderType, setOrderType] = useState(2);
 
-  const handleSubmit = () => {
+  const handleSubmit = (params?) => {
     const values = form.getFieldsValue();
-
+    if(params){
+      values[params.key] = params.value
+    }
     values.orderType = orderType;
 
     if (values.orderType === 2) {
@@ -104,21 +106,21 @@ function SearchForm(props: {
                 defaultValue={0}
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value={0}>待审核</Radio>
-                <Radio value={1}>已审核</Radio>
+                <Radio onClick={()=>handleSubmit({key:"check", value:0})} value={0}>待审核</Radio>
+                <Radio onClick={()=>handleSubmit({key:"check", value:1})}  value={1}>已审核</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} field={'symbol'}>
+            <Form.Item label={'币种类型：'} initialValue={"USDT"} field={'symbol'}>
               <RadioGroup
                 type="button"
                 name="lang"
                 defaultValue="USDT"
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value="USDT">USDT</Radio>
-                <Radio value="AIS">AIS</Radio>
+                <Radio onClick={()=>handleSubmit({key:"symbol", value:"USDT"})} value="USDT">USDT</Radio>
+                <Radio onClick={()=>handleSubmit({key:"symbol", value:"AIS"})} value="AIS">AIS</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
@@ -131,13 +133,13 @@ function SearchForm(props: {
               defaultValue="all"
               style={{ marginBottom: 0 }}
             >
-              <Radio value="all">全部</Radio>
-              <Radio value={0}>今天</Radio>
-              <Radio value={2}>昨天</Radio>
-              <Radio value={7}>最近7天</Radio>
-              <Radio value={30}>最近30天</Radio>
-              <Radio value="1m">本月</Radio>
-              <Radio value="1y">本年</Radio>
+              <Radio onClick={handleSubmit} value="all">全部</Radio>
+              <Radio onClick={handleSubmit} value={0}>今天</Radio>
+              <Radio onClick={handleSubmit} value={2}>昨天</Radio>
+              <Radio onClick={handleSubmit} value={7}>最近7天</Radio>
+              <Radio onClick={handleSubmit} value={30}>最近30天</Radio>
+              <Radio onClick={handleSubmit} value="1m">本月</Radio>
+              <Radio onClick={handleSubmit} value="1y">本年</Radio>
             </RadioGroup>
           </Form.Item>
           <Form.Item field={'dateStartAndEnd'}>

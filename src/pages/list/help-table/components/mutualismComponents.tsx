@@ -48,9 +48,12 @@ function SearchForm(props: {
 
   const [orderType, setOrderType] = useState(-1);
 
-  const handleSubmit = () => {
-    const values = form.getFieldsValue();
 
+  const handleSubmit = (params?) => {
+    const values = form.getFieldsValue();
+    if(params){
+      values[params.key] = params.value
+    }
     values.orderType = orderType;
 
     if (values.orderType === 2) {
@@ -133,15 +136,14 @@ function SearchForm(props: {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} field={'symbol'}>
+            <Form.Item label={'币种类型：'}  field={'symbol'}>
               <RadioGroup
                 type="button"
                 name="lang"
-                defaultValue="0"
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value="0">USDT</Radio>
-                <Radio value="1">AIS</Radio>
+                <Radio onClick={()=>handleSubmit({key:"symbol", value:"USDT"})} value="USDT">USDT</Radio>
+                <Radio onClick={()=>handleSubmit({key:"symbol", value:"AIS"})} value="AIS">AIS</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
@@ -214,7 +216,8 @@ const columns = (callback) => {
     },
     {
       title: '类型',
-      dataIndex: 'orderType',
+      dataIndex: 'type',
+      render:(_)=><div>{typeList[_]}</div>
     },
     {
       title: '变动金额',
@@ -274,6 +277,7 @@ const MutualismComponents = () => {
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
   const getData = () => {
+    setLoading(true);
     APIGetChargeRecord(
       {
         ...formParams,
@@ -290,6 +294,8 @@ const MutualismComponents = () => {
         });
       }
       console.log('Aa');
+    }).finally(()=>{
+      setLoading(false);
     });
   };
 

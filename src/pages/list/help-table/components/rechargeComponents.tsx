@@ -33,9 +33,11 @@ function SearchForm(props: {
   const [form] = useForm();
   const [orderType, setOrderType] = useState(2);
 
-  const handleSubmit = () => {
+  const handleSubmit = (params?) => {
     const values = form.getFieldsValue();
-
+    if(params){
+      values[params.key] = params.value
+    }
     values.orderType = orderType;
 
     if (values.orderType === 2) {
@@ -84,15 +86,15 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} field={'symbol'}>
+            <Form.Item label={'币种类型：'} initialValue={"USDT"} field={'symbol'}>
               <RadioGroup
                 type="button"
                 name="lang"
-                defaultValue="usdt"
+                defaultValue="USDT"
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value="usdt">USDT</Radio>
-                <Radio value="ais">AIS</Radio>
+                <Radio onClick={()=>handleSubmit({key:"symbol", value:"USDT"})} value="USDT">USDT</Radio>
+                <Radio onClick={()=>handleSubmit({key:"symbol", value:"AIS"})} value="AIS">AIS</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
@@ -105,13 +107,13 @@ function SearchForm(props: {
               defaultValue="all"
               style={{ marginBottom: 0 }}
             >
-              <Radio value="all">全部</Radio>
-              <Radio value={0}>今天</Radio>
-              <Radio value={2}>昨天</Radio>
-              <Radio value={7}>最近7天</Radio>
-              <Radio value={30}>最近30天</Radio>
-              <Radio value="1m">本月</Radio>
-              <Radio value="1y">本年</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:"all"})} value="all">全部</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:0})} value={0}>今天</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:2})} value={2}>昨天</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:7})} value={7}>最近7天</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:30})} value={30}>最近30天</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:"1m"})} value="1m">本月</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:"1y"})} value="1y">本年</Radio>
             </RadioGroup>
           </Form.Item>
           <Form.Item field={'dateStartAndEnd'}>
@@ -196,7 +198,9 @@ const RechargeComponents = () => {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [formParams, setFormParams] = useState({});
+  const [formParams, setFormParams] = useState({
+    symbol:"USDT"
+  });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   function handleSearch(params) {
@@ -221,11 +225,13 @@ const RechargeComponents = () => {
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
   const getData = () => {
+    setLoading(true);
     APIGetChargeRecord(
       {
         ...formParams,
         page_size: pagination.pageSize,
         page_num: pagination.current,
+        type:9
       },
       'getChargeRecord'
     ).then((resp: any) => {
@@ -237,6 +243,8 @@ const RechargeComponents = () => {
         });
       }
       console.log('Aa');
+    }).finally(()=>{
+      setLoading(false);
     });
   };
 

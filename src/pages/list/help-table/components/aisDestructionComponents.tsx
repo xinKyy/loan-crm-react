@@ -50,8 +50,12 @@ function SearchForm(props: {
 
   const [orderType, setOrderType] = useState(2);
 
-  const handleSubmit = () => {
+  const handleSubmit = (params?) => {
     const values = form.getFieldsValue();
+
+    if(params){
+      values[params.key] = params.value
+    }
 
     values.orderType = orderType;
 
@@ -113,8 +117,8 @@ function SearchForm(props: {
                 defaultValue={0}
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value={1}>已销毁</Radio>
-                <Radio value={0}>待销毁</Radio>
+                <Radio onClick={()=>handleSubmit({key:"burnRecord", value:1})} value={1}>已销毁</Radio>
+                <Radio onClick={()=>handleSubmit({key:"burnRecord", value:0})} value={0}>待销毁</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
@@ -127,13 +131,13 @@ function SearchForm(props: {
               defaultValue="all"
               style={{ marginBottom: 0 }}
             >
-              <Radio value="all">全部</Radio>
-              <Radio value={0}>今天</Radio>
-              <Radio value={2}>昨天</Radio>
-              <Radio value={7}>最近7天</Radio>
-              <Radio value={30}>最近30天</Radio>
-              <Radio value="1m">本月</Radio>
-              <Radio value="1y">本年</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:"all"})} value="all">全部</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:0})} value={0}>今天</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:2})} value={2}>昨天</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:7})} value={7}>最近7天</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:30})} value={30}>最近30天</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:"1m"})} value="1m">本月</Radio>
+              <Radio onClick={()=>handleSubmit({key:"dateStart", value:"1y"})} value="1y">本年</Radio>
             </RadioGroup>
           </Form.Item>
           <Form.Item field={'dateStartAndEnd'}>
