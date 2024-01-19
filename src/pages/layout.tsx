@@ -48,6 +48,8 @@ function getIconFromKey(key) {
       return <IconApps className={styles.icon} />;
     case 'ai-table/ai-invest-list':
       return <IconCheckCircle className={styles.icon} />;
+    case 'ai-table/ai-amount-get-table':
+      return <IconCheckCircle className={styles.icon} />;
     case 'exception':
       return <IconExclamationCircle className={styles.icon} />;
     case 'user/user-table':

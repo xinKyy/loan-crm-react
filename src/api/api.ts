@@ -280,3 +280,7 @@ export const APISetOpenChargeStatus = (params) => {
 export const APIGetOpenChargeStatus = (params) => {
   return axios.get(`/api/v1/adminUser/getOpenChargeStatus`, { params });
 };
+
+export const APIGetAIGetList = (params) => {
+  return axios.get(`/api/v1/userDailyIncome/getIncomeList`, {params});
+};

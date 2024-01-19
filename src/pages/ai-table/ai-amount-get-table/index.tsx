@@ -23,7 +23,7 @@ import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import { Status } from '@/pages/list/help-table/constants';
 import {
   APIConfirmQuestion,
-  APIConfirmWithdraw,
+  APIConfirmWithdraw, APIGetAIGetList,
   APIGetChargeRecord,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
@@ -171,10 +171,7 @@ const AIAmountComponents = () => {
     current: 1,
     pageSizeChangeResetCurrent: true
   });
-  const [formParams, setFormParams] = useState({
-    check: 0,
-    symbol: 'USDT'
-  });
+  const [formParams, setFormParams] = useState({});
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [questionVisible, setQuestionVisible] = useState(false);
@@ -205,13 +202,12 @@ const AIAmountComponents = () => {
 
   const getData = (loading?) => {
     if (!loading) setLoading(true);
-    APIGetChargeRecord(
+    APIGetAIGetList(
       {
         ...formParams,
         page_size: pagination.pageSize,
         page_num: pagination.current
       },
-      'getWithdrawList'
     ).then((resp: any) => {
       if (resp.result) {
         setData(resp.result.records);

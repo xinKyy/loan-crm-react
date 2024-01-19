@@ -194,6 +194,10 @@ const columns = (callback) => {
       render: (_, record) => <div>{_ === 0 ? '待销毁' : '已销毁'}</div>,
     },
     {
+      title: '时间',
+      dataIndex: 'createTime',
+    },
+    {
       title: '操作',
       dataIndex: 'status',
       render: (_, record) =>

@@ -251,11 +251,6 @@ const columns = (callback) => {
       dataIndex: 'balance',
     },
     {
-      title: '账户类型',
-      dataIndex: 'status',
-      render: () => <div>不可提现</div>,
-    },
-    {
       title: '创建时间',
       dataIndex: 'createTime',
     },

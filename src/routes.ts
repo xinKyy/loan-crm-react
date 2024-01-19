@@ -68,10 +68,10 @@ export const routes: IRoute[] = [
         name: 'AI投资记录',
         key: 'ai-table/ai-invest-list',
       },
-      // {
-      //   name: '收益领取记录',
-      //   key: 'ai-table/ai-amount-get-table',
-      // },
+      {
+        name: '收益领取记录',
+        key: 'ai-table/ai-amount-get-table',
+      },
     ],
   },
   {
