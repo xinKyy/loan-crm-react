@@ -41,6 +41,24 @@ const typeList = [
   '充值回收',
   '提现失败',
 ];
+const transactionTypes = {
+  "-2": "投资收益USDT",
+  "-1": "投资收益USDT",
+  "1": "充值USDT",
+  "3": "投资收益USDT",
+  "4": "投资收益AIS",
+  "5": "推荐收益USDT",
+  "6": "推荐收益AIS",
+  "7": "分享奖励释放AIS",
+  "10": "分享奖励释放USDT",
+  "8": "管理奖励释放AIS",
+  "9": "管理奖励释放USDT",
+  "11": "投资",
+  "20": "投资",
+  "21": "投资",
+  "22": "投资"
+  // 添加其他枚举值和描述
+};
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
@@ -217,7 +235,7 @@ const columns = (callback) => {
     {
       title: '类型',
       dataIndex: 'type',
-      render:(_)=><div>{typeList[_]}</div>
+      render:(_)=><div>{transactionTypes[_]}</div>
     },
     {
       title: '变动金额',

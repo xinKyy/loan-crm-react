@@ -103,11 +103,11 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'币种类型：'} field={'symbol'}>
+            <Form.Item label={'币种类型：'} initialValue={"USDT"} field={'symbol'}>
               <RadioGroup
                 type="button"
                 name="lang"
-                defaultValue="0"
+                defaultValue="USDT"
                 style={{ marginRight: 20, marginBottom: 0 }}
               >
                 <Radio onClick={()=>handleSubmit({key:"symbol", value:"USDT"})} value="USDT">USDT</Radio>
@@ -213,7 +213,9 @@ const ImputationComponents = () => {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [formParams, setFormParams] = useState({});
+  const [formParams, setFormParams] = useState({
+    symbol:"USDT"
+  });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   function handleSearch(params) {
