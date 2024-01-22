@@ -96,6 +96,11 @@ function SearchForm(props: {
       delete values.type;
     }
 
+    for(const key in values){
+      if(values[key] == ""){
+        delete values[key];
+      }
+    }
     props.onSearch(values);
   };
 
