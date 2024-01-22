@@ -106,7 +106,7 @@ function SearchForm(props: {
       >
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item label={'操作类型：'} field={'check'}>
+            <Form.Item label={'操作类型：'} initialValue={0} field={'check'}>
               <RadioGroup
                 type="button"
                 name="lang"
