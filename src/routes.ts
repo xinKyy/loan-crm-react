@@ -108,6 +108,16 @@ export const routes: IRoute[] = [
       },
     ],
   },
+  {
+    name: '工单管理',
+    key: 'work-order',
+    children: [
+      {
+        name: '工单审核',
+        key: 'work-order-management/work-order-check',
+      },
+    ],
+  },
   // {
   //   name: 'menu.visualization',
   //   key: 'visualization',
