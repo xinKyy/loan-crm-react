@@ -30,57 +30,9 @@ export const routes: IRoute[] = [
     ],
   },
   {
-    name: '用户管理',
-    key: 'user/user-table',
-  },
-  {
-    name: '资金管理',
-    key: 'list/amountManagement',
-    // children: [
-    //   {
-    //     name: '资金管理',
-    //     key: 'list/amountManagement',
-    //   },
-    //   {
-    //     name: '帮助订单',
-    //     key: 'list/help-table',
-    //   },
-    //   {
-    //     name: '基金订单',
-    //     key: 'list/search-table',
-    //   },
-    //   // {
-    //   //   name: 'menu.list.cardList',
-    //   //   key: 'list/card',
-    //   // },
-    // ],
-  },
-  {
-    name: '钱包配置',
-    key: 'distribution/configuration',
-  },
-  {
-    name: 'AI投资',
-    // key: 'post',
-    key: 'ai-table/ai-invest-list',
-    children: [
-      {
-        name: 'AI投资记录',
-        key: 'ai-table/ai-invest-list',
-      },
-      {
-        name: '收益领取记录',
-        key: 'ai-table/ai-amount-get-table',
-      },
-    ],
-  },
-  {
-    name: 'LP管理',
-    key: 'lp-managment',
-  },
-  {
     name: '配置管理',
     key: 'setting',
+    ignore:true,
     children: [
       {
         name: '公告',
@@ -123,113 +75,40 @@ export const routes: IRoute[] = [
       },
     ],
   },
-  // {
-  //   name: 'menu.visualization',
-  //   key: 'visualization',
-  //   children: [
-  //     {
-  //       name: 'menu.visualization.dataAnalysis',
-  //       key: 'visualization/data-analysis',
-  //       requiredPermissions: [
-  //         { resource: 'menu.visualization.dataAnalysis', actions: ['read'] },
-  //       ],
-  //     },
-  //     {
-  //       name: 'menu.visualization.multiDimensionDataAnalysis',
-  //       key: 'visualization/multi-dimension-data-analysis',
-  //       requiredPermissions: [
-  //         {
-  //           resource: 'menu.visualization.dataAnalysis',
-  //           actions: ['read', 'write'],
-  //         },
-  //         {
-  //           resource: 'menu.visualization.multiDimensionDataAnalysis',
-  //           actions: ['write'],
-  //         },
-  //       ],
-  //       oneOfPerm: true,
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'menu.form',
-  //   key: 'form',
-  //   children: [
-  //     {
-  //       name: 'menu.form.group',
-  //       key: 'form/group',
-  //       requiredPermissions: [
-  //         { resource: 'menu.form.group', actions: ['read', 'write'] },
-  //       ],
-  //     },
-  //     {
-  //       name: 'menu.form.step',
-  //       key: 'form/step',
-  //       requiredPermissions: [
-  //         { resource: 'menu.form.step', actions: ['read'] },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'menu.profile',
-  //   key: 'profile',
-  //   children: [
-  //     {
-  //       name: 'menu.profile.basic',
-  //       key: 'profile/basic',
-  //     },
-  //   ],
-  // },
-
-  // {
-  //   name: 'menu.result',
-  //   key: 'result',
-  //   children: [
-  //     {
-  //       name: 'menu.result.success',
-  //       key: 'result/success',
-  //       breadcrumb: false,
-  //     },
-  //     {
-  //       name: 'menu.result.error',
-  //       key: 'result/error',
-  //       breadcrumb: false,
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'menu.exception',
-  //   key: 'exception',
-  //   children: [
-  //     {
-  //       name: 'menu.exception.403',
-  //       key: 'exception/403',
-  //     },
-  //     {
-  //       name: 'menu.exception.404',
-  //       key: 'exception/404',
-  //     },
-  //     {
-  //       name: 'menu.exception.500',
-  //       key: 'exception/500',
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: 'menu.user',
-  //   key: 'user',
-  //   children: [
-  //     {
-  //       name: 'menu.user.info',
-  //       key: 'user/info',
-  //     },
-  //     {
-  //       name: 'menu.user.setting',
-  //       key: 'user/setting',
-  //     },
-  //   ],
-  // },
+  {
+    name: '审批管理',
+    key: 'approve-management',
+    children: [
+      {
+        name: '工单推送',
+        key: 'approve-management/check-manage',
+      },
+      {
+        name: '工单查询',
+        key: 'approve-management/order-search',
+      },
+      {
+        name: '规则设置',
+        key: 'approve-management/rule-manage',
+      },
+      {
+        name: '流程设置',
+        key: 'approve-management/flow-manage',
+      },
+    ],
+  },
+  {
+    name: '还款查询',
+    key: 'repayment-search',
+  },
+  {
+    name: '催收管理',
+    key: 'repayment-search/collection-manage',
+  },
+  {
+    name: '定时任务手动触发',
+    key: 'repayment-search/task-manage',
+  },
 ];
 
 export const getName = (path: string, routes) => {

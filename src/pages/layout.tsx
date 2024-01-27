@@ -36,23 +36,23 @@ function getIconFromKey(key) {
   switch (key) {
     case 'dashboard/workplace':
       return <IconDashboard className={styles.icon} />;
-    case 'list/amountManagement':
+    case 'repayment-search/task-manage':
       return <IconList className={styles.icon} />;
     case 'setting':
       return <IconSettings className={styles.icon} />;
     case 'profile':
       return <IconFile className={styles.icon} />;
-    case 'lp-managment':
+    case 'repayment-search/collection-manage':
       return <IconFile className={styles.icon} />;
-    case 'distribution/configuration':
+    case 'repayment-search':
       return <IconApps className={styles.icon} />;
     case 'ai-table/ai-invest-list':
       return <IconCheckCircle className={styles.icon} />;
-    case 'ai-table/ai-amount-get-table':
+    case 'approve-management':
       return <IconCheckCircle className={styles.icon} />;
     case 'exception':
       return <IconExclamationCircle className={styles.icon} />;
-    case 'user/user-table':
+    case 'work-order':
       return <IconUser className={styles.icon} />;
     default:
       return <div className={styles['icon-empty']} />;
