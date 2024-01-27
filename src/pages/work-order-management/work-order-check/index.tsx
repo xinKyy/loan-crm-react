@@ -15,7 +15,7 @@ import {
   Modal,
   Message, Card,
 } from '@arco-design/web-react';
-import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
+import { IconDown, IconRefresh, IconSearch, IconInfoCircle } from '@arco-design/web-react/icon';
 import styles from '../../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
@@ -23,6 +23,7 @@ import {
   APIGetChargeRecord,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
+import ModalAlert from '@/components/ModalAlert';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
@@ -353,26 +354,18 @@ const WorkOrderCheck = () => {
           data={data}
         />
 
-        <Modal
-          title="提现订单"
+
+        <ModalAlert
+          title={"取消工单"}
+          body={<div>
+            <IconInfoCircle style={{color:"#ff0000", fontSize:"16px"}} />
+            此操作会取消工单号
+          </div>}
           visible={questionVisible}
           onCancel={() => setQuestionVisible(false)}
-          hideCancel
-          autoFocus={false}
-          focusLock={true}
-          footer={
-            <>
-              <Button onClick={() => confirmQuestion(-1)} type={'default'}>
-                拒绝通过
-              </Button>
-              <Button onClick={() => confirmQuestion(1)} type={'primary'}>
-                审核通过
-              </Button>
-            </>
-          }
-        >
-          <p>同意提现申请并打款</p>
-        </Modal>
+          refuseFun={() => confirmQuestion(-1)}
+          confirmFun={() => confirmQuestion(1)}
+        />
       </div>
     </Card>
   );

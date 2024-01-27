@@ -116,6 +116,11 @@ export const routes: IRoute[] = [
         name: '工单审核',
         key: 'work-order-management/work-order-check',
       },
+      {
+        name: '工单详情',
+        key: 'work-order-management/work-order-check/order-detail-view',
+        ignore: true,
+      },
     ],
   },
   // {
