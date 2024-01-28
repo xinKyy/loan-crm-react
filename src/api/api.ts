@@ -284,3 +284,58 @@ export const APIGetOpenChargeStatus = (params) => {
 export const APIGetAIGetList = (params) => {
   return axios.get(`/api/v1/userDailyIncome/getIncomeList`, {params});
 };
+
+/// 获取工单列表
+export const APIGetLoanOrderList = (params) => {
+  return axios.post(`/v1/admin/loanorder/list`, params);
+};
+
+/// 工单取消
+export const APIGetLoanOrderCancel = (params) => {
+  return axios.post(`/v1/admin/loanorder/cancel`, params);
+};
+
+/// 工单关闭
+export const APIGetLoanOrderClose = (params) => {
+  return axios.post(`/v1/admin/loanorder/close`, params);
+};
+
+// 客户基本信息
+export const APIGetUserBaseInfo = (params) => {
+  return axios.post(`/v1/admin/user/baseInfo`, params);
+};
+
+// 设备基本信息
+export const APIGetDeviceInfo = (params) => {
+  return axios.post(`/v1/admin/user/deviceInfo`, params);
+};
+
+// 推单列表
+export const APIGetPushList = (params) => {
+  return axios.post(`/v1/admin/loanorder/push-list`, params);
+};
+
+// 还款列表
+export const APIGetRepaymentPlanList = (params) => {
+  return axios.post(`/v1/admin/repaymentPlan/list`, params);
+};
+
+// 定时任务触发
+export const APIGetTaskList = (params) => {
+  return axios.post(`/v1/admin/task/trigger`, params);
+};
+
+// 推单
+export const APIPushOrder = (params) => {
+  return axios.post(`/v1/admin/loanorder/push`, params);
+};
+
+// 批量推单
+export const APIPushListOrder = (params) => {
+  return axios.post(`/v1/admin/loanorder/listPush`, params);
+};
+
+// 工单查询
+export const APIOrderQuery = (params) => {
+  return axios.post(`/v1/admin/loanorder/query`, params);
+};

@@ -43,10 +43,13 @@ axiosInstance.interceptors.request.use(
 // 响应拦截器
 axiosInstance.interceptors.response.use(
   (response: CustomAxiosResponse) => {
+
+    console.log(response, "responseresponse");
+
     const resp = response.data;
 
     // 在响应返回之后做一些处理
-    if (resp.resultCode === 200) {
+    if (resp.state === 1) {
       return resp;
     }
 

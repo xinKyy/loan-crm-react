@@ -20,63 +20,51 @@ import styles from '../../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
   APIConfirmWithdraw,
-  APIGetChargeRecord,
+  APIGetChargeRecord, APIGetLoanOrderCancel, APIGetLoanOrderClose, APIGetLoanOrderList,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
 import ModalAlert from '@/components/ModalAlert';
+import {useRouter} from "next/router";
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
 const { Row, Col } = Grid;
 
+const loanStatus = {
+  SUBMIT_LOAN: "提交借款申请",
+  TO_MAN_REVIEWED: "待人工审核",
+  REVIEWED_PASSED: "审核通过",
+  REVIEWED_RETUR: "审核退回",
+  REVIEWED_REJECT: "审核拒绝",
+  PUSHING_SINGLE: "推单中",
+  PUSH_SINGLE_FAIL: "推单失败",
+  LOAN_SUCCESS: "放款成功",
+  LOAN_FAIL: "放款失败",
+  NO_REPAYMENT: "未还款",
+  OVERDUE: "逾期",
+  HAS_BEEN_CLEARED: "已结清"
+};
+
+const showState = ["TO_MAN_REVIEWED", "REVIEWED_PASSED", "REVIEWED_RETUR", "REVIEWED_REJECT"]
+
+
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
   const [form] = useForm();
-  const [orderType, setOrderType] = useState(2);
-
-  const handleSubmit = (params?) => {
+  const handleSubmit = () => {
     const values = form.getFieldsValue();
-    if(params){
-      values[params.key] = params.value
-    }
-    values.orderType = orderType;
-
-    if (values.orderType === 2) {
-      delete values.orderType;
-    }
-
-    if (values.status === 'all') {
-      delete values.status;
-    }
-
-    if (values.dateStart && values.dateStart != 'all') {
-      values.start = new Date(getStartOfDay(values.dateStart));
-    }
-    if (values.dateStartAndEnd) {
-      values.start = new Date(values.dateStartAndEnd[0]);
-      values.end = new Date(values.dateStartAndEnd[1]);
-    }
-
     for(const key in values){
       if(values[key] == ""){
         delete values[key];
       }
     }
-
     props.onSearch(values);
   };
 
   const handleReset = () => {
     form.resetFields();
-    form.setFieldsValue({
-      check:0,
-      symbol:"USDT"
-    })
-    props.onSearch({
-      check:0,
-      symbol:"USDT"
-    });
+    props.onSearch({});
   };
 
   function onSelect(dateString, date) {
@@ -101,48 +89,46 @@ function SearchForm(props: {
         wrapperCol={{ span: 15 }}
       >
         <div style={{ display: 'flex' }}>
-          <Form.Item labelCol={{span:2}} label={'工单状态：'} initialValue={0} field={'check'}>
+          <Form.Item labelCol={{span:2}} label={'工单状态：'} field={'check'}>
             <RadioGroup
               type="button"
               name="lang"
-              defaultValue={0}
-              style={{ marginRight: 20, marginBottom: 0 }}
             >
-              <Radio onClick={()=>handleSubmit({key:"check", value:0})} value={0}>待自动审核</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:1})}  value={1}>待人工审核</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:2})}  value={2}>取消</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:4})}  value={4}>审核退回</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:5})}  value={5}>审核拒绝</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:6})}  value={6}>审核通过</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:7})}  value={7}>关闭</Radio>
+              {/* <Radio value={0}>待自动审核</Radio>*/}
+              <Radio value={"TO_MAN_REVIEWED"}>待人工审核</Radio>
+              <Radio value={2}>取消</Radio>
+              <Radio value={"REVIEWED_RETUR"}>审核退回</Radio>
+              <Radio value={"REVIEWED_REJECT"}>审核拒绝</Radio>
+              <Radio value={"REVIEWED_PASSED"}>审核通过</Radio>
+              <Radio value={7}>关闭</Radio>
             </RadioGroup>
           </Form.Item>
         </div>
         <Row gutter={36}>
           <Col span={12}>
-            <Form.Item label={'工单ID:'} field="account">
+            <Form.Item label={'工单ID:'} field="orderNo">
               <Input placeholder={'请输入工单ID'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="account">
+            <Form.Item label={'用户姓名:'} field="name">
               <Input placeholder={'请输入用户姓名'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'KTP账号:'} field="address">
+            <Form.Item label={'KTP账号:'} field="idCardNo">
               <Input placeholder={'请输入KTP账号'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={"借款时间"} field={'dateStartAndEnd'}>
+            <Form.Item label={"借款时间"} field={'loanDate'}>
               <RangePicker
-                style={{ width: 300, margin: '0 0 0 0' }}
+                style={{ width: 400, margin: '0 0 0 0' }}
                 showTime={{
                   defaultValue: ['00:00', '00:00'],
                   format: 'HH:mm',
                 }}
-                format="YYYY-MM-DD HH:mm"
+                format="YYYY-MM-DD HH:mm:ss"
                 onChange={onChange}
                 onSelect={onSelect}
                 onOk={onOk}
@@ -167,68 +153,82 @@ const getColumns = (callback) => {
   return [
     {
       title: '工单ID',
-      dataIndex: 'id',
+      dataIndex: 'orderNo',
     },
     {
       title: '用户ID',
-      dataIndex: 'account',
+      dataIndex: 'userId',
     },
     {
       title: '用户类型',
-      dataIndex: 'address',
+      dataIndex: 'firstLoan',
+      render:(_)=><div>{_ === 1 ? "首次借款" : "多次借款"}</div>
     },
     {
       title: '借款类型',
-      dataIndex: 'amount',
+      dataIndex: 'loanType',
     },
     {
       title: '工单状态',
-      dataIndex: 'fee',
+      dataIndex: 'state',
+      render:(_)=><div>{loanStatus[_]}</div>
     },
     {
       title: '用户姓名',
-      dataIndex: 'symbol',
+      dataIndex: 'name',
     },
     {
       title: 'KTP身份证号',
-      dataIndex: 'status',
+      dataIndex: 'idCardNo',
     },
     {
       title: '手机号码',
-      dataIndex: 'status',
+      dataIndex: 'phone',
     },
     {
       title: '借款本金',
-      dataIndex: 'createTime',
+      dataIndex: 'loanAmount',
     },
     {
       title: '借款期限',
-      dataIndex: 'createTime',
+      dataIndex: 'period',
+      render:(_)=><div>{_}天</div>
     },
     {
       title: '借款时间',
-      dataIndex: 'createTime',
+      dataIndex: 'loanDate',
     },
     {
       title: '审核时间',
-      dataIndex: 'createTime',
+      dataIndex: 'approvedDate',
     },
     {
       title: '操作',
       dataIndex: 'status',
       render: (_, record) => {
         return (
-          <Space>
-            <Button type="primary" size="small" onClick={(e) => callback(record)}>
-              审核
-            </Button>
-            <Button type="default" status={"danger"} size="small" onClick={(e) => callback(record)}>
-              取消
-            </Button>
-            <Button type="dashed" status={"warning"} size="small" onClick={(e) => callback(record)}>
-              关闭
-            </Button>
-          </Space>
+          <>
+            {
+              showState.includes(record.state) &&
+              <Space>
+                {
+                  record.state === "TO_MAN_REVIEWED" ?
+                  <Button type="primary" size="small" onClick={(e) => callback(record, "审核")}>
+                    审核
+                  </Button> :
+                  <Button type="primary" size="small" onClick={(e) => callback(record, "查看")}>
+                    查看
+                  </Button>
+                }
+                <Button type="default" status={"danger"} size="small" onClick={(e) => callback(record, "取消")}>
+                  取消
+                </Button>
+                <Button type="dashed" status={"warning"} size="small" onClick={(e) => callback(record, "关闭")}>
+                  关闭
+                </Button>
+              </Space>
+            }
+          </>
         )
       }
     },
@@ -248,15 +248,25 @@ const WorkOrderCheck = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [questionVisible, setQuestionVisible] = useState(false);
+  const [exitVisible, setExitVisible] = useState(false);
   const [currentConfirmRecord, setCurrentConfirmRecord]: any = useState();
+  const router = useRouter();
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
     setFormParams(params);
   }
 
-  const callBack = (record) => {
-    setCurrentConfirmRecord(record);
-    setQuestionVisible(true);
+  const callBack = (record, currentAction) => {
+    setCurrentConfirmRecord({...record});
+    if(currentAction === "取消"){
+      setQuestionVisible(true);
+    }
+    if(currentAction === "关闭"){
+      setExitVisible(true);
+    }
+    if(currentAction === "审核"){
+      router.push(`/work-order-management/work-order-check/order-detail-view?orderNo=${record.id}`)
+    }
   };
 
   function onChangeTable({ current, pageSize }) {
@@ -276,19 +286,18 @@ const WorkOrderCheck = () => {
 
   const getData = (loading?) => {
     if(!loading) setLoading(true);
-    APIGetChargeRecord(
+    APIGetLoanOrderList(
       {
         ...formParams,
-        page_size: pagination.pageSize,
-        page_num: pagination.current,
+        size: pagination.pageSize,
+        number: pagination.current,
       },
-      'getWithdrawList'
     ).then((resp: any) => {
-      if (resp.result) {
-        setData(resp.result.records);
+      if (resp.data) {
+        setData(resp.data.content);
         setPatination({
           ...pagination,
-          total: resp.result.total,
+          total: resp.data.totalElements,
         });
       }
     }).finally(()=>{
@@ -300,15 +309,13 @@ const WorkOrderCheck = () => {
   const confirmQuestion = (type) => {
     setQuestionVisible(false);
     setLoading(true);
-
-    if (type === -1) {
-      APIConfirmWithdraw({
-        id: currentConfirmRecord?.id,
-        status: type,
+    if(type === 1){
+      APIGetLoanOrderCancel({
+        orderNo: currentConfirmRecord?.id,
       })
         .then((resp: any) => {
-          if (resp.result) {
-            Message.success('已拒绝该笔提现');
+          if (resp.data) {
+            Message.success('已取消该工单');
             getData();
           }
         })
@@ -316,28 +323,18 @@ const WorkOrderCheck = () => {
           setLoading(false);
         });
     } else {
-      withDrawUSDT(
-        currentConfirmRecord.address,
-        currentConfirmRecord.amount
-      ).then((resp) => {
-        if (resp.result) {
-          APIConfirmWithdraw({
-            id: currentConfirmRecord?.id,
-            status: type,
-          })
-            .then((resp: any) => {
-              if (resp.result) {
-                Message.success('同意提现成功！');
-                getData();
-              }
-            })
-            .finally(() => {
-              setLoading(false);
-            });
-        } else {
+      APIGetLoanOrderClose({
+        orderNo: currentConfirmRecord?.id,
+      })
+        .then((resp: any) => {
+          if (resp.data) {
+            Message.success('已关闭该工单');
+            getData();
+          }
+        })
+        .finally(() => {
           setLoading(false);
-        }
-      });
+        });
     }
   };
 
@@ -354,17 +351,28 @@ const WorkOrderCheck = () => {
           data={data}
         />
 
-
         <ModalAlert
           title={"取消工单"}
           body={<div>
             <IconInfoCircle style={{color:"#ff0000", fontSize:"16px"}} />
-            此操作会取消工单号
+            此操作会取消工单号【{currentConfirmRecord?.id}】,是否继续？
           </div>}
           visible={questionVisible}
           onCancel={() => setQuestionVisible(false)}
-          refuseFun={() => confirmQuestion(-1)}
+          refuseFun={() => setQuestionVisible(false)}
           confirmFun={() => confirmQuestion(1)}
+        />
+
+        <ModalAlert
+          title={"关闭工单"}
+          body={<div>
+            <IconInfoCircle style={{color:"#ff0000", fontSize:"16px"}} />
+            此操作会关闭工单号【{currentConfirmRecord?.id}】,是否继续？
+          </div>}
+          visible={exitVisible}
+          onCancel={() => setExitVisible(false)}
+          refuseFun={() => setExitVisible(false)}
+          confirmFun={() => confirmQuestion(2)}
         />
       </div>
     </Card>

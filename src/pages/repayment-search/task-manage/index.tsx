@@ -20,7 +20,7 @@ import styles from '../../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
   APIConfirmWithdraw,
-  APIGetChargeRecord,
+  APIGetChargeRecord, APIGetLoanOrderCancel, APIGetRepaymentPlanList, APIGetTaskList,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
 import ModalAlert from '@/components/ModalAlert';
@@ -38,11 +38,11 @@ const getColumns = (callback) => {
     },
     {
       title: '功能说明',
-      dataIndex: 'amount',
+      dataIndex: 'des',
     },
     {
       title: '操作',
-      dataIndex: 'status',
+      dataIndex: 'type',
       render: (_, record) => {
         return (
           <Space>
@@ -66,7 +66,32 @@ const WorkOrderCheck = () => {
     pageSizeChangeResetCurrent: true,
   });
   const [formParams, setFormParams] = useState({});
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([
+    {
+      id:1,
+      des:"每日还款金额计算",
+    },
+    {
+      id:2,
+      des:"向电催公司1推送催收数据",
+    },
+    {
+      id:3,
+      des:"向电催公司1推送回款数据",
+    },
+    {
+      id:4,
+      des:"推送冲账数据",
+    },
+    {
+      id:5,
+      des:"每日金账户金额查询",
+    },
+    {
+      id:6,
+      des:"更新虚拟账户还款金额",
+    },
+  ]);
   const [loading, setLoading] = useState(false);
   const [questionVisible, setQuestionVisible] = useState(false);
   const [currentConfirmRecord, setCurrentConfirmRecord]: any = useState();
@@ -90,76 +115,21 @@ const WorkOrderCheck = () => {
 
   const columns = useMemo(()=>getColumns(callBack), []);
 
-  useEffect(() => {
-    getData();
-  }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
-
-  const getData = (loading?) => {
-    if(!loading) setLoading(true);
-    APIGetChargeRecord(
-      {
-        ...formParams,
-        page_size: pagination.pageSize,
-        page_num: pagination.current,
-      },
-      'getWithdrawList'
-    ).then((resp: any) => {
-      if (resp.result) {
-        setData(resp.result.records);
-        setPatination({
-          ...pagination,
-          total: resp.result.total,
-        });
-      }
-    }).finally(()=>{
-      setLoading(false);
-    });
-  };
-
-
-  const confirmQuestion = (type) => {
+  const confirmQuestion = () => {
     setQuestionVisible(false);
     setLoading(true);
-
-    if (type === -1) {
-      APIConfirmWithdraw({
-        id: currentConfirmRecord?.id,
-        status: type,
-      })
-        .then((resp: any) => {
-          if (resp.result) {
-            Message.success('已拒绝该笔提现');
-            getData();
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      withDrawUSDT(
-        currentConfirmRecord.address,
-        currentConfirmRecord.amount
-      ).then((resp) => {
-        if (resp.result) {
-          APIConfirmWithdraw({
-            id: currentConfirmRecord?.id,
-            status: type,
-          })
-            .then((resp: any) => {
-              if (resp.result) {
-                Message.success('同意提现成功！');
-                getData();
-              }
-            })
-            .finally(() => {
-              setLoading(false);
-            });
-        } else {
-          setLoading(false);
+    APIGetLoanOrderCancel({
+      type: currentConfirmRecord?.id,
+    })
+      .then((resp: any) => {
+        if (resp.data) {
+          Message.success(`已触发【${currentConfirmRecord.des}】定时任务`);
         }
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    }
   };
 
   return (
@@ -179,12 +149,12 @@ const WorkOrderCheck = () => {
           title={"取消工单"}
           body={<div>
             <IconInfoCircle style={{color:"#ff0000", fontSize:"16px"}} />
-            此操作会取消工单号
+            确认触发【{currentConfirmRecord?.des}】定时任务？
           </div>}
           visible={questionVisible}
           onCancel={() => setQuestionVisible(false)}
-          refuseFun={() => confirmQuestion(-1)}
-          confirmFun={() => confirmQuestion(1)}
+          refuseFun={() => setQuestionVisible(false)}
+          confirmFun={() => confirmQuestion()}
         />
       </div>
     </Card>

@@ -20,7 +20,7 @@ import styles from '../../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
   APIConfirmWithdraw,
-  APIGetChargeRecord,
+  APIGetChargeRecord, APIGetPushList,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
 import ModalAlert from '@/components/ModalAlert';
@@ -29,6 +29,24 @@ const { useForm } = Form;
 const RadioGroup = Radio.Group;
 const { Row, Col } = Grid;
 
+const loanStatus = {
+  SUBMIT_LOAN: "提交借款申请",
+  TO_MAN_REVIEWED: "待人工审核",
+  REVIEWED_PASSED: "审核通过",
+  REVIEWED_RETUR: "审核退回",
+  REVIEWED_REJECT: "审核拒绝",
+  PUSHING_SINGLE: "推单成功",
+  PUSH_SINGLE_FAIL: "推单失败",
+  LOAN_SUCCESS: "放款成功",
+  LOAN_FAIL: "放款失败",
+  NO_REPAYMENT: "未还款",
+  OVERDUE: "逾期",
+  HAS_BEEN_CLEARED: "已结清"
+};
+
+const showState = ["TO_MAN_REVIEWED", "REVIEWED_PASSED", "REVIEWED_RETUR", "REVIEWED_REJECT"]
+const canPushOrderState = ["PUSH_SINGLE_FAIL", "LOAN_FAIL"]
+const cancelAndExitState = ["PUSHING_SINGLE", "LOAN_SUCCESS"]
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
@@ -101,33 +119,32 @@ function SearchForm(props: {
         wrapperCol={{ span: 15 }}
       >
         <div style={{ display: 'flex' }}>
-          <Form.Item labelCol={{span:2}} label={'工单状态：'} initialValue={0} field={'check'}>
+          <Form.Item labelCol={{span:2}} label={'工单状态：'} field={'state'}>
             <RadioGroup
               type="button"
               name="lang"
-              defaultValue={0}
             >
-              <Radio onClick={()=>handleSubmit({key:"check", value:0})} value={0}>待推单</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:1})}  value={1}>推单成功</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:2})}  value={2}>推单失败</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:4})}  value={4}>放款成功</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:5})}  value={5}>放款失败</Radio>
+              <Radio value={0}>待推单</Radio>
+              <Radio value={"PUSHING_SINGLE"}>推单成功</Radio>
+              <Radio value={"PUSH_SINGLE_FAIL"}>推单失败</Radio>
+              <Radio value={"LOAN_SUCCESS"}>放款成功</Radio>
+              <Radio value={"LOAN_FAIL"}>放款失败</Radio>
             </RadioGroup>
           </Form.Item>
         </div>
         <Row gutter={36}>
           <Col span={12}>
-            <Form.Item label={'工单ID:'} field="account">
+            <Form.Item label={'工单ID:'} field="orderNo">
               <Input placeholder={'请输入工单ID'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="account">
+            <Form.Item label={'用户昵称:'} field="name">
               <Input placeholder={'请输入用户姓名'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'KTP账号:'} field="address">
+            <Form.Item label={'KTP账号:'} field="idCardNo">
               <Input placeholder={'请输入KTP账号'} allowClear />
             </Form.Item>
           </Col>
@@ -139,7 +156,7 @@ function SearchForm(props: {
                   defaultValue: ['00:00', '00:00'],
                   format: 'HH:mm',
                 }}
-                format="YYYY-MM-DD HH:mm"
+                format="YYYY-MM-DD HH:mm:ss"
                 onChange={onChange}
                 onSelect={onSelect}
                 onOk={onOk}
@@ -164,68 +181,73 @@ const getColumns = (callback) => {
   return [
     {
       title: '工单ID',
-      dataIndex: 'id',
+      dataIndex: 'orderNo',
     },
     {
       title: '用户ID',
-      dataIndex: 'account',
+      dataIndex: 'userId',
     },
     {
       title: '用户类型',
-      dataIndex: 'address',
+      dataIndex: 'firstLoan',
+      render:(_)=><div>{_ === 1 ? "首次借款" : "多次借款"}</div>
     },
     {
       title: '借款类型',
-      dataIndex: 'amount',
+      dataIndex: 'loanType',
     },
     {
       title: '工单状态',
       dataIndex: 'fee',
+      render:(_)=><div>{loanStatus[_]}</div>
     },
     {
       title: '用户姓名',
-      dataIndex: 'symbol',
+      dataIndex: 'name',
     },
     {
       title: 'KTP身份证号',
-      dataIndex: 'status',
+      dataIndex: 'idCardNo',
     },
     {
       title: '手机号码',
-      dataIndex: 'status',
+      dataIndex: 'phone',
     },
     {
       title: '借款本金',
-      dataIndex: 'createTime',
+      dataIndex: 'loanAmount',
     },
     {
       title: '借款期限',
-      dataIndex: 'createTime',
+      dataIndex: 'period',
+      render:(_)=><div>{_}天</div>
     },
     {
       title: '借款时间',
-      dataIndex: 'createTime',
+      dataIndex: 'loanDate',
     },
     {
       title: '审核时间',
-      dataIndex: 'createTime',
+      dataIndex: 'approvedDate',
     },
     {
       title: '操作',
       dataIndex: 'status',
       render: (_, record) => {
         return (
-          <Space>
-            <Button type="primary" size="small" onClick={(e) => callback(record)}>
-              推单
-            </Button>
-            <Button type="default" status={"danger"} size="small" onClick={(e) => callback(record)}>
-              取消
-            </Button>
-            <Button type="dashed" status={"warning"} size="small" onClick={(e) => callback(record)}>
-              关闭
-            </Button>
-          </Space>
+          <>
+            <Space>
+              <Button disabled={!canPushOrderState.includes(record.state)} type="primary" size="small" onClick={(e) => callback(record, "审核")}>
+                推单
+              </Button>
+              <Button disabled={!cancelAndExitState.includes(record.state)} type="default" status={"danger"} size="small" onClick={(e) => callback(record, "取消")}>
+                取消
+              </Button>
+              <Button disabled={!cancelAndExitState.includes(record.state)} type="dashed" status={"warning"} size="small" onClick={(e) => callback(record, "关闭")}>
+                关闭
+              </Button>
+            </Space>
+          </>
         )
       }
     },
@@ -273,19 +295,18 @@ const ApproveManagement = () => {
 
   const getData = (loading?) => {
     if(!loading) setLoading(true);
-    APIGetChargeRecord(
+    APIGetPushList(
       {
         ...formParams,
-        page_size: pagination.pageSize,
-        page_num: pagination.current,
+        size: pagination.pageSize,
+        number: pagination.current,
       },
-      'getWithdrawList'
     ).then((resp: any) => {
-      if (resp.result) {
-        setData(resp.result.records);
+      if (resp.data) {
+        setData(resp.data.content);
         setPatination({
           ...pagination,
-          total: resp.result.total,
+          total: resp.data.totalElements,
         });
       }
     }).finally(()=>{

@@ -20,7 +20,7 @@ import styles from '../../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
   APIConfirmWithdraw,
-  APIGetChargeRecord,
+  APIGetChargeRecord, APIGetLoanOrderList, APIOrderQuery,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
 import ModalAlert from '@/components/ModalAlert';
@@ -35,61 +35,15 @@ function SearchForm(props: {
   const [form] = useForm();
   const [orderType, setOrderType] = useState(2);
 
-  const handleSubmit = (params?) => {
+  const handleSubmit = () => {
     const values = form.getFieldsValue();
-    if(params){
-      values[params.key] = params.value
-    }
-    values.orderType = orderType;
-
-    if (values.orderType === 2) {
-      delete values.orderType;
-    }
-
-    if (values.status === 'all') {
-      delete values.status;
-    }
-
-    if (values.dateStart && values.dateStart != 'all') {
-      values.start = new Date(getStartOfDay(values.dateStart));
-    }
-    if (values.dateStartAndEnd) {
-      values.start = new Date(values.dateStartAndEnd[0]);
-      values.end = new Date(values.dateStartAndEnd[1]);
-    }
-
-    for(const key in values){
-      if(values[key] == ""){
-        delete values[key];
-      }
-    }
-
     props.onSearch(values);
   };
 
   const handleReset = () => {
     form.resetFields();
-    form.setFieldsValue({
-      check:0,
-      symbol:"USDT"
-    })
-    props.onSearch({
-      check:0,
-      symbol:"USDT"
-    });
+    props.onSearch({});
   };
-
-  function onSelect(dateString, date) {
-    console.log('onSelect', dateString, date);
-  }
-
-  function onChange(dateString, date) {
-    console.log('onChange: ', dateString, date);
-  }
-
-  function onOk(dateString, date) {
-    console.log('onOk: ', dateString, date);
-  }
 
   return (
     <div className={styles['search-form-wrapper']}>
@@ -102,17 +56,17 @@ function SearchForm(props: {
       >
         <Row gutter={36}>
           <Col span={12}>
-            <Form.Item label={'工单ID:'} field="account">
+            <Form.Item label={'工单ID:'} field="orderNo">
               <Input placeholder={'请输入工单ID'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'客户手机号:'} field="account">
+            <Form.Item label={'客户手机号:'} field="phone">
               <Input placeholder={'请输入客户手机号'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'KTP账号:'} field="address">
+            <Form.Item label={'KTP账号:'} field="ktpNo">
               <Input placeholder={'请输入KTP账号'} allowClear />
             </Form.Item>
           </Col>
@@ -232,6 +186,25 @@ const OrderDetailView = () =>{
     setFormParams(params);
   }
 
+  const getData = (loading?) => {
+    if(!loading) setLoading(true);
+    APIOrderQuery(
+      {
+        ...formParams,
+      },
+    ).then((resp: any) => {
+      if (resp.data) {
+        setData(resp.data.content);
+        setPatination({
+          ...pagination,
+          total: resp.data.totalElements,
+        });
+      }
+    }).finally(()=>{
+      setLoading(false);
+    });
+  };
+
   return <Card style={{minHeight:"100vh"}}>
     <SearchForm onSearch={handleSearch}></SearchForm>
     <Descriptions border data={baseData} />
@@ -239,6 +212,7 @@ const OrderDetailView = () =>{
     <Descriptions border data={baseData} />
     <Divider />
     <Table
+      loading={loading}
       data={data}
       columns={columns}
     />

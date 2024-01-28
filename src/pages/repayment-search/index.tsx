@@ -20,7 +20,7 @@ import styles from '../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
   APIConfirmWithdraw,
-  APIGetChargeRecord,
+  APIGetChargeRecord, APIGetLoanOrderList, APIGetRepaymentPlanList,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
 import ModalAlert from '@/components/ModalAlert';
@@ -172,23 +172,23 @@ const getColumns = (callback) => {
     },
     {
       title: '借款类型',
-      dataIndex: 'amount',
+      dataIndex: 'loanType',
     },
     {
       title: '客户姓名',
-      dataIndex: 'symbol',
+      dataIndex: 'name',
     },
     {
       title: 'KTP身份证号',
-      dataIndex: 'status',
+      dataIndex: 'idCardNo',
     },
     {
       title: '手机号码',
-      dataIndex: 'status',
+      dataIndex: 'phone',
     },
     {
       title: '还款金额',
-      dataIndex: 'fee',
+      dataIndex: 'repaymentAmount',
     },
     {
       title: '放款时间',
@@ -196,31 +196,31 @@ const getColumns = (callback) => {
     },
     {
       title: '计划还款日',
-      dataIndex: 'fee',
+      dataIndex: 'repaymentDate',
     },
     {
       title: '还款时间',
-      dataIndex: 'fee',
+      dataIndex: 'realRepaymentDate',
     },
     {
       title: '实还金额',
-      dataIndex: 'fee',
+      dataIndex: 'realRepaymentAmount',
     },
     {
       title: '逾期天数',
-      dataIndex: 'fee',
+      dataIndex: 'overdueDay',
     },
     {
       title: '逾期金额',
-      dataIndex: 'fee',
+      dataIndex: 'overdueFee',
     },
     {
       title: '还款状态',
-      dataIndex: 'fee',
+      dataIndex: 'repaymentCodeState',
     },
     {
       title: '操作',
-      dataIndex: 'status',
+      dataIndex: 'action',
       render: (_, record) => {
         return (
           <Space>
@@ -275,19 +275,18 @@ const WorkOrderCheck = () => {
 
   const getData = (loading?) => {
     if(!loading) setLoading(true);
-    APIGetChargeRecord(
+    APIGetRepaymentPlanList(
       {
         ...formParams,
-        page_size: pagination.pageSize,
-        page_num: pagination.current,
+        size: pagination.pageSize,
+        number: pagination.current,
       },
-      'getWithdrawList'
     ).then((resp: any) => {
-      if (resp.result) {
-        setData(resp.result.records);
+      if (resp.data) {
+        setData(resp.data.content);
         setPatination({
           ...pagination,
-          total: resp.result.total,
+          total: resp.data.totalElements,
         });
       }
     }).finally(()=>{

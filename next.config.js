@@ -47,7 +47,7 @@ module.exports = withLess(
         {
           source: '/api/:path*',
           // destination: 'http://45.159.209.53:8090/:path*', // 实际API的基本URL
-          destination: 'http://194.36.171.87:8081/:path*', // 实际API的基本URL
+          destination: 'http://myjx2erv5kcq.ngrok.xiaomiqiu123.top/:path*', // 实际API的基本URL
           // destination: 'http://18.162.207.126:8081/:path*', // 实际API的基本URL
           // destination: 'http://193.43.72.72:8081/:path*', // 实际API的基本URL
           // destination: 'http://192.168.2.126:8081/:path*', // 实际API的基本URL
