@@ -17,7 +17,7 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { Checkbox } from '@arco-design/web-react';
-import { APIGetDeviceInfo, APIGetUserBaseInfo, APIOrderSure } from '@/api/api';
+import {APIGetDeviceInfo, APIGetUserBaseInfo, APIOrderDetail, APIOrderSure} from '@/api/api';
 import { getQueryString } from '@/utils/xink';
 import { router } from 'next/client';
 const CheckboxGroup = Checkbox.Group;
@@ -156,6 +156,7 @@ const OrderDetailView = () => {
   const [resultForm] = useForm();
 
   const [baseData, setBaseData] = useState([]);
+  const [orderData, setOrderData] = useState([]);
   const [deviceData, setDeviceData] = useState([]);
   const [contractSizes, setContractSizes] = useState(0);
   const [locationData, setLocationData] = useState([]);
@@ -182,11 +183,11 @@ const OrderDetailView = () => {
     },
     {
       label: '是否清晰知晓借款金额/期限？',
-      filed: 'oneCardProduct',
+      filed: 'amount',
     },
     {
       label: '是否清晰知晓OneCard品牌？',
-      filed: 'type',
+      filed: 'oneCardProduct',
     },
     {
       label: '是否无工作矛盾？',
@@ -254,171 +255,173 @@ const OrderDetailView = () => {
   ];
 
   const setUserBaseInfo = (data) => {
-    const personalInfo = data.personalInfo;
-    const workInfo = data.workInfo;
-    setBaseData([
-      {
-        label: '客户姓名',
-        value: personalInfo.name,
-      },
-      {
-        label: '性别',
-        value: personalInfo.sex,
-      },
-      {
-        label: '手机号',
-        value: workInfo.phone,
-      },
-      {
-        label: '年龄',
-        value: personalInfo.age,
-      },
-      {
-        label: 'Email',
-        value: personalInfo.email,
-      },
-      {
-        label: '教育水平',
-        value: personalInfo.education,
-      },
-      {
-        label: '婚姻状况',
-        value: personalInfo.marry,
-      },
-      {
-        label: '孩子数量',
-        value: personalInfo.childNum,
-      },
-      {
-        label: '居住情况',
-        value: personalInfo.livingType,
-      },
-      {
-        label: '居住年限',
-        value: personalInfo.livingTime,
-      },
-    ]);
-    setWorkInfoData([
-      {
-        label: '公司名称',
-        value: workInfo.name,
-      },
-      {
-        label: '所在行业',
-        value: workInfo.name,
-      },
-      {
-        label: '岗位类型',
-        value: workInfo.workType,
-      },
-      {
-        label: '工作情况',
-        value: workInfo.workType,
-      },
-      {
-        label: '薪资水平',
-        value: workInfo.salaryInfo,
-      },
-      {
-        label: '工作年限',
-        value: workInfo.workYear,
-      },
-    ]);
-    setWorkOrderData([
-      {
-        label: '公司名称',
-        value: workInfo.name,
-      },
-    ]);
-    setImageData([
-      {
-        label: '客户姓名',
-        value: personalInfo.name,
-      },
-      {
-        label: 'KTP',
-        value: data.kpt.ktpNo,
-      },
-    ]);
-    setImageTableData([
-      {
-        id: 'ktpOperating',
-        des: 'KTP',
-        image: data.kpt.photoUrl,
-      },
-      {
-        id: 'faceOperating',
-        des: '人脸识别',
-        image: data.kpt.faceUrl,
-      },
-      {
-        id: 'npwpOperating',
-        des: 'NPWP',
-        image: data.workCertification.npwpUrl,
-      },
-      {
-        id: 'workOperating',
-        des: '工作照/工资证明',
-        image: data.workCertification.eworkUrl,
-      },
-      {
-        id: 'bpjsOperating',
-        des: 'BPJS',
-        image: data.workCertification.bpjsUrl,
-      },
-      {
-        id: 'kkOperating',
-        des: 'KK',
-        image: data.kpt.kkUrl,
-      },
-    ]);
-    setLocationData([
-      {
-        label: '居住地址',
-        value: personalInfo.address,
-      },
-      {
-        label: '居住城市',
-        value: personalInfo.city,
-      },
-      {
-        label: '居住区县',
-        value: personalInfo.county,
-      },
-      {
-        label: '居住村',
-        value: personalInfo.address,
-      },
-      {
-        label: '详细地址',
-        value: personalInfo.address,
-      },
-    ]);
-    setWorkLocationData([
-      {
-        label: '公司所在省份',
-        value: workInfo.province,
-      },
-      {
-        label: '公司所在城市',
-        value: workInfo.city,
-      },
-      {
-        label: '公司所在区县',
-        value: workInfo.county,
-      },
-      {
-        label: '公司所在村',
-        value: workInfo.address,
-      },
-      {
-        label: '公司详细地址',
-        value: workInfo.address,
-      },
-    ]);
-    setGpsData(data.gps);
-    setIpsData(data.ips);
-    setIntimateContact(data.intimateContact);
+    if(data.personalInfo && data.workInfo){
+      const personalInfo = data.personalInfo;
+      const workInfo = data.workInfo;
+      setBaseData([
+        {
+          label: '客户姓名',
+          value: personalInfo.name,
+        },
+        {
+          label: '性别',
+          value: personalInfo.sex,
+        },
+        {
+          label: '手机号',
+          value: workInfo.phone,
+        },
+        {
+          label: '年龄',
+          value: personalInfo.age,
+        },
+        {
+          label: 'Email',
+          value: personalInfo.email,
+        },
+        {
+          label: '教育水平',
+          value: personalInfo.education,
+        },
+        {
+          label: '婚姻状况',
+          value: personalInfo.marry,
+        },
+        {
+          label: '孩子数量',
+          value: personalInfo.childNum,
+        },
+        {
+          label: '居住情况',
+          value: personalInfo.livingType,
+        },
+        {
+          label: '居住年限',
+          value: personalInfo.livingTime,
+        },
+      ]);
+      setWorkInfoData([
+        {
+          label: '公司名称',
+          value: workInfo.name,
+        },
+        {
+          label: '所在行业',
+          value: workInfo.name,
+        },
+        {
+          label: '岗位类型',
+          value: workInfo.workType,
+        },
+        {
+          label: '工作情况',
+          value: workInfo.workType,
+        },
+        {
+          label: '薪资水平',
+          value: workInfo.salaryInfo,
+        },
+        {
+          label: '工作年限',
+          value: workInfo.workYear,
+        },
+      ]);
+      setWorkOrderData([
+        {
+          label: '公司名称',
+          value: workInfo.name,
+        },
+      ]);
+      setImageData([
+        {
+          label: '客户姓名',
+          value: personalInfo.name,
+        },
+        {
+          label: 'KTP',
+          value: data.kpt.ktpNo,
+        },
+      ]);
+      setImageTableData([
+        {
+          id: 'ktpOperating',
+          des: 'KTP',
+          image: data.kpt.photoUrl,
+        },
+        {
+          id: 'faceOperating',
+          des: '人脸识别',
+          image: data.kpt.faceUrl,
+        },
+        {
+          id: 'npwpOperating',
+          des: 'NPWP',
+          image: data.workCertification.npwpUrl,
+        },
+        {
+          id: 'workOperating',
+          des: '工作照/工资证明',
+          image: data.workCertification.eworkUrl,
+        },
+        {
+          id: 'bpjsOperating',
+          des: 'BPJS',
+          image: data.workCertification.bpjsUrl,
+        },
+        {
+          id: 'kkOperating',
+          des: 'KK',
+          image: data.kpt.kkUrl,
+        },
+      ]);
+      setLocationData([
+        {
+          label: '居住地址',
+          value: personalInfo.address,
+        },
+        {
+          label: '居住城市',
+          value: personalInfo.city,
+        },
+        {
+          label: '居住区县',
+          value: personalInfo.county,
+        },
+        {
+          label: '居住村',
+          value: personalInfo.address,
+        },
+        {
+          label: '详细地址',
+          value: personalInfo.address,
+        },
+      ]);
+      setWorkLocationData([
+        {
+          label: '公司所在省份',
+          value: workInfo.province,
+        },
+        {
+          label: '公司所在城市',
+          value: workInfo.city,
+        },
+        {
+          label: '公司所在区县',
+          value: workInfo.county,
+        },
+        {
+          label: '公司所在村',
+          value: workInfo.address,
+        },
+        {
+          label: '公司详细地址',
+          value: workInfo.address,
+        },
+      ]);
+      setGpsData(data.gps);
+      setIpsData(data.ips);
+      setIntimateContact(data.intimateContact);
+    }
   };
 
   const setDeviceInfo = (data) => {
@@ -428,6 +431,35 @@ const OrderDetailView = () => {
     setCallOutRecords(data.callOutRecords);
     setSms(data.sms);
   };
+
+  const setOrderInfo = (data) => {
+    setOrderData([
+      {
+        label: '开户银行',
+        value: data.bankName,
+      },
+      {
+        label: '银行账户',
+        value: data.bankNo,
+      },
+      {
+        label: '信用额度',
+        value: data.creditQuota,
+      },
+      {
+        label: '可用额度',
+        value: data.availableQuota,
+      },
+      {
+        label: '借款金额',
+        value: data.loanAmount,
+      },
+      {
+        label: '借款期限',
+        value: data.loanDate,
+      },
+    ]);
+  }
 
   const getUserInfo = () => {
     setLoading(true);
@@ -461,15 +493,29 @@ const OrderDetailView = () => {
       });
   };
 
+  const getOrderInfo = () => {
+    setLoading(true);
+    const orderNo = getQueryString('orderNo');
+    APIOrderDetail({
+      orderNo: orderNo,
+    })
+      .then((resp: any) => {
+        if (resp.data) {
+          setOrderInfo(resp.data.loanOrder);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   useEffect(() => {
     getUserInfo();
     getDeviceInfo();
+    getOrderInfo();
   }, []);
 
   const orderSure = async () => {
-    console.log(picForm.getFieldsValue(), 'picForm');
-    console.log(actionForm.getFieldsValue(), 'actionForm');
-    console.log(resultForm.getFieldsValue(), 'resultForm');
     try {
       await picForm.validate();
     } catch (e) {
@@ -499,7 +545,7 @@ const OrderDetailView = () => {
       }
 
       if (resParams[key] === undefined) {
-        delete resParams[key];
+        resParams[key] = 0;
       }
     }
 
@@ -511,7 +557,7 @@ const OrderDetailView = () => {
       orderNo: getQueryString('orderNo'),
     })
       .then((resp: any) => {
-        if (resp) {
+        if (resp.data) {
           Message.success('审核成功！');
           router.push('/work-order-management/work-order-check');
         }
@@ -530,7 +576,7 @@ const OrderDetailView = () => {
             <div style={{ height: '20px' }}></div>
             <Descriptions title={'工作信息'} border data={workInfoData} />
             <div style={{ height: '20px' }}></div>
-            <Descriptions title={'工单信息'} border data={workOrderData} />
+            <Descriptions title={'工单信息'} border data={orderData} />
           </Tabs.TabPane>
 
           <Tabs.TabPane key={'2'} title={'照片审核'}>
@@ -737,6 +783,10 @@ const OrderDetailView = () => {
                     {
                       label: '个人信息异常',
                       value: 'personAbnormal',
+                    },
+                    {
+                      label: '工单信息异常',
+                      value: 'orderAbnormal',
                     },
                     {
                       label: '工作信息异常',

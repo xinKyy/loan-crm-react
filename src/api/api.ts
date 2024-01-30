@@ -344,3 +344,8 @@ export const APIOrderQuery = (params) => {
 export const APIOrderSure = (params) => {
   return axios.post(`/v1/admin/loanorder/sure`, params);
 };
+
+// 工单详情
+export const APIOrderDetail = (params) => {
+  return axios.post(`/v1/admin/loanorder/detail`, params);
+};
