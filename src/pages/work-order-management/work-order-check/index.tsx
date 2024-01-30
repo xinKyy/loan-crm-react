@@ -77,7 +77,9 @@ function SearchForm(props: {
 
   const handleReset = () => {
     form.resetFields();
-    props.onSearch({});
+    props.onSearch({
+      state: 'TO_MAN_REVIEWED',
+    });
   };
 
   function onSelect(dateString, date) {
@@ -106,6 +108,7 @@ function SearchForm(props: {
             labelCol={{ span: 2 }}
             label={'工单状态：'}
             field={'state'}
+            initialValue={'TO_MAN_REVIEWED'}
           >
             <RadioGroup type="button" name="lang">
               {/* <Radio value={0}>待自动审核</Radio>*/}
@@ -210,7 +213,7 @@ const getColumns = (callback) => {
     },
     {
       title: '借款时间',
-      dataIndex: 'loanDate',
+      dataIndex: 'gmtCreate',
     },
     {
       title: '审核时间',
@@ -267,7 +270,9 @@ const WorkOrderCheck = () => {
     current: 1,
     pageSizeChangeResetCurrent: true,
   });
-  const [formParams, setFormParams] = useState({});
+  const [formParams, setFormParams] = useState({
+    state: 'TO_MAN_REVIEWED',
+  });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [questionVisible, setQuestionVisible] = useState(false);
@@ -288,6 +293,11 @@ const WorkOrderCheck = () => {
       setExitVisible(true);
     }
     if (currentAction === '审核') {
+      router.push(
+        `/work-order-management/work-order-check/order-detail-view?orderNo=${record.orderNo}&userId=${record.userId}`
+      );
+    }
+    if (currentAction === '查看') {
       router.push(
         `/work-order-management/work-order-check/order-detail-view?orderNo=${record.orderNo}&userId=${record.userId}`
       );
