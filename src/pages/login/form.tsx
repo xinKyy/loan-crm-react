@@ -16,7 +16,6 @@ import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
 import {APIDoLogin, APILoginAdmin, APIUserAdminLogin} from '@/api/api';
-import { router } from 'next/client';
 import { useRouter } from 'next/router';
 import cookies from 'next-cookies';
 import { setCookie } from '@/utils/dateUtil';

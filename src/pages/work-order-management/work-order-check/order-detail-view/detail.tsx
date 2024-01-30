@@ -19,7 +19,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Checkbox } from '@arco-design/web-react';
 import {APIGetDeviceInfo, APIGetUserBaseInfo, APIOrderDetail, APIOrderSure} from '@/api/api';
 import { getQueryString } from '@/utils/xink';
-import { router } from 'next/client';
+import {useRouter} from "next/router";
 const CheckboxGroup = Checkbox.Group;
 const { useForm } = Form;
 const getColumns = (callback) => {
@@ -155,7 +155,7 @@ const OrderDetailView = () => {
   const [picForm] = useForm();
   const [actionForm] = useForm();
   const [resultForm] = useForm();
-
+  const router = useRouter();
   const [baseData, setBaseData] = useState([]);
   const [orderData, setOrderData] = useState([]);
   const [deviceData, setDeviceData] = useState([]);
