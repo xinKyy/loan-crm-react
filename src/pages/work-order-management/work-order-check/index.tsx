@@ -67,6 +67,12 @@ function SearchForm(props: {
   const [form] = useForm();
   const handleSubmit = () => {
     const values = form.getFieldsValue();
+
+    if (values.date) {
+      values.startTime = new Date(values.date[0]);
+      values.endTime = new Date(values.date[1]);
+    }
+
     for (const key in values) {
       if (values[key] == '') {
         delete values[key];
@@ -138,7 +144,7 @@ function SearchForm(props: {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'借款时间'} field={'loanDate'}>
+            <Form.Item label={'借款时间'} field={'date'}>
               <RangePicker
                 style={{ width: 400, margin: '0 0 0 0' }}
                 showTime={{
