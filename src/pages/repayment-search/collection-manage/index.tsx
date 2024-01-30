@@ -132,60 +132,35 @@ const getColumns = (callback) => {
   return [
     {
       title: '工单ID',
-      dataIndex: 'id',
+      dataIndex: 'orderNo',
     },
     {
       title: '借款类型',
-      dataIndex: 'amount',
+      dataIndex: 'loanType',
     },
     {
       title: '客户姓名',
-      dataIndex: 'symbol',
+      dataIndex: 'name',
     },
     {
       title: 'KTP身份证号',
-      dataIndex: 'status',
+      dataIndex: 'idCard',
     },
     {
       title: '手机号码',
-      dataIndex: 'status',
+      dataIndex: 'phone',
     },
     {
       title: '还款金额',
-      dataIndex: 'fee',
+      dataIndex: 'repaymentAmount',
     },
     {
       title: '计划还款日',
-      dataIndex: 'fee',
+      dataIndex: 'promiseToPayDate',
     },
     {
       title: '逾期天数',
-      dataIndex: 'fee',
-    },
-    {
-      title: '案件类型',
-      dataIndex: 'fee',
-    },
-    {
-      title: '分案公司',
-      dataIndex: 'fee',
-    },
-    {
-      title: '还款情况',
-      dataIndex: 'fee',
-    },
-    {
-      title: '操作',
-      dataIndex: 'status',
-      render: (_, record) => {
-        return (
-          <Space>
-            <Button type="primary" size="small" onClick={(e) => callback(record)}>
-              删除
-            </Button>
-          </Space>
-        )
-      }
+      dataIndex: 'overdueDay',
     },
   ];
 };
