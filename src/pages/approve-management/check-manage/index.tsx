@@ -20,7 +20,7 @@ import styles from '../../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
   APIConfirmWithdraw,
-  APIGetChargeRecord, APIGetPushList,
+  APIGetChargeRecord, APIGetPushList, APIPushListOrder, APIPushOrder,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
 import ModalAlert from '@/components/ModalAlert';
@@ -45,7 +45,7 @@ const loanStatus = {
 };
 
 const showState = ["TO_MAN_REVIEWED", "REVIEWED_PASSED", "REVIEWED_RETUR", "REVIEWED_REJECT"]
-const canPushOrderState = ["PUSH_SINGLE_FAIL", "LOAN_FAIL"]
+const canPushOrderState = ["PUSH_SINGLE_FAIL", "LOAN_FAIL", "REVIEWED_PASSED"]
 const cancelAndExitState = ["PUSHING_SINGLE", "LOAN_SUCCESS"]
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
@@ -224,7 +224,7 @@ const getColumns = (callback) => {
     },
     {
       title: '借款时间',
-      dataIndex: 'loanDate',
+      dataIndex: 'gmtCreate',
     },
     {
       title: '审核时间',
@@ -240,12 +240,16 @@ const getColumns = (callback) => {
               <Button disabled={!canPushOrderState.includes(record.state)} type="primary" size="small" onClick={(e) => callback(record, "审核")}>
                 推单
               </Button>
-              <Button disabled={!cancelAndExitState.includes(record.state)} type="default" status={"danger"} size="small" onClick={(e) => callback(record, "取消")}>
-                取消
-              </Button>
-              <Button disabled={!cancelAndExitState.includes(record.state)} type="dashed" status={"warning"} size="small" onClick={(e) => callback(record, "关闭")}>
-                关闭
-              </Button>
+              {
+
+                // <Button disabled={!cancelAndExitState.includes(record.state)} type="default" status={"danger"} size="small" onClick={(e) => callback(record, "取消")}>
+                //   取消
+                // </Button>
+                // <Button disabled={!cancelAndExitState.includes(record.state)} type="dashed" status={"warning"} size="small" onClick={(e) => callback(record, "关闭")}>
+                // 关闭
+                // </Button>
+
+              }
             </Space>
           </>
         )
@@ -267,7 +271,9 @@ const ApproveManagement = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [questionVisible, setQuestionVisible] = useState(false);
+  const [pushOrderListVisible, setPushOrderListVisible] = useState(false);
   const [currentConfirmRecord, setCurrentConfirmRecord]: any = useState();
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
     setFormParams(params);
@@ -315,18 +321,33 @@ const ApproveManagement = () => {
   };
 
 
-  const confirmQuestion = (type) => {
+  const confirmQuestion = () => {
     setQuestionVisible(false);
     setLoading(true);
+    APIPushOrder({
+      orderNo: currentConfirmRecord?.orderNo,
+    })
+      .then((resp: any) => {
+        if (resp.data) {
+          Message.success('已推单成功！');
+          getData();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
-    if (type === -1) {
-      APIConfirmWithdraw({
-        id: currentConfirmRecord?.id,
-        status: type,
+  const pushOrderList =  () => {
+    if(selectedRowKeys && selectedRowKeys.length > 0){
+      setPushOrderListVisible(false);
+      setLoading(true);
+      APIPushListOrder({
+        orderNos: selectedRowKeys,
       })
         .then((resp: any) => {
-          if (resp.result) {
-            Message.success('已拒绝该笔提现');
+          if (resp.data) {
+            Message.success('已批量推单成功！');
             getData();
           }
         })
@@ -334,58 +355,69 @@ const ApproveManagement = () => {
           setLoading(false);
         });
     } else {
-      withDrawUSDT(
-        currentConfirmRecord.address,
-        currentConfirmRecord.amount
-      ).then((resp) => {
-        if (resp.result) {
-          APIConfirmWithdraw({
-            id: currentConfirmRecord?.id,
-            status: type,
-          })
-            .then((resp: any) => {
-              if (resp.result) {
-                Message.success('同意提现成功！');
-                getData();
-              }
-            })
-            .finally(() => {
-              setLoading(false);
-            });
-        } else {
-          setLoading(false);
-        }
-      });
+      Message.info('请选择需要推的工单！');
     }
-  };
+  }
 
   return (
     <Card>
       <div>
         <SearchForm onSearch={handleSearch}></SearchForm>
         <div style={{display:"flex", justifyContent:"flex-end", marginBottom:"20px"}}>
-          <Button type={"primary"}>批量推单</Button>
+          <Button type={"primary"} onClick={()=>{
+            if(selectedRowKeys && selectedRowKeys.length > 0){
+              setPushOrderListVisible(true);
+            } else {
+              Message.info('请选择需要推的工单！');
+            }
+          }}>批量推单</Button>
         </div>
         <Table
-          rowKey="id"
+          rowKey="orderNo"
           loading={loading}
           onChange={onChangeTable}
           pagination={pagination}
           columns={columns}
           data={data}
+          rowSelection={{
+            type:"checkbox",
+            selectedRowKeys,
+            onChange: (selectedRowKeys, selectedRows) => {
+              setSelectedRowKeys(selectedRowKeys);
+            },
+            onSelect: (selected, record, selectedRows) => {
+            },
+            checkboxProps: (record) => {
+              return {
+                disabled: !canPushOrderState.includes(record.state),
+              };
+            },
+          }}
         />
 
 
         <ModalAlert
-          title={"取消工单"}
+          title={"推单"}
           body={<div>
             <IconInfoCircle style={{color:"#ff0000", fontSize:"16px"}} />
-            此操作会取消工单号
+            确认推单【{currentConfirmRecord?.orderNo}】？
           </div>}
           visible={questionVisible}
           onCancel={() => setQuestionVisible(false)}
-          refuseFun={() => confirmQuestion(-1)}
-          confirmFun={() => confirmQuestion(1)}
+          refuseFun={() => setQuestionVisible(false)}
+          confirmFun={() => confirmQuestion()}
+        />
+
+        <ModalAlert
+          title={"批量推单"}
+          body={<div>
+            <IconInfoCircle style={{color:"#ff0000", fontSize:"16px"}} />
+            确认批量推单【{selectedRowKeys.join(",")}】？
+          </div>}
+          visible={pushOrderListVisible}
+          onCancel={() => setPushOrderListVisible(false)}
+          refuseFun={() => setPushOrderListVisible(false)}
+          confirmFun={() => pushOrderList()}
         />
       </div>
     </Card>
