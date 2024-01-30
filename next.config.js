@@ -36,7 +36,7 @@ module.exports = withLess(
       return [
         {
           source: '/',
-          destination: 'work-order-management/work-order-check',
+          destination: '/work-order-management/work-order-check',
           permanent: true,
         },
       ];
