@@ -348,6 +348,7 @@ const ApproveManagement = () => {
         .then((resp: any) => {
           if (resp.data) {
             Message.success('已批量推单成功！');
+            setSelectedRowKeys([]);
             getData();
           }
         })

@@ -13,7 +13,7 @@ import {
   PaginationProps,
   Table,
   Modal,
-  Message, Card, Tabs, Descriptions, PageHeader, Divider,
+  Message, Card, Tabs, Descriptions, PageHeader, Divider, Spin,
 } from '@arco-design/web-react';
 import { IconDown, IconRefresh, IconSearch, IconInfoCircle } from '@arco-design/web-react/icon';
 import styles from '../../index.module.less';
@@ -33,7 +33,6 @@ function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
   const [form] = useForm();
-  const [orderType, setOrderType] = useState(2);
 
   const handleSubmit = () => {
     const values = form.getFieldsValue();
@@ -42,7 +41,6 @@ function SearchForm(props: {
 
   const handleReset = () => {
     form.resetFields();
-    props.onSearch({});
   };
 
   return (
@@ -84,89 +82,71 @@ function SearchForm(props: {
   );
 }
 
-
+const loanStatus = {
+  SUBMIT_LOAN: '提交借款申请',
+  TO_MAN_REVIEWED: '待人工审核',
+  REVIEWED_PASSED: '审核通过',
+  REVIEWED_RETUR: '审核退回',
+  REVIEWED_REJECT: '审核拒绝',
+  PUSHING_SINGLE: '推单中',
+  PUSH_SINGLE_FAIL: '推单失败',
+  LOAN_SUCCESS: '放款成功',
+  LOAN_FAIL: '放款失败',
+  NO_REPAYMENT: '未还款',
+  OVERDUE: '逾期',
+  HAS_BEEN_CLEARED: '已结清',
+};
 const getColumns = () => {
   return [
     {
       title: '工单ID',
-      dataIndex: 'id',
+      dataIndex: 'orderNo',
     },
     {
       title: '借款类型',
-      dataIndex: 'account',
+      dataIndex: 'loanType',
     },
     {
       title: '工单状态',
-      dataIndex: 'address',
+      dataIndex: 'state',
+      render: (_) => <div>{loanStatus[_]}</div>,
     },
     {
       title: '借款本金',
-      dataIndex: 'amount',
-    },
-    {
-      title: '工单状态',
-      dataIndex: 'fee',
-    },
-    {
-      title: '借款本金',
-      dataIndex: 'createTime',
+      dataIndex: 'contractAmount',
     },
     {
       title: '借款期限',
-      dataIndex: 'createTime',
+      dataIndex: 'loanDay',
     },
     {
       title: '借款时间',
-      dataIndex: 'createTime',
+      dataIndex: 'gmtCreate',
     },
     {
       title: '计划还款日',
-      dataIndex: 'createTime',
+      dataIndex: 'repaymentDate',
     },
     {
       title: '实还金额',
-      dataIndex: 'createTime',
+      dataIndex: 'realRepaymentAmount',
     },
     {
       title: '还款状态',
-      dataIndex: 'createTime',
+      dataIndex: 'repaymentCodeState',
     },
     {
       title: '逾期天数',
-      dataIndex: 'createTime',
+      dataIndex: 'overdueDay',
     },
   ];
 };
 
-const OrderDetailView = () =>{
+const OrderDetailView = () => {
 
-  const baseData = [
-    {
-      label: 'Name',
-      value: 'Socrates',
-    },
-    {
-      label: 'Mobile',
-      value: '123-1234-1234',
-    },
-    {
-      label: 'Residence',
-      value: 'Beijing',
-    },
-    {
-      label: 'Hometown',
-      value: 'Beijing',
-    },
-    {
-      label: 'Date of Birth',
-      value: '2020-05-15',
-      span: 2,
-    },
-    {
-      label: 'Address',
-      value: 'Yingdu Building, Zhichun Road, Beijing',
-    },
-  ];
+  const [baseData, setBaseData] = useState([]);
+  const [base2Data, setBase2Data] = useState([]);
+  const [base3Data, setBase3Data] = useState([]);
 
   const [pagination, setPatination] = useState<PaginationProps>({
     sizeCanChange: true,
@@ -183,18 +163,99 @@ const OrderDetailView = () =>{
 
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
-    setFormParams(params);
+    getData(params);
   }
 
-  const getData = (loading?) => {
+  const getData = (params, loading?) => {
     if(!loading) setLoading(true);
     APIOrderQuery(
       {
-        ...formParams,
+        ...params,
       },
     ).then((resp: any) => {
       if (resp.data) {
-        setData(resp.data.content);
+        const orderDetailAdminVo = resp.data.orderDetailAdminVo;
+        const card = resp.data.card;
+
+        if(orderDetailAdminVo){
+          setBaseData([
+            {
+              label:"客户姓名",
+              value:orderDetailAdminVo.name
+            },
+            {
+              label:"性别",
+              value:orderDetailAdminVo.sex
+            },
+            {
+              label:"手机号",
+              value:orderDetailAdminVo.phone
+            },
+            {
+              label:"Email",
+              value:orderDetailAdminVo.email
+            },
+            {
+              label:"开发银行",
+              value:orderDetailAdminVo.bankName
+            },
+            {
+              label:"银行账户",
+              value:orderDetailAdminVo.bankNum
+            },
+            {
+              label:"注册时间",
+              value:orderDetailAdminVo.registerTime
+            },
+            {
+              label:"注册渠道",
+              value:orderDetailAdminVo.registerChannel
+            },
+          ]);
+        }
+
+        if(card){
+          setBase2Data([
+            {
+              label:"总额度",
+              value:card.creditQuota
+            },
+            {
+              label:"已用额度",
+              value:card.usedQuota
+            },
+            {
+              label:"可用额度",
+              value:card.availableQuota
+            },
+            {
+              label:"PDL额度",
+              value:card.itmCreditQuota
+            },
+            {
+              label:"已用PDL额度",
+              value:card.itmUsedQuota
+            },
+            {
+              label:"可用PDL额度",
+              value:card.itmAvailableQuota
+            },
+            {
+              label:"分期额度",
+              value:card.upQuota
+            },
+            {
+              label:"已用分期额度",
+              value:card.upQuota
+            },
+            {
+              label:"可用分期额度",
+              value:card.upQuota
+            },
+          ])
+        }
+
+        setData(resp.data.repaymentPlans.content);
         setPatination({
           ...pagination,
           total: resp.data.totalElements,
@@ -205,20 +266,24 @@ const OrderDetailView = () =>{
     });
   };
 
-  return <Card style={{minHeight:"100vh"}}>
-    <SearchForm onSearch={handleSearch}></SearchForm>
-    <Descriptions border data={baseData} />
-    <div style={{height:"20px"}}></div>
-    <Descriptions border data={baseData} />
-    <Divider />
-    <Table
-      loading={loading}
-      data={data}
-      columns={columns}
-    />
-    <Divider />
-    <Descriptions border data={baseData} />
-  </Card>
+  return <Spin style={{width:"100%"}} loading={loading}>
+    <Card style={{minHeight:"100vh"}}>
+      <SearchForm onSearch={handleSearch}></SearchForm>
+      {
+       baseData.length > 0 && <>
+          <Descriptions border data={baseData} />
+          <div style={{height:"20px"}}></div>
+          <Descriptions border data={base2Data} />
+          <Divider />
+          <Table
+            loading={loading}
+            data={data}
+            columns={columns}
+          />
+        </>
+      }
+    </Card>
+  </Spin>
 }
 
 export default OrderDetailView;
