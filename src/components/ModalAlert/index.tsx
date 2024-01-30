@@ -7,8 +7,10 @@ const ModalAlert = ({
     onCancel,
     refuseFun,
     confirmFun,
+    confirmBtn = false,
+    confirm2Fun = function (){},
     title,
-    body
+    body,
    }) =>{
 
   return   <Modal
@@ -26,6 +28,11 @@ const ModalAlert = ({
         <Button onClick={confirmFun} type={'primary'}>
           确认
         </Button>
+        {
+          confirmBtn && <Button onClick={confirm2Fun} type={'primary'}>
+            还款并结清
+          </Button>
+        }
       </>
     }
   >

@@ -20,7 +20,7 @@ import styles from '../../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
   APIConfirmWithdraw,
-  APIGetChargeRecord,
+  APIGetChargeRecord, APIGetRepaymentPlanList, APIOrderGetList,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
 import ModalAlert from '@/components/ModalAlert';
@@ -69,14 +69,7 @@ function SearchForm(props: {
 
   const handleReset = () => {
     form.resetFields();
-    form.setFieldsValue({
-      check:0,
-      symbol:"USDT"
-    })
-    props.onSearch({
-      check:0,
-      symbol:"USDT"
-    });
+    props.onSearch({});
   };
 
   function onSelect(dateString, date) {
@@ -100,69 +93,25 @@ function SearchForm(props: {
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 15 }}
       >
-        <Form.Item labelCol={{span:2}} label={'案件类型：'} initialValue={0} field={'check'}>
-          <RadioGroup
-            type="button"
-            name="lang"
-            defaultValue={0}
-            style={{ marginRight: 20, marginBottom: 0 }}
-          >
-            <Radio onClick={()=>handleSubmit({key:"check", value:0})} value={0}>T1-2</Radio>
-            <Radio onClick={()=>handleSubmit({key:"check", value:1})}  value={1}>M0</Radio>
-            <Radio onClick={()=>handleSubmit({key:"check", value:2})}  value={2}>M1</Radio>
-            <Radio onClick={()=>handleSubmit({key:"check", value:2})}  value={2}>M2</Radio>
-            <Radio onClick={()=>handleSubmit({key:"check", value:2})}  value={2}>M3</Radio>
-            <Radio onClick={()=>handleSubmit({key:"check", value:2})}  value={2}>M3+</Radio>
-          </RadioGroup>
-        </Form.Item>
-        <Row gutter={36}>
-          <Form.Item labelCol={{span:2}} label={'方案筛选：'} initialValue={0} field={'check'}>
-            <RadioGroup
-              type="button"
-              name="lang"
-              defaultValue={0}
-            >
-              <Radio onClick={()=>handleSubmit({key:"check", value:0})} value={0}>语音外呼公司</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:1})}  value={1}>电催公司1</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:2})}  value={2}>电催公司2</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:2})}  value={2}>地催公司2</Radio>
-            </RadioGroup>
-          </Form.Item>
-        </Row>
         <Row gutter={36}>
           <Col span={12}>
-            <Form.Item label={'工单ID:'} field="account">
+            <Form.Item label={'工单ID:'} field="orderNo">
               <Input placeholder={'请输入工单ID'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="account">
+            <Form.Item label={'用户昵称:'} field="name">
               <Input placeholder={'请输入用户姓名'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'客户手机号:'} field="account">
+            <Form.Item label={'客户手机号:'} field="phone">
               <Input placeholder={'请输入用户姓名'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item label={'KTP账号:'} field="address">
               <Input placeholder={'请输入KTP账号'} allowClear />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label={"计划还款日"} field={'dateStartAndEnd'}>
-              <RangePicker
-                style={{ width: 300, margin: '0 0 0 0' }}
-                showTime={{
-                  defaultValue: ['00:00', '00:00'],
-                  format: 'HH:mm',
-                }}
-                format="YYYY-MM-DD HH:mm"
-                onChange={onChange}
-                onSelect={onSelect}
-                onOk={onOk}
-              />
             </Form.Item>
           </Col>
         </Row>
@@ -282,19 +231,18 @@ const WorkOrderCheck = () => {
 
   const getData = (loading?) => {
     if(!loading) setLoading(true);
-    APIGetChargeRecord(
+    APIOrderGetList(
       {
         ...formParams,
-        page_size: pagination.pageSize,
-        page_num: pagination.current,
+        size: pagination.pageSize,
+        number: pagination.current,
       },
-      'getWithdrawList'
     ).then((resp: any) => {
-      if (resp.result) {
-        setData(resp.result.records);
+      if (resp.data) {
+        setData(resp.data.content);
         setPatination({
           ...pagination,
-          total: resp.result.total,
+          total: resp.data.totalElements,
         });
       }
     }).finally(()=>{
@@ -364,7 +312,7 @@ const WorkOrderCheck = () => {
         <ModalAlert
           title={"取消工单"}
           body={<div>
-            <IconInfoCircle style={{color:"#ff0000", fontSize:"16px"}} />
+            <IconInfoCircle style={{color: "#ff0000", fontSize: "16px"}}/>
             此操作会取消工单号
           </div>}
           visible={questionVisible}

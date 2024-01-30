@@ -44,7 +44,7 @@ function getIconFromKey(key) {
       return <IconFile className={styles.icon} />;
     case 'repayment-search/collection-manage':
       return <IconFile className={styles.icon} />;
-    case 'repayment-search':
+    case 'repayment-search/index':
       return <IconApps className={styles.icon} />;
     case 'ai-table/ai-invest-list':
       return <IconCheckCircle className={styles.icon} />;

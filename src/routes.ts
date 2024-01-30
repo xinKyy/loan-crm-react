@@ -99,7 +99,7 @@ export const routes: IRoute[] = [
   },
   {
     name: '还款查询',
-    key: 'repayment-search',
+    key: 'repayment-search/index',
   },
   {
     name: '催收管理',

@@ -16,9 +16,10 @@ import {
   Message, Card,
 } from '@arco-design/web-react';
 import { IconDown, IconRefresh, IconSearch, IconInfoCircle } from '@arco-design/web-react/icon';
-import styles from '../index.module.less';
+import styles from '../../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
+  APIClearOrder,
   APIConfirmWithdraw,
   APIGetChargeRecord, APIGetLoanOrderList, APIGetRepaymentPlanList,
 } from '@/api/api';
@@ -28,55 +29,34 @@ const { RangePicker } = DatePicker;
 const { useForm } = Form;
 const RadioGroup = Radio.Group;
 const { Row, Col } = Grid;
-
+const loanStatus = {
+  SUBMIT_LOAN: '提交借款申请',
+  TO_MAN_REVIEWED: '待人工审核',
+  REVIEWED_PASSED: '审核通过',
+  REVIEWED_RETUR: '审核退回',
+  REVIEWED_REJECT: '审核拒绝',
+  PUSHING_SINGLE: '推单中',
+  PUSH_SINGLE_FAIL: '推单失败',
+  LOAN_SUCCESS: '放款成功',
+  LOAN_FAIL: '放款失败',
+  NO_REPAYMENT: '未还款',
+  OVERDUE: '逾期',
+  HAS_BEEN_CLEARED: '已结清',
+};
 function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
   const [form] = useForm();
   const [orderType, setOrderType] = useState(2);
 
-  const handleSubmit = (params?) => {
+  const handleSubmit = () => {
     const values = form.getFieldsValue();
-    if(params){
-      values[params.key] = params.value
-    }
-    values.orderType = orderType;
-
-    if (values.orderType === 2) {
-      delete values.orderType;
-    }
-
-    if (values.status === 'all') {
-      delete values.status;
-    }
-
-    if (values.dateStart && values.dateStart != 'all') {
-      values.start = new Date(getStartOfDay(values.dateStart));
-    }
-    if (values.dateStartAndEnd) {
-      values.start = new Date(values.dateStartAndEnd[0]);
-      values.end = new Date(values.dateStartAndEnd[1]);
-    }
-
-    for(const key in values){
-      if(values[key] == ""){
-        delete values[key];
-      }
-    }
-
     props.onSearch(values);
   };
 
   const handleReset = () => {
     form.resetFields();
-    form.setFieldsValue({
-      check:0,
-      symbol:"USDT"
-    })
-    props.onSearch({
-      check:0,
-      symbol:"USDT"
-    });
+    props.onSearch({});
   };
 
   function onSelect(dateString, date) {
@@ -101,37 +81,36 @@ function SearchForm(props: {
         wrapperCol={{ span: 15 }}
       >
         <div style={{ display: 'flex' }}>
-          <Form.Item labelCol={{span:2}} label={'还款状态：'} initialValue={0} field={'check'}>
+          <Form.Item labelCol={{span:2}} label={'还款状态：'} field={'state'}>
             <RadioGroup
               type="button"
               name="lang"
-              defaultValue={0}
               style={{ marginRight: 20, marginBottom: 0 }}
             >
-              <Radio onClick={()=>handleSubmit({key:"check", value:0})} value={0}>未还款</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:1})}  value={1}>逾期</Radio>
-              <Radio onClick={()=>handleSubmit({key:"check", value:2})}  value={2}>已结清</Radio>
+              <Radio value={"NO_REPAYMENT"}>未还款</Radio>
+              <Radio value={"OVERDUE"}>逾期</Radio>
+              <Radio value={"HAS_BEEN_CLEARED"}>已结清</Radio>
             </RadioGroup>
           </Form.Item>
         </div>
         <Row gutter={36}>
           <Col span={12}>
-            <Form.Item label={'工单ID:'} field="account">
+            <Form.Item label={'工单ID:'} field="orderNo">
               <Input placeholder={'请输入工单ID'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'用户昵称:'} field="account">
+            <Form.Item label={'用户昵称:'} field="name">
               <Input placeholder={'请输入用户姓名'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'客户手机号:'} field="account">
-              <Input placeholder={'请输入用户姓名'} allowClear />
+            <Form.Item label={'客户手机号:'} field="phone">
+              <Input placeholder={'请输入客户手机号'} allowClear />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'KTP账号:'} field="address">
+            <Form.Item label={'KTP账号:'} field="idCardNo">
               <Input placeholder={'请输入KTP账号'} allowClear />
             </Form.Item>
           </Col>
@@ -168,7 +147,7 @@ const getColumns = (callback) => {
   return [
     {
       title: '工单ID',
-      dataIndex: 'id',
+      dataIndex: 'orderNo',
     },
     {
       title: '借款类型',
@@ -220,13 +199,16 @@ const getColumns = (callback) => {
     },
     {
       title: '操作',
-      dataIndex: 'action',
+      dataIndex: 'state',
       render: (_, record) => {
         return (
           <Space>
-            <Button type="primary" size="small" onClick={(e) => callback(record)}>
-              手动还款
-            </Button>
+            {
+              _ !== "HAS_BEEN_CLEARED"  &&   <Button type="primary" size="small" onClick={(e) => callback(record)}>
+                手动还款
+              </Button>
+            }
+
           </Space>
         )
       }
@@ -247,7 +229,10 @@ const WorkOrderCheck = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [questionVisible, setQuestionVisible] = useState(false);
+  const [questionVisible1, setQuestionVisible1] = useState(false);
+  const [questionVisible2, setQuestionVisible2] = useState(false);
   const [currentConfirmRecord, setCurrentConfirmRecord]: any = useState();
+  const [form] = Form.useForm();
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
     setFormParams(params);
@@ -256,6 +241,9 @@ const WorkOrderCheck = () => {
   const callBack = (record) => {
     setCurrentConfirmRecord(record);
     setQuestionVisible(true);
+    form.setFieldsValue({
+      ...record
+    })
   };
 
   function onChangeTable({ current, pageSize }) {
@@ -272,6 +260,25 @@ const WorkOrderCheck = () => {
     getData();
   }, [pagination.current, pagination.pageSize, JSON.stringify(formParams)]);
 
+
+  const clearOrder = (settle) =>{
+    setLoading(true);
+    setQuestionVisible2(false);
+    setQuestionVisible1(false);
+    setQuestionVisible(false);
+    APIClearOrder({
+      ...form.getFieldsValue(),
+      settle:settle
+    }).then((resp:any)=>{
+      if (resp.data){
+        Message.success("操作成功！");
+        getData();
+      }
+    }).finally(()=>{
+      form.resetFields();
+      setLoading(false);
+    })
+  }
 
   const getData = (loading?) => {
     if(!loading) setLoading(true);
@@ -295,50 +302,6 @@ const WorkOrderCheck = () => {
   };
 
 
-  const confirmQuestion = (type) => {
-    setQuestionVisible(false);
-    setLoading(true);
-
-    if (type === -1) {
-      APIConfirmWithdraw({
-        id: currentConfirmRecord?.id,
-        status: type,
-      })
-        .then((resp: any) => {
-          if (resp.result) {
-            Message.success('已拒绝该笔提现');
-            getData();
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      withDrawUSDT(
-        currentConfirmRecord.address,
-        currentConfirmRecord.amount
-      ).then((resp) => {
-        if (resp.result) {
-          APIConfirmWithdraw({
-            id: currentConfirmRecord?.id,
-            status: type,
-          })
-            .then((resp: any) => {
-              if (resp.result) {
-                Message.success('同意提现成功！');
-                getData();
-              }
-            })
-            .finally(() => {
-              setLoading(false);
-            });
-        } else {
-          setLoading(false);
-        }
-      });
-    }
-  };
-
   return (
     <Card>
       <div>
@@ -354,15 +317,84 @@ const WorkOrderCheck = () => {
 
 
         <ModalAlert
-          title={"取消工单"}
+          title={"手动还款"}
           body={<div>
-            <IconInfoCircle style={{color:"#ff0000", fontSize:"16px"}} />
-            此操作会取消工单号
+
+            <Form form={form}>
+              <Form.Item label={"工单ID"} field={"id"} disabled>
+                <Input></Input>
+              </Form.Item>
+              <Form.Item rules={[{required:true}]} label={"实还金额"} field={"amount"} >
+                <Input></Input>
+              </Form.Item>
+              <Form.Item label={"备注"} field={"remark"}>
+                <Input.TextArea></Input.TextArea>
+              </Form.Item>
+            </Form>
+
           </div>}
           visible={questionVisible}
-          onCancel={() => setQuestionVisible(false)}
-          refuseFun={() => confirmQuestion(-1)}
-          confirmFun={() => confirmQuestion(1)}
+          confirmBtn={true}
+          onCancel={() => {
+            form.resetFields();
+            setQuestionVisible(false)
+          }}
+          refuseFun={() => {
+            form.resetFields();
+            setQuestionVisible(false)
+          }}
+          confirmFun={ async () => {
+            try {
+              await form.validate()
+              setQuestionVisible(false)
+              setQuestionVisible1(true)
+            } catch (e){
+              Message.info("请填写金额")
+            }
+          }}
+          confirm2Fun={ async () => {
+            try {
+              await form.validate()
+              setQuestionVisible(false)
+              setQuestionVisible2(true)
+            } catch (e){
+              Message.info("请填写金额")
+            }
+          }}
+        />
+
+        <ModalAlert
+          title={""}
+          body={<div>
+            手动还款{form.getFieldValue("amount")}
+          </div>}
+          visible={questionVisible1}
+          onCancel={() => {
+            form.resetFields();
+            setQuestionVisible1(false)
+          }}
+          refuseFun={() => {
+            form.resetFields();
+            setQuestionVisible1(false)
+          }}
+          confirmFun={() => clearOrder(0)}
+        />
+
+        <ModalAlert
+          title={""}
+          body={<div>
+            手动还款{form.getFieldValue("amount")}并结清
+          </div>}
+          visible={questionVisible2}
+          onCancel={() => {
+            form.resetFields();
+            setQuestionVisible2(false)
+          }}
+          refuseFun={() => {
+            form.resetFields();
+            setQuestionVisible2(false)
+          }}
+          confirmFun={() => clearOrder(1)}
         />
       </div>
     </Card>

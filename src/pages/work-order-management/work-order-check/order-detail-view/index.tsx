@@ -43,6 +43,7 @@ const getColumns = (callback) => {
               <Radio.Group style={{ width: 300 }} type={'button'}>
                 <Radio value={1}>通过</Radio>
                 <Radio value={0}>拒绝</Radio>
+                <Radio value={2}>退回</Radio>
               </Radio.Group>
             </Form.Item>
           </Space>
@@ -696,7 +697,7 @@ const OrderDetailView = () => {
           </Tabs.TabPane>
 
           <Tabs.TabPane key={'6'} title={'审核意见'}>
-            <Descriptions border data={checkData} />
+            {/* <Descriptions border data={checkData} /> */}
             <div style={{ height: '20px' }}></div>
             <div
               style={{

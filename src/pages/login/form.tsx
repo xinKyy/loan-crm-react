@@ -15,7 +15,7 @@ import useStorage from '@/utils/useStorage';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
-import { APIDoLogin, APIUserAdminLogin } from '@/api/api';
+import {APIDoLogin, APILoginAdmin, APIUserAdminLogin} from '@/api/api';
 import { router } from 'next/client';
 import { useRouter } from 'next/router';
 import cookies from 'next-cookies';
@@ -38,8 +38,8 @@ export default function LoginForm() {
     }
     // 记录登录状态
     localStorage.setItem('userStatus', 'login');
-    localStorage.setItem('token', params.result);
-    setCookie('satoken', params.result, 7);
+    localStorage.setItem('token', params.data.accessToken);
+    setCookie('satoken', params.data.accessToken, 7);
     // 跳转首页
     window.location.href = '/';
   }
@@ -62,9 +62,12 @@ export default function LoginForm() {
 
   const login = (params) => {
     setLoading(true);
-    APIUserAdminLogin(params)
+    APILoginAdmin({
+      ...params,
+      name: params.userName,
+    })
       .then((resp: any) => {
-        if (resp.result) {
+        if (resp.data) {
           afterLoginSuccess(resp);
           localStorage.setItem('adminUserName', params.userName);
         }

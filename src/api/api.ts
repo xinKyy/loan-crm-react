@@ -349,3 +349,17 @@ export const APIOrderSure = (params) => {
 export const APIOrderDetail = (params) => {
   return axios.post(`/v1/admin/loanorder/detail`, params);
 };
+
+// 管理员登录
+export const APILoginAdmin = (params) => {
+  return axios.post(`/v1/admin/user/login`, params);
+};
+
+// 催收工单列表
+export const APIOrderGetList = (params) => {
+  return axios.post(`/v1/admin/repaymentPlan/collectionList`, params);
+};
+
+export const APIClearOrder = (params) => {
+  return axios.post(`/v1/admin/repaymentPlan/settle`, params);
+};
