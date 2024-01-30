@@ -20,7 +20,6 @@ import useLocale from '@/utils/useLocale';
 import { IconDown, IconRefresh, IconSearch } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
-import { Status } from '@/pages/list/help-table/constants';
 import {APIAddScheduled, APIGetAISPriceConfigList, APIRemoveAisConfig} from '@/api/api';
 const { RangePicker } = DatePicker;
 const { useForm } = Form;
