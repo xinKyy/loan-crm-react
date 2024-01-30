@@ -4,7 +4,8 @@ import {
   Checkbox,
   Link,
   Button,
-  Space, Message
+  Space,
+  Message,
 } from '@arco-design/web-react';
 import { FormInstance } from '@arco-design/web-react/es/Form';
 import { IconLock, IconUser } from '@arco-design/web-react/icon';
@@ -85,7 +86,7 @@ export default function LoginForm() {
 
   return (
     <div className={styles['login-form-wrapper']}>
-      <div className={styles['login-form-title']}>登录AI Space Admin</div>
+      <div className={styles['login-form-title']}>登录Loan Admin</div>
       <div className={styles['login-form-error-msg']}>{errorMessage}</div>
       <Form className={styles['login-form']} layout="vertical" ref={formRef}>
         <Form.Item

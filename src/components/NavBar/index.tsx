@@ -108,7 +108,7 @@ function Navbar({ show }: { show: boolean }) {
       <div className={styles.left}>
         <div className={styles.logo}>
           <Logo />
-          <div className={styles['logo-name']}>AI Space Admin</div>
+          <div className={styles['logo-name']}>Loan Admin</div>
         </div>
       </div>
       <ul className={styles.right}>

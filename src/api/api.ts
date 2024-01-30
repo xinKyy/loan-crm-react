@@ -270,7 +270,7 @@ export const APIConfirmWithdraw = (params) => {
 };
 
 export const APIUserAdminLogin = (params) => {
-  return axios.post('/api/v1/adminUser/doLogin',  params);
+  return axios.post('/api/v1/adminUser/doLogin', params);
 };
 
 export const APISetOpenChargeStatus = (params) => {
@@ -282,7 +282,7 @@ export const APIGetOpenChargeStatus = (params) => {
 };
 
 export const APIGetAIGetList = (params) => {
-  return axios.get(`/api/v1/userDailyIncome/getIncomeList`, {params});
+  return axios.get(`/api/v1/userDailyIncome/getIncomeList`, { params });
 };
 
 /// 获取工单列表
@@ -338,4 +338,9 @@ export const APIPushListOrder = (params) => {
 // 工单查询
 export const APIOrderQuery = (params) => {
   return axios.post(`/v1/admin/loanorder/query`, params);
+};
+
+// 工单审核
+export const APIOrderSure = (params) => {
+  return axios.post(`/v1/admin/loanorder/sure`, params);
 };
