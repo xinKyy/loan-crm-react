@@ -18,41 +18,6 @@ function ColorPanel() {
 
   return (
     <div>
-      <Trigger
-        trigger="hover"
-        position="bl"
-        popup={() => (
-          <SketchPicker
-            color={themeColor}
-            onChangeComplete={(color) => {
-              const newColor = color.hex;
-              dispatch({
-                type: 'update-settings',
-                payload: { settings: { ...settings, themeColor: newColor } },
-              });
-              const newList = generate(newColor, {
-                list: true,
-                dark: theme === 'dark',
-              });
-              newList.forEach((l, index) => {
-                const rgbStr = getRgbStr(l);
-                document.body.style.setProperty(
-                  `--arcoblue-${index + 1}`,
-                  rgbStr
-                );
-              });
-            }}
-          />
-        )}
-      >
-        <div className={styles.input}>
-          <div
-            className={styles.color}
-            style={{ backgroundColor: themeColor }}
-          />
-          <span>{themeColor}</span>
-        </div>
-      </Trigger>
       <ul className={styles.ul}>
         {list.map((item, index) => (
           <li
