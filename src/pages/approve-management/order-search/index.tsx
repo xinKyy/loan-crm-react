@@ -288,7 +288,7 @@ const OrderDetailView = () => {
             <div style={{ height: '20px' }}></div>
             <Descriptions border data={base2Data} />
             <Divider />
-            <Table loading={loading} data={data} columns={columns} />
+            <Table data={data} columns={columns} />
           </>
         )}
       </Card>
