@@ -51,6 +51,10 @@ function SearchForm(props: {
 
   const handleSubmit = () => {
     const values = form.getFieldsValue();
+    if (values.dateStartAndEnd) {
+      values.start = values.dateStartAndEnd[0];
+      values.end = values.dateStartAndEnd[1];
+    }
     props.onSearch(values);
   };
 

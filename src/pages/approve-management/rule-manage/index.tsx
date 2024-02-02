@@ -105,25 +105,25 @@ const ApproveManagement = () => {
 
 
   const getData = (loading?) => {
-    if(!loading) setLoading(true);
-    APIGetChargeRecord(
-      {
-        ...formParams,
-        page_size: pagination.pageSize,
-        page_num: pagination.current,
-      },
-      'getWithdrawList'
-    ).then((resp: any) => {
-      if (resp.result) {
-        setData(resp.result.records);
-        setPatination({
-          ...pagination,
-          total: resp.result.total,
-        });
-      }
-    }).finally(()=>{
-      setLoading(false);
-    });
+    // if(!loading) setLoading(true);
+    // APIGetChargeRecord(
+    //   {
+    //     ...formParams,
+    //     page_size: pagination.pageSize,
+    //     page_num: pagination.current,
+    //   },
+    //   'getWithdrawList'
+    // ).then((resp: any) => {
+    //   if (resp.result) {
+    //     setData(resp.result.records);
+    //     setPatination({
+    //       ...pagination,
+    //       total: resp.result.total,
+    //     });
+    //   }
+    // }).finally(()=>{
+    //   setLoading(false);
+    // });
   };
 
 

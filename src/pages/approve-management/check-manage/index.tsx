@@ -68,12 +68,9 @@ function SearchForm(props: {
       delete values.status;
     }
 
-    if (values.dateStart && values.dateStart != 'all') {
-      values.start = new Date(getStartOfDay(values.dateStart));
-    }
     if (values.dateStartAndEnd) {
-      values.start = new Date(values.dateStartAndEnd[0]);
-      values.end = new Date(values.dateStartAndEnd[1]);
+      values.start = values.dateStartAndEnd[0];
+      values.end = values.dateStartAndEnd[1];
     }
 
     for(const key in values){
