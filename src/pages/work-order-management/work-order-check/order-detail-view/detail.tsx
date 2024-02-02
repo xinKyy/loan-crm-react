@@ -307,7 +307,7 @@ const OrderDetailView = () => {
       },
       {
         label: '所在行业',
-        value: workInfo?.name,
+        value: workInfo?.jobType,
       },
       {
         label: '岗位类型',
@@ -315,7 +315,7 @@ const OrderDetailView = () => {
       },
       {
         label: '工作情况',
-        value: workInfo?.workType,
+        value: workInfo?.industry,
       },
       {
         label: '薪资水平',
@@ -408,10 +408,6 @@ const OrderDetailView = () => {
       {
         label: '公司所在区县',
         value: workInfo?.county,
-      },
-      {
-        label: '公司所在村',
-        value: workInfo?.address,
       },
       {
         label: '公司详细地址',
