@@ -256,173 +256,171 @@ const OrderDetailView = () => {
   ];
 
   const setUserBaseInfo = (data) => {
-    if(data.personalInfo && data.workInfo){
-      const personalInfo = data.personalInfo;
-      const workInfo = data.workInfo;
-      setBaseData([
-        {
-          label: '客户姓名',
-          value: personalInfo.name,
-        },
-        {
-          label: '性别',
-          value: personalInfo.sex,
-        },
-        {
-          label: '手机号',
-          value: workInfo.phone,
-        },
-        {
-          label: '年龄',
-          value: personalInfo.age,
-        },
-        {
-          label: 'Email',
-          value: personalInfo.email,
-        },
-        {
-          label: '教育水平',
-          value: personalInfo.education,
-        },
-        {
-          label: '婚姻状况',
-          value: personalInfo.marry,
-        },
-        {
-          label: '孩子数量',
-          value: personalInfo.childNum,
-        },
-        {
-          label: '居住情况',
-          value: personalInfo.livingType,
-        },
-        {
-          label: '居住年限',
-          value: personalInfo.livingTime,
-        },
-      ]);
-      setWorkInfoData([
-        {
-          label: '公司名称',
-          value: workInfo.name,
-        },
-        {
-          label: '所在行业',
-          value: workInfo.name,
-        },
-        {
-          label: '岗位类型',
-          value: workInfo.workType,
-        },
-        {
-          label: '工作情况',
-          value: workInfo.workType,
-        },
-        {
-          label: '薪资水平',
-          value: workInfo.salaryInfo,
-        },
-        {
-          label: '工作年限',
-          value: workInfo.workYear,
-        },
-      ]);
-      setWorkOrderData([
-        {
-          label: '公司名称',
-          value: workInfo.name,
-        },
-      ]);
-      setImageData([
-        {
-          label: '客户姓名',
-          value: personalInfo.name,
-        },
-        {
-          label: 'KTP',
-          value: data.kpt.ktpNo,
-        },
-      ]);
-      setImageTableData([
-        {
-          id: 'ktpOperating',
-          des: 'KTP',
-          image: data.kpt.photoUrl,
-        },
-        {
-          id: 'faceOperating',
-          des: '人脸识别',
-          image: data.kpt.faceUrl,
-        },
-        {
-          id: 'npwpOperating',
-          des: 'NPWP',
-          image: data.workCertification.npwpUrl,
-        },
-        {
-          id: 'workOperating',
-          des: '工作照/工资证明',
-          image: data.workCertification.eworkUrl,
-        },
-        {
-          id: 'bpjsOperating',
-          des: 'BPJS',
-          image: data.workCertification.bpjsUrl,
-        },
-        {
-          id: 'kkOperating',
-          des: 'KK',
-          image: data.kpt.kkUrl,
-        },
-      ]);
-      setLocationData([
-        {
-          label: '居住地址',
-          value: personalInfo.address,
-        },
-        {
-          label: '居住城市',
-          value: personalInfo.city,
-        },
-        {
-          label: '居住区县',
-          value: personalInfo.county,
-        },
-        {
-          label: '居住村',
-          value: personalInfo.address,
-        },
-        {
-          label: '详细地址',
-          value: personalInfo.address,
-        },
-      ]);
-      setWorkLocationData([
-        {
-          label: '公司所在省份',
-          value: workInfo.province,
-        },
-        {
-          label: '公司所在城市',
-          value: workInfo.city,
-        },
-        {
-          label: '公司所在区县',
-          value: workInfo.county,
-        },
-        {
-          label: '公司所在村',
-          value: workInfo.address,
-        },
-        {
-          label: '公司详细地址',
-          value: workInfo.address,
-        },
-      ]);
-      setGpsData(data.gps);
-      setIpsData(data.ips);
-      setIntimateContact(data.intimateContact);
-    }
+    const personalInfo = data.personalInfo;
+    const workInfo = data.workInfo;
+    setBaseData([
+      {
+        label: '客户姓名',
+        value: personalInfo?.name,
+      },
+      {
+        label: '性别',
+        value: personalInfo?.sex,
+      },
+      {
+        label: '手机号',
+        value: workInfo?.phone,
+      },
+      {
+        label: '年龄',
+        value: personalInfo?.age,
+      },
+      {
+        label: 'Email',
+        value: personalInfo?.email,
+      },
+      {
+        label: '教育水平',
+        value: personalInfo?.education,
+      },
+      {
+        label: '婚姻状况',
+        value: personalInfo?.marry,
+      },
+      {
+        label: '孩子数量',
+        value: personalInfo?.childNum,
+      },
+      {
+        label: '居住情况',
+        value: personalInfo?.livingType,
+      },
+      {
+        label: '居住年限',
+        value: personalInfo?.livingTime,
+      },
+    ]);
+    setWorkInfoData([
+      {
+        label: '公司名称',
+        value: workInfo?.name,
+      },
+      {
+        label: '所在行业',
+        value: workInfo?.name,
+      },
+      {
+        label: '岗位类型',
+        value: workInfo?.workType,
+      },
+      {
+        label: '工作情况',
+        value: workInfo?.workType,
+      },
+      {
+        label: '薪资水平',
+        value: workInfo?.salaryInfo,
+      },
+      {
+        label: '工作年限',
+        value: workInfo?.workYear,
+      },
+    ]);
+    setWorkOrderData([
+      {
+        label: '公司名称',
+        value: workInfo?.name,
+      },
+    ]);
+    setImageData([
+      {
+        label: '客户姓名',
+        value: personalInfo?.name,
+      },
+      {
+        label: 'KTP',
+        value: data?.kpt?.ktpNo,
+      },
+    ]);
+    setImageTableData([
+      {
+        id: 'ktpOperating',
+        des: 'KTP',
+        image: data.kpt?.photoUrl,
+      },
+      {
+        id: 'faceOperating',
+        des: '人脸识别',
+        image: data.kpt?.faceUrl,
+      },
+      {
+        id: 'npwpOperating',
+        des: 'NPWP',
+        image: data.workCertification?.npwpUrl,
+      },
+      {
+        id: 'workOperating',
+        des: '工作照/工资证明',
+        image: data.workCertification?.eworkUrl,
+      },
+      {
+        id: 'bpjsOperating',
+        des: 'BPJS',
+        image: data.workCertification?.bpjsUrl,
+      },
+      {
+        id: 'kkOperating',
+        des: 'KK',
+        image: data.kpt?.kkUrl,
+      },
+    ]);
+    setLocationData([
+      {
+        label: '居住地址',
+        value: personalInfo?.address,
+      },
+      {
+        label: '居住城市',
+        value: personalInfo?.city,
+      },
+      {
+        label: '居住区县',
+        value: personalInfo?.county,
+      },
+      {
+        label: '居住村',
+        value: personalInfo?.address,
+      },
+      {
+        label: '详细地址',
+        value: personalInfo?.address,
+      },
+    ]);
+    setWorkLocationData([
+      {
+        label: '公司所在省份',
+        value: workInfo?.province,
+      },
+      {
+        label: '公司所在城市',
+        value: workInfo?.city,
+      },
+      {
+        label: '公司所在区县',
+        value: workInfo?.county,
+      },
+      {
+        label: '公司所在村',
+        value: workInfo?.address,
+      },
+      {
+        label: '公司详细地址',
+        value: workInfo?.address,
+      },
+    ]);
+    setGpsData(data?.gps);
+    setIpsData(data?.ips);
+    setIntimateContact(data?.intimateContact);
   };
 
   const setDeviceInfo = (data) => {
