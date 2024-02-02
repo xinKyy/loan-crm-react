@@ -22,7 +22,7 @@ import { getQueryString } from '@/utils/xink';
 import {useRouter} from "next/router";
 const CheckboxGroup = Checkbox.Group;
 const { useForm } = Form;
-const getColumns = (callback) => {
+const getColumns = (callback, orderState) => {
   return [
     {
       title: '照片类型',
@@ -39,13 +39,15 @@ const getColumns = (callback) => {
       render: (_, record) => {
         return (
           <Space>
-            <Form.Item rules={[{ required: true }]} field={record.id}>
-              <Radio.Group style={{ width: 300 }} type={'button'}>
-                <Radio value={1}>通过</Radio>
-                <Radio value={0}>拒绝</Radio>
-                <Radio value={2}>退回</Radio>
-              </Radio.Group>
-            </Form.Item>
+            {
+              orderState === "TO_MAN_REVIEWED" && <Form.Item rules={[{ required: true }]} field={record.id}>
+                <Radio.Group style={{ width: 300 }} type={'button'}>
+                  <Radio value={1}>通过</Radio>
+                  <Radio value={0}>拒绝</Radio>
+                  <Radio value={2}>退回</Radio>
+                </Radio.Group>
+              </Form.Item>
+            }
           </Space>
         );
       },
@@ -162,6 +164,7 @@ const OrderDetailView = () => {
   const [contractSizes, setContractSizes] = useState(0);
   const [locationData, setLocationData] = useState([]);
   const [workLocationData, setWorkLocationData] = useState([]);
+  const [orderState, setOrderState] = useState("");
 
   const [workInfoData, setWorkInfoData] = useState([]);
   const [workOrderData, setWorkOrderData] = useState([]);
@@ -214,7 +217,7 @@ const OrderDetailView = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [loading, setLoading] = useState(false);
 
-  const columns = useMemo(() => getColumns(checkImageCallBack), []);
+  const columns = useMemo(() => getColumns(checkImageCallBack, orderState), [orderState]);
   const phoneColumns = useMemo(() => getPhoneColumns(), []);
   const areaColumns = useMemo(() => getAreaColumns(), []);
   const sendPersonColumns = useMemo(() => getSendPersonColumns(), []);
@@ -496,6 +499,7 @@ const OrderDetailView = () => {
     })
       .then((resp: any) => {
         if (resp.data) {
+          setOrderState(resp.data.loanOrder.state);
           setOrderInfo(resp.data.loanOrder);
         }
       })
@@ -690,130 +694,133 @@ const OrderDetailView = () => {
             {/* <Descriptions title={'Facebook'} border data={baseData} />*/}
           </Tabs.TabPane>
 
-          <Tabs.TabPane key={'6'} title={'审核意见'}>
-            {/* <Descriptions border data={checkData} /> */}
-            <div style={{ height: '20px' }}></div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div>审核操作</div>
-              <Divider type={'vertical'} />
-              <div>
-                <Form form={actionForm}>
-                  {checkActionData.map((item, index) => {
-                    return (
-                      <Form.Item
-                        rules={[{ required: true }]}
-                        key={index}
-                        style={{ width: '1000px' }}
-                        field={item.filed}
-                        label={item.label}
-                      >
+          {
+            orderState === "TO_MAN_REVIEWED" && <Tabs.TabPane key={'6'} title={'审核意见'}>
+              {/* <Descriptions border data={checkData} /> */}
+              <div style={{ height: '20px' }}></div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div>审核操作</div>
+                <Divider type={'vertical'} />
+                <div>
+                  <Form form={actionForm}>
+                    {checkActionData.map((item, index) => {
+                      return (
+                        <Form.Item
+                          rules={[{ required: true }]}
+                          key={index}
+                          style={{ width: '1000px' }}
+                          field={item.filed}
+                          label={item.label}
+                        >
+                          <Radio.Group type="button">
+                            <Radio
+                              style={{ width: '100px', textAlign: 'center' }}
+                              value={1}
+                            >
+                              是
+                            </Radio>
+                            <Radio
+                              style={{ width: '100px', textAlign: 'center' }}
+                              value={0}
+                            >
+                              否
+                            </Radio>
+                          </Radio.Group>
+                        </Form.Item>
+                      );
+                    })}
+                  </Form>
+                </div>
+              </div>
+              <Divider />
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '900px',
+                }}
+              >
+                <div>审核结果</div>
+                <div
+                  style={{
+                    width: '700px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <Form form={resultForm}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <Form.Item rules={[{ required: true }]} field={'result'}>
                         <Radio.Group type="button">
-                          <Radio
-                            style={{ width: '100px', textAlign: 'center' }}
-                            value={1}
-                          >
-                            是
-                          </Radio>
                           <Radio
                             style={{ width: '100px', textAlign: 'center' }}
                             value={0}
                           >
-                            否
+                            拒绝
+                          </Radio>
+                          <Radio
+                            style={{ width: '100px', textAlign: 'center' }}
+                            value={1}
+                          >
+                            通过
                           </Radio>
                         </Radio.Group>
                       </Form.Item>
-                    );
-                  })}
-                </Form>
-              </div>
-            </div>
-            <Divider />
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '900px',
-              }}
-            >
-              <div>审核结果</div>
-              <div
-                style={{
-                  width: '700px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-start',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <Form form={resultForm}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Form.Item rules={[{ required: true }]} field={'result'}>
-                      <Radio.Group type="button">
-                        <Radio
-                          style={{ width: '100px', textAlign: 'center' }}
-                          value={0}
-                        >
-                          拒绝
-                        </Radio>
-                        <Radio
-                          style={{ width: '100px', textAlign: 'center' }}
-                          value={1}
-                        >
-                          通过
-                        </Radio>
-                      </Radio.Group>
-                    </Form.Item>
-                    <Button onClick={orderSure} type={'primary'}>
-                      提交
-                    </Button>
-                  </div>
-                  {[
-                    {
-                      label: '个人信息异常',
-                      value: 'personAbnormal',
-                    },
-                    {
-                      label: '工单信息异常',
-                      value: 'orderAbnormal',
-                    },
-                    {
-                      label: '工作信息异常',
-                      value: 'workAbnormal',
-                    },
-                    {
-                      label: '地理位置异常',
-                      value: 'addressAbnormal',
-                    },
-                    {
-                      label: '设备信息异常',
-                      value: 'equipmentAbnormal',
-                    },
-                    {
-                      label: '社交信息异常',
-                      value: 'socialAbnormal',
-                    },
-                  ].map((item) => {
-                    return (
-                      <Form.Item key={item.value}  field={item.value}>
-                        <Checkbox>{item.label} </Checkbox>
-                      </Form.Item>
-                    );
-                  })}
+                      <Button onClick={orderSure} type={'primary'}>
+                        提交
+                      </Button>
+                    </div>
+                    {[
+                      {
+                        label: '个人信息异常',
+                        value: 'personAbnormal',
+                      },
+                      {
+                        label: '工单信息异常',
+                        value: 'orderAbnormal',
+                      },
+                      {
+                        label: '工作信息异常',
+                        value: 'workAbnormal',
+                      },
+                      {
+                        label: '地理位置异常',
+                        value: 'addressAbnormal',
+                      },
+                      {
+                        label: '设备信息异常',
+                        value: 'equipmentAbnormal',
+                      },
+                      {
+                        label: '社交信息异常',
+                        value: 'socialAbnormal',
+                      },
+                    ].map((item) => {
+                      return (
+                        <Form.Item key={item.value}  field={item.value}>
+                          <Checkbox>{item.label} </Checkbox>
+                        </Form.Item>
+                      );
+                    })}
 
-                  <Form.Item field={'remarks'} label={'备注'}>
-                    <Input.TextArea></Input.TextArea>
-                  </Form.Item>
-                </Form>
+                    <Form.Item field={'remarks'} label={'备注'}>
+                      <Input.TextArea></Input.TextArea>
+                    </Form.Item>
+                  </Form>
+                </div>
               </div>
-            </div>
-          </Tabs.TabPane>
+            </Tabs.TabPane>
+          }
+
         </Tabs>
       </Card>
     </Spin>

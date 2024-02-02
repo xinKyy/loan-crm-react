@@ -195,7 +195,7 @@ const getColumns = (callback) => {
     },
     {
       title: '工单状态',
-      dataIndex: 'fee',
+      dataIndex: 'state',
       render:(_)=><div>{loanStatus[_]}</div>
     },
     {

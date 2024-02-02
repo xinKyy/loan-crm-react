@@ -119,11 +119,11 @@ function SearchForm(props: {
             <RadioGroup type="button" name="lang">
               {/* <Radio value={0}>待自动审核</Radio>*/}
               <Radio value={'TO_MAN_REVIEWED'}>待人工审核</Radio>
-              <Radio value={2}>取消</Radio>
+              {/* <Radio value={2}>取消</Radio>*/}
               <Radio value={'REVIEWED_RETUR'}>审核退回</Radio>
               <Radio value={'REVIEWED_REJECT'}>审核拒绝</Radio>
               <Radio value={'REVIEWED_PASSED'}>审核通过</Radio>
-              <Radio value={7}>关闭</Radio>
+              {/* <Radio value={7}>关闭</Radio>*/}
             </RadioGroup>
           </Form.Item>
         </div>
