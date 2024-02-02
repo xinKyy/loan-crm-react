@@ -144,7 +144,7 @@ const getColumns = (callback) => {
     },
     {
       title: 'KTP身份证号',
-      dataIndex: 'idCard',
+      dataIndex: 'ktpNo',
     },
     {
       title: '手机号码',
@@ -152,11 +152,11 @@ const getColumns = (callback) => {
     },
     {
       title: '还款金额',
-      dataIndex: 'repaymentAmount',
+      dataIndex: 'totalRepaymentAmount',
     },
     {
       title: '计划还款日',
-      dataIndex: 'promiseToPayDate',
+      dataIndex: 'repaymentDate',
     },
     {
       title: '逾期天数',

@@ -52,8 +52,8 @@ function SearchForm(props: {
   const handleSubmit = () => {
     const values = form.getFieldsValue();
     if (values.dateStartAndEnd) {
-      values.start = values.dateStartAndEnd[0];
-      values.end = values.dateStartAndEnd[1];
+      values.startRepaymentTime = values.dateStartAndEnd[0];
+      values.endRepaymentTime = values.dateStartAndEnd[1];
     }
     props.onSearch(values);
   };
@@ -199,7 +199,8 @@ const getColumns = (callback) => {
     },
     {
       title: '还款状态',
-      dataIndex: 'repaymentCodeState',
+      dataIndex: 'state',
+      render: (_) => <div>{loanStatus[_]}</div>,
     },
     {
       title: '操作',

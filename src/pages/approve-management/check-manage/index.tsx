@@ -69,8 +69,8 @@ function SearchForm(props: {
     }
 
     if (values.dateStartAndEnd) {
-      values.start = values.dateStartAndEnd[0];
-      values.end = values.dateStartAndEnd[1];
+      values.startTime = values.dateStartAndEnd[0];
+      values.endTime = values.dateStartAndEnd[1];
     }
 
     for(const key in values){
