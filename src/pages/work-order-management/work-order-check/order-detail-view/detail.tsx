@@ -420,7 +420,7 @@ const OrderDetailView = () => {
   };
 
   const setDeviceInfo = (data) => {
-    setDeviceData(data.deviceInfos.centent);
+    setDeviceData(data.deviceInfos.content);
     setContractSizes(data.contractSizes);
     setCallInRecords(data.callInRecords);
     setCallOutRecords(data.callOutRecords);
