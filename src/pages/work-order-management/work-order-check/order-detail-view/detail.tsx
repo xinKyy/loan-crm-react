@@ -457,7 +457,7 @@ const OrderDetailView = () => {
       },
       {
         label: '借款期限',
-        value: data.loanDate,
+        value: data.period && data.period + "天",
       },
     ]);
   }
@@ -545,7 +545,7 @@ const OrderDetailView = () => {
         resParams[key] = 1;
       }
 
-      if (resParams[key] === undefined) {
+      if (resParams[key] === undefined || resParams[key] === false) {
         resParams[key] = 0;
       }
     }
@@ -807,7 +807,7 @@ const OrderDetailView = () => {
                     },
                   ].map((item) => {
                     return (
-                      <Form.Item key={item.value} field={item.value}>
+                      <Form.Item key={item.value}  field={item.value}>
                         <Checkbox>{item.label} </Checkbox>
                       </Form.Item>
                     );

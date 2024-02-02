@@ -69,8 +69,8 @@ function SearchForm(props: {
     const values = form.getFieldsValue();
 
     if (values.date) {
-      values.startTime = new Date(values.date[0]);
-      values.endTime = new Date(values.date[1]);
+      values.startTime = values.date[0];
+      values.endTime = values.date[1];
     }
 
     for (const key in values) {
@@ -202,7 +202,7 @@ const getColumns = (callback) => {
     },
     {
       title: 'KTP身份证号',
-      dataIndex: 'idCardNo',
+      dataIndex: 'ktpNo',
     },
     {
       title: '手机号码',
