@@ -91,6 +91,7 @@ export const routes: IRoute[] = [
   {
     name: '定时任务手动触发',
     key: 'repayment-search/task-manage',
+    ignore: true,
   },
 ];
 
