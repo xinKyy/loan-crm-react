@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
   Form,
   Input,
@@ -13,14 +13,27 @@ import {
   PaginationProps,
   Table,
   Modal,
-  Message, Card, Tabs, Descriptions, PageHeader, Divider, Spin,
+  Message,
+  Card,
+  Tabs,
+  Descriptions,
+  PageHeader,
+  Divider,
+  Spin,
 } from '@arco-design/web-react';
-import { IconDown, IconRefresh, IconSearch, IconInfoCircle } from '@arco-design/web-react/icon';
+import {
+  IconDown,
+  IconRefresh,
+  IconSearch,
+  IconInfoCircle,
+} from '@arco-design/web-react/icon';
 import styles from '../../index.module.less';
 import { getStartOfDay, splitWalletAddress } from '@/utils/dateUtil';
 import {
   APIConfirmWithdraw,
-  APIGetChargeRecord, APIGetLoanOrderList, APIOrderQuery,
+  APIGetChargeRecord,
+  APIGetLoanOrderList,
+  APIOrderQuery,
 } from '@/api/api';
 import { withDrawUSDT } from '@/utils/web3Util';
 import ModalAlert from '@/components/ModalAlert';
@@ -143,7 +156,6 @@ const getColumns = () => {
 };
 
 const OrderDetailView = () => {
-
   const [baseData, setBaseData] = useState([]);
   const [base2Data, setBase2Data] = useState([]);
   const [base3Data, setBase3Data] = useState([]);
@@ -159,7 +171,7 @@ const OrderDetailView = () => {
   const [formParams, setFormParams] = useState({});
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const columns = useMemo(()=>getColumns(), []);
+  const columns = useMemo(() => getColumns(), []);
 
   function handleSearch(params) {
     setPatination({ ...pagination, current: 1 });
@@ -167,123 +179,121 @@ const OrderDetailView = () => {
   }
 
   const getData = (params, loading?) => {
-    if(!loading) setLoading(true);
-    APIOrderQuery(
-      {
-        ...params,
-      },
-    ).then((resp: any) => {
-      if (resp.data) {
-        const orderDetailAdminVo = resp.data.orderDetailAdminVo;
-        const card = resp.data.card;
+    if (!loading) setLoading(true);
+    APIOrderQuery({
+      ...params,
+    })
+      .then((resp: any) => {
+        if (resp.data) {
+          const orderDetailAdminVo = resp.data.orderDetailAdminVo;
+          const card = resp.data.card;
 
-        if(orderDetailAdminVo){
-          setBaseData([
-            {
-              label:"客户姓名",
-              value:orderDetailAdminVo.name
-            },
-            {
-              label:"性别",
-              value:orderDetailAdminVo.sex
-            },
-            {
-              label:"手机号",
-              value:orderDetailAdminVo.phone
-            },
-            {
-              label:"Email",
-              value:orderDetailAdminVo.email
-            },
-            {
-              label:"开发银行",
-              value:orderDetailAdminVo.bankName
-            },
-            {
-              label:"银行账户",
-              value:orderDetailAdminVo.bankNum
-            },
-            {
-              label:"注册时间",
-              value:orderDetailAdminVo.registerTime
-            },
-            {
-              label:"注册渠道",
-              value:orderDetailAdminVo.registerChannel
-            },
-          ]);
+          if (orderDetailAdminVo) {
+            setBaseData([
+              {
+                label: '客户姓名',
+                value: orderDetailAdminVo.name,
+              },
+              {
+                label: '性别',
+                value: orderDetailAdminVo.sex,
+              },
+              {
+                label: '手机号',
+                value: orderDetailAdminVo.phone,
+              },
+              {
+                label: 'Email',
+                value: orderDetailAdminVo.email,
+              },
+              {
+                label: '开发银行',
+                value: orderDetailAdminVo.bankName,
+              },
+              {
+                label: '银行账户',
+                value: orderDetailAdminVo.bankNo,
+              },
+              {
+                label: '注册时间',
+                value: orderDetailAdminVo.registerTime,
+              },
+              // {
+              //   label:"注册渠道",
+              //   value:orderDetailAdminVo.registerChannel
+              // },
+            ]);
+          }
+
+          if (card) {
+            setBase2Data([
+              {
+                label: '总额度',
+                value: card.creditQuota,
+              },
+              {
+                label: '已用额度',
+                value: card.usedQuota,
+              },
+              {
+                label: '可用额度',
+                value: card.availableQuota,
+              },
+              {
+                label: 'PDL额度',
+                value: card.itmCreditQuota,
+              },
+              {
+                label: '已用PDL额度',
+                value: card.itmUsedQuota,
+              },
+              {
+                label: '可用PDL额度',
+                value: card.itmAvailableQuota,
+              },
+              {
+                label: '分期额度',
+                value: card.upQuota,
+              },
+              {
+                label: '已用分期额度',
+                value: card.upQuota,
+              },
+              {
+                label: '可用分期额度',
+                value: card.upQuota,
+              },
+            ]);
+          }
+
+          setData(resp.data.repaymentPlans.content);
+          setPatination({
+            ...pagination,
+            total: resp.data.totalElements,
+          });
         }
-
-        if(card){
-          setBase2Data([
-            {
-              label:"总额度",
-              value:card.creditQuota
-            },
-            {
-              label:"已用额度",
-              value:card.usedQuota
-            },
-            {
-              label:"可用额度",
-              value:card.availableQuota
-            },
-            {
-              label:"PDL额度",
-              value:card.itmCreditQuota
-            },
-            {
-              label:"已用PDL额度",
-              value:card.itmUsedQuota
-            },
-            {
-              label:"可用PDL额度",
-              value:card.itmAvailableQuota
-            },
-            {
-              label:"分期额度",
-              value:card.upQuota
-            },
-            {
-              label:"已用分期额度",
-              value:card.upQuota
-            },
-            {
-              label:"可用分期额度",
-              value:card.upQuota
-            },
-          ])
-        }
-
-        setData(resp.data.repaymentPlans.content);
-        setPatination({
-          ...pagination,
-          total: resp.data.totalElements,
-        });
-      }
-    }).finally(()=>{
-      setLoading(false);
-    });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  return <Spin style={{width:"100%"}} loading={loading}>
-    <Card style={{minHeight:"100vh"}}>
-      <SearchForm onSearch={handleSearch}></SearchForm>
-      {
-       baseData.length > 0 && <>
-          <Descriptions border data={baseData} />
-          <div style={{height:"20px"}}></div>
-          <Descriptions border data={base2Data} />
-          <Divider />
-          <Table
-            loading={loading}
-            data={data}
-            columns={columns}
-          />
-        </>
-      }
-    </Card>
-  </Spin>
-}
+  return (
+    <Spin style={{ width: '100%' }} loading={loading}>
+      <Card style={{ minHeight: '100vh' }}>
+        <SearchForm onSearch={handleSearch}></SearchForm>
+        {baseData.length > 0 && (
+          <>
+            <Descriptions border data={baseData} />
+            <div style={{ height: '20px' }}></div>
+            <Descriptions border data={base2Data} />
+            <Divider />
+            <Table loading={loading} data={data} columns={columns} />
+          </>
+        )}
+      </Card>
+    </Spin>
+  );
+};
 
 export default OrderDetailView;
