@@ -30,7 +30,7 @@ const getColumns = (callback) => {
     },
     {
       title: '照片',
-      dataIndex: 'images',
+      dataIndex: 'image',
       render: (_) => <Image width={200} height={200} src={_}></Image>,
     },
     {
@@ -307,7 +307,7 @@ const OrderDetailView = () => {
       },
       {
         label: '所在行业',
-        value: workInfo?.jobType,
+        value: workInfo?.industry,
       },
       {
         label: '岗位类型',
@@ -315,7 +315,7 @@ const OrderDetailView = () => {
       },
       {
         label: '工作情况',
-        value: workInfo?.industry,
+        value: workInfo?.jobType,
       },
       {
         label: '薪资水平',
