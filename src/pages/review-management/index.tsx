@@ -40,28 +40,9 @@ function SearchForm(props: {
   onSearch: (values: Record<string, any>) => void;
 }) {
   const [form] = useForm();
-  const [orderType, setOrderType] = useState(2);
 
   const handleSubmit = () => {
     const values = form.getFieldsValue();
-
-    values.orderType = orderType;
-
-    if (values.orderType === 2) {
-      delete values.orderType;
-    }
-
-    if (values.status === 'all') {
-      delete values.status;
-    }
-
-    if (values.dateStart && values.dateStart != 'all') {
-      values.start = new Date(getStartOfDay(values.dateStart));
-    }
-    if (values.dateStartAndEnd) {
-      values.start = new Date(values.dateStartAndEnd[0]);
-      values.end = new Date(values.dateStartAndEnd[1]);
-    }
     props.onSearch(values);
   };
 
@@ -92,19 +73,26 @@ function SearchForm(props: {
         wrapperCol={{ span: 21 }}
       >
         <Row gutter={24}>
-          <Col span={12}>
-            <Form.Item label={'处理状态:'} field="status">
+          <Col span={24}>
+            <Form.Item  label={'意见类型:'} field="feedbackType">
               <RadioGroup
                   type="button"
                   name="lang"
-                  defaultValue="0"
-                  style={{ marginRight: 20, marginBottom: 0 }}
               >
-                <Radio value="0">待处理</Radio>
-                <Radio value="1">已处理</Radio>
+                <Radio value="Credit limit">Credit limit</Radio>
+                <Radio value="Fee">Fee</Radio>
+                <Radio value="Bank card">Bank card</Radio>
+                <Radio value="Loanreview">Loanreview</Radio>
+                <Radio value="Repayment">Repayment</Radio>
+                <Radio value="Overdue">Overdue</Radio>
+                <Radio value="Page & Process Copywriting">Page & Process Copywriting</Radio>
+                <Radio value="other problems">other problems</Radio>
               </RadioGroup>
             </Form.Item>
           </Col>
+          <Form.Item label={'意见人联系方式:'} field="contactInfo">
+            <Input style={{width:300}} placeholder="请输入意见人联系方式" />
+          </Form.Item>
         </Row>
       </Form>
       <div className={styles['right-button']}>
@@ -324,7 +312,7 @@ const WithdrawComponents = () => {
     <Card>
       <div>
         {
-        //    <SearchForm onSearch={handleSearch}></SearchForm>
+           <SearchForm onSearch={handleSearch}></SearchForm>
         }
         <Table
           rowKey="id"

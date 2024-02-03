@@ -320,6 +320,9 @@ const WorkOrderCheck = () => {
               <Form.Item label={"版本名"} field={"name"}>
                 <Input></Input>
               </Form.Item>
+              <Form.Item label={"标题"} field={"title"}>
+                <Input></Input>
+              </Form.Item>
               <Form.Item label={"版本内容"} field={"content"}>
                 <Input></Input>
               </Form.Item>
@@ -360,6 +363,9 @@ const WorkOrderCheck = () => {
           body={<div>
             <Form form={form2}>
               <Form.Item label={"版本名"} field={"name"}>
+                <Input></Input>
+              </Form.Item>
+              <Form.Item label={"标题"} field={"title"}>
                 <Input></Input>
               </Form.Item>
               <Form.Item label={"版本内容"} field={"content"}>
