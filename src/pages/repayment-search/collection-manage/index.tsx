@@ -110,7 +110,7 @@ function SearchForm(props: {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'KTP账号:'} field="address">
+            <Form.Item label={'KTP账号:'} field="ktpNo">
               <Input placeholder={'请输入KTP账号'} allowClear />
             </Form.Item>
           </Col>

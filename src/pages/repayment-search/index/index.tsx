@@ -13,7 +13,7 @@ import {
   PaginationProps,
   Table,
   Modal,
-  Message, Card,
+  Message, Card, InputNumber,
 } from '@arco-design/web-react';
 import { IconDown, IconRefresh, IconSearch, IconInfoCircle } from '@arco-design/web-react/icon';
 import styles from '../../index.module.less';
@@ -114,7 +114,7 @@ function SearchForm(props: {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label={'KTP账号:'} field="idCardNo">
+            <Form.Item label={'KTP账号:'} field="ktpNo">
               <Input placeholder={'请输入KTP账号'} allowClear />
             </Form.Item>
           </Col>
@@ -163,7 +163,7 @@ const getColumns = (callback) => {
     },
     {
       title: 'KTP身份证号',
-      dataIndex: 'idCardNo',
+      dataIndex: 'ktpNo',
     },
     {
       title: '手机号码',
@@ -175,7 +175,7 @@ const getColumns = (callback) => {
     },
     {
       title: '放款时间',
-      dataIndex: 'fee',
+      dataIndex: 'gmtCreate',
     },
     {
       title: '计划还款日',
@@ -195,7 +195,7 @@ const getColumns = (callback) => {
     },
     {
       title: '逾期金额',
-      dataIndex: 'overdueFee',
+      dataIndex: 'balance',
     },
     {
       title: '还款状态',
@@ -330,7 +330,7 @@ const WorkOrderCheck = () => {
                 <Input></Input>
               </Form.Item>
               <Form.Item rules={[{required:true}]} label={"实还金额"} field={"amount"} >
-                <Input></Input>
+                <InputNumber min={0}></InputNumber>
               </Form.Item>
               <Form.Item label={"备注"} field={"remark"}>
                 <Input.TextArea></Input.TextArea>

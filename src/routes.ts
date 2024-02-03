@@ -93,6 +93,14 @@ export const routes: IRoute[] = [
     key: 'repayment-search/task-manage',
     ignore: true,
   },
+  {
+    name: '反馈管理',
+    key: 'review-management',
+  },
+  {
+    name: '版本管理',
+    key: 'version-manage',
+  },
 ];
 
 export const getName = (path: string, routes) => {

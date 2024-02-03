@@ -363,3 +363,23 @@ export const APIOrderGetList = (params) => {
 export const APIClearOrder = (params) => {
   return axios.post(`/v1/admin/repaymentPlan/settle`, params);
 };
+
+export const APIGetFeedbackList = (params) => {
+  return axios.post(`/v1/admin/feedBack/list`, params);
+};
+
+export const APIGetVersionList = (params) => {
+  return axios.post(`/v1/admin/appVersion/list`, params);
+};
+
+export const APIDeleteVersion = (params) => {
+  return axios.post(`/v1/admin/appVersion/delete`, params);
+};
+
+export const APIAddVersion = (params) => {
+  return axios.post(`/v1/admin/appVersion/add`, params);
+};
+
+export const APIEditVersion = (params) => {
+  return axios.post(`/v1/admin/appVersion/update`, params);
+};
