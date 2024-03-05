@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import { Link, Card, Radio, Table, Typography } from '@arco-design/web-react';
 import { IconCaretDown, IconCaretUp } from '@arco-design/web-react/icon';
 import axios from 'axios';
@@ -28,12 +28,11 @@ function PopularContent() {
         setLoading(false);
       });
   }, [page, type]);
-
   useEffect(() => {
     fetchData();
   }, [page, fetchData]);
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       title: t['workplace.column.rank'],
       dataIndex: 'rank',
@@ -76,7 +75,7 @@ function PopularContent() {
         );
       },
     },
-  ];
+  ], []);
 
   return (
     <Card>

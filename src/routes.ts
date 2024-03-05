@@ -13,23 +13,6 @@ export type IRoute = AuthParams & {
 
 export const routes: IRoute[] = [
   {
-    name: '仪表盘',
-    key: 'dashboard/workplace',
-    children: [
-      // {
-      //   name: 'menu.dashboard.workplace',
-      //   key: 'dashboard/workplace',
-      // },
-      // {
-      //   name: 'menu.dashboard.monitor',
-      //   key: 'dashboard/monitor',
-      //   requiredPermissions: [
-      //     { resource: 'menu.dashboard.monitor', actions: ['write'] },
-      //   ],
-      // },
-    ],
-  },
-  {
     name: '配置管理',
     key: 'setting',
     ignore:true,
@@ -90,10 +73,12 @@ export const routes: IRoute[] = [
       {
         name: '规则设置',
         key: 'approve-management/rule-manage',
+        ignore: true,
       },
       {
         name: '流程设置',
         key: 'approve-management/flow-manage',
+        ignore: true,
       },
     ],
   },

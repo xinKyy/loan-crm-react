@@ -67,8 +67,9 @@ export default function LoginForm() {
       name: params.userName,
     })
       .then((resp: any) => {
-        if (resp.data) {
-          afterLoginSuccess(resp);
+        console.log(resp, "resp")
+        if (resp.data?.data.accessToken) {
+          afterLoginSuccess(resp.data);
           localStorage.setItem('adminUserName', params.userName);
         }
       })
