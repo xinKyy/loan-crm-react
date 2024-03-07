@@ -1,5 +1,6 @@
 import auth, { AuthParams } from '@/utils/authentication';
 import { useEffect, useMemo, useState } from 'react';
+import useStorage from '@/utils/useStorage';
 
 export type IRoute = AuthParams & {
   name: string;
@@ -9,25 +10,29 @@ export type IRoute = AuthParams & {
   children?: IRoute[];
   // 当前路由是否渲染菜单项，为 true 的话不会在菜单中显示，但可通过路由地址访问。
   ignore?: boolean;
+  permission?: Array<string>;
 };
 
 export const routes: IRoute[] = [
   {
     name: '配置管理',
     key: 'setting',
-    ignore:true,
+    ignore: true,
     children: [
       {
         name: '公告',
         key: 'post/post-table',
+        permission: [],
       },
       {
         name: '添加公告',
         key: 'post/create-post',
+        permission: [],
       },
       {
         name: '轮播图',
         key: 'setting/system-setting',
+        permission: [],
       },
       // {
       //   name: '权限管理',
@@ -40,6 +45,7 @@ export const routes: IRoute[] = [
       {
         name: 'AIS币价配置',
         key: 'setting/pay',
+        permission: [],
       },
     ],
   },
@@ -50,11 +56,13 @@ export const routes: IRoute[] = [
       {
         name: '工单审核',
         key: 'work-order-management/work-order-check',
+        permission: ['1', '2'],
       },
       {
         name: '工单详情',
         key: 'work-order-management/work-order-check/order-detail-view',
         ignore: true,
+        permission: ['1', '2'],
       },
     ],
   },
@@ -65,41 +73,41 @@ export const routes: IRoute[] = [
       {
         name: '工单推送',
         key: 'approve-management/check-manage',
+        permission: ['1', '2'],
       },
       {
         name: '工单查询',
         key: 'approve-management/order-search',
+        permission: ['1', '2'],
       },
       {
         name: '规则设置',
         key: 'approve-management/rule-manage',
+        ignore: true,
+        permission: ['1'],
       },
       {
         name: '流程设置',
         key: 'approve-management/flow-manage',
+        ignore: true,
+        permission: ['1'],
       },
     ],
   },
   {
     name: '还款查询',
     key: 'repayment-search/index',
+    permission: ['1', '3'],
   },
   {
     name: '催收管理',
     key: 'repayment-search/collection-manage',
+    permission: ['1', '4'],
   },
   {
     name: '定时任务手动触发',
     key: 'repayment-search/task-manage',
-    ignore: true,
-  },
-  {
-    name: '反馈管理',
-    key: 'review-management',
-  },
-  {
-    name: '版本管理',
-    key: 'version-manage',
+    permission: ['1'],
   },
 ];
 
@@ -115,7 +123,7 @@ export const getName = (path: string, routes) => {
 };
 
 export const generatePermission = (role: string) => {
-  const actions = role === 'admin' ? ['*'] : ['read'];
+  const actions = role === "'admin' ? ['*'] : ['read']";
   const result = {};
   routes.forEach((item) => {
     if (item.children) {
@@ -127,41 +135,43 @@ export const generatePermission = (role: string) => {
   return result;
 };
 
-const useRoute = (userPermission): [IRoute[], string] => {
-  const filterRoute = (routes: IRoute[], arr = []): IRoute[] => {
+const useRoute = (): [IRoute[], string] => {
+  const filterRoute = (
+    userPermission,
+    routes: IRoute[],
+    arr = []
+  ): IRoute[] => {
     if (!routes.length) {
       return [];
     }
     for (const route of routes) {
-      const { requiredPermissions, oneOfPerm } = route;
-      let visible = true;
-      if (requiredPermissions) {
-        visible = auth({ requiredPermissions, oneOfPerm }, userPermission);
-      }
-
-      if (!visible) {
-        continue;
-      }
+      const newRoute = { ...route, children: [] };
       if (route.children && route.children.length) {
-        const newRoute = { ...route, children: [] };
-        filterRoute(route.children, newRoute.children);
-        if (newRoute.children.length) {
+        route.children.forEach((item) => {
+          if (item.permission.includes(userPermission)) {
+            newRoute.children.push(item);
+          }
+        });
+        if (newRoute.children && newRoute.children.length) {
           arr.push(newRoute);
         }
       } else {
-        arr.push({ ...route });
+        if (route.permission.includes(userPermission)) {
+          arr.push(newRoute);
+        }
       }
     }
-
     return arr;
   };
 
   const [permissionRoute, setPermissionRoute] = useState(routes);
+  const [userRole, setUserRole] = useStorage('loanUserRole', '0');
 
   useEffect(() => {
-    const newRoutes = filterRoute(routes);
+    const userRole = localStorage.getItem('loanUserRole');
+    const newRoutes = filterRoute(userRole, routes);
     setPermissionRoute(newRoutes);
-  }, [JSON.stringify(userPermission)]);
+  }, [userRole]);
 
   const defaultRoute = useMemo(() => {
     const first = permissionRoute[0];
@@ -170,7 +180,7 @@ const useRoute = (userPermission): [IRoute[], string] => {
       return firstRoute;
     }
     return '';
-  }, [permissionRoute]);
+  }, [userRole]);
 
   return [permissionRoute, defaultRoute];
 };

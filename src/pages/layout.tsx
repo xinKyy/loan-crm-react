@@ -11,7 +11,9 @@ import {
   IconExclamationCircle,
   IconUser,
   IconMenuFold,
-  IconMenuUnfold, IconQuestionCircle, IconUpload,
+  IconMenuUnfold,
+  IconQuestionCircle,
+  IconUpload,
 } from '@arco-design/web-react/icon';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -75,7 +77,7 @@ function PageLayout({ children }: { children: ReactNode }) {
 
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
-  const [routes, defaultRoute] = useRoute(userInfo?.permissions);
+  const [routes, defaultRoute] = useRoute();
 
   const defaultSelectedKeys = [currentComponent || defaultRoute];
   const paths = (currentComponent || defaultRoute).split('/');

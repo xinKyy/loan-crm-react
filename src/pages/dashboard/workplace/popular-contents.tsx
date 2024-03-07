@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, Card, Radio, Table, Typography } from '@arco-design/web-react';
 import { IconCaretDown, IconCaretUp } from '@arco-design/web-react/icon';
 import axios from 'axios';
@@ -28,55 +28,57 @@ function PopularContent() {
         setLoading(false);
       });
   }, [page, type]);
-
   useEffect(() => {
     fetchData();
   }, [page, fetchData]);
 
-  const columns = [
-    {
-      title: t['workplace.column.rank'],
-      dataIndex: 'rank',
-      width: 65,
-    },
-    {
-      title: t['workplace.column.title'],
-      dataIndex: 'title',
-      render: (x) => (
-        <Typography.Paragraph style={{ margin: 0 }} ellipsis>
-          {x}
-        </Typography.Paragraph>
-      ),
-    },
-    {
-      title: t['workplace.column.pv'],
-      dataIndex: 'pv',
-      width: 100,
-      render: (text) => {
-        return `${text / 1000}k`;
+  const columns = useMemo(
+    () => [
+      {
+        title: t['workplace.column.rank'],
+        dataIndex: 'rank',
+        width: 65,
       },
-    },
-    {
-      title: t['workplace.column.increase'],
-      dataIndex: 'increase',
-      sorter: (a, b) => a.increase - b.increase,
-      width: 110,
-      render: (text) => {
-        return (
-          <span>
-            {`${(text * 100).toFixed(2)}%`}
-            <span className={styles['symbol']}>
-              {text < 0 ? (
-                <IconCaretUp style={{ color: 'rgb(var(--green-6))' }} />
-              ) : (
-                <IconCaretDown style={{ color: 'rgb(var(--red-6))' }} />
-              )}
+      {
+        title: t['workplace.column.title'],
+        dataIndex: 'title',
+        render: (x) => (
+          <Typography.Paragraph style={{ margin: 0 }} ellipsis>
+            {x}
+          </Typography.Paragraph>
+        ),
+      },
+      {
+        title: t['workplace.column.pv'],
+        dataIndex: 'pv',
+        width: 100,
+        render: (text) => {
+          return `${text / 1000}k`;
+        },
+      },
+      {
+        title: t['workplace.column.increase'],
+        dataIndex: 'increase',
+        sorter: (a, b) => a.increase - b.increase,
+        width: 110,
+        render: (text) => {
+          return (
+            <span>
+              {`${(text * 100).toFixed(2)}%`}
+              <span className={styles['symbol']}>
+                {text < 0 ? (
+                  <IconCaretUp style={{ color: 'rgb(var(--green-6))' }} />
+                ) : (
+                  <IconCaretDown style={{ color: 'rgb(var(--red-6))' }} />
+                )}
+              </span>
             </span>
-          </span>
-        );
+          );
+        },
       },
-    },
-  ];
+    ],
+    []
+  );
 
   return (
     <Card>

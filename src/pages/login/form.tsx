@@ -15,7 +15,7 @@ import useStorage from '@/utils/useStorage';
 import useLocale from '@/utils/useLocale';
 import locale from './locale';
 import styles from './style/index.module.less';
-import {APIDoLogin, APILoginAdmin, APIUserAdminLogin} from '@/api/api';
+import { APIDoLogin, APILoginAdmin, APIUserAdminLogin } from '@/api/api';
 import { useRouter } from 'next/router';
 import cookies from 'next-cookies';
 import { setCookie } from '@/utils/dateUtil';
@@ -66,8 +66,9 @@ export default function LoginForm() {
       name: params.userName,
     })
       .then((resp: any) => {
-        if (resp.data) {
-          afterLoginSuccess(resp);
+        if (resp.data?.data.accessToken) {
+          afterLoginSuccess(resp.data); // resp.data.data.type
+          localStorage.setItem('loanUserRole', resp.data.data.type); // 1审批经理，2审批人员，3财务人员，4催收人员
           localStorage.setItem('adminUserName', params.userName);
         }
       })
