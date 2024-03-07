@@ -97,7 +97,7 @@ export const routes: IRoute[] = [
   {
     name: '还款查询',
     key: 'repayment-search/index',
-    permission:["1", "2"]
+    permission:["1", "3"]
   },
   {
     name: '催收管理',
@@ -148,7 +148,9 @@ const useRoute = (): [IRoute[], string] => {
             newRoute.children.push(item)
           }
         })
-        arr.push(newRoute)
+        if(newRoute.children && newRoute.children.length){
+          arr.push(newRoute)
+        }
       } else {
         if(route.permission.includes(userPermission)){
           arr.push(newRoute)
@@ -174,7 +176,7 @@ const useRoute = (): [IRoute[], string] => {
       return firstRoute;
     }
     return '';
-  }, [permissionRoute]);
+  }, [userRole]);
 
   return [permissionRoute, defaultRoute];
 };

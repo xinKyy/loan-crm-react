@@ -68,7 +68,7 @@ export default function LoginForm() {
     })
       .then((resp: any) => {
         if (resp.data?.data.accessToken) {
-          afterLoginSuccess(resp.data);
+          afterLoginSuccess(resp.data); // resp.data.data.type
           localStorage.setItem("loanUserRole", resp.data.data.type); // 1审批经理，2审批人员，3财务人员，4催收人员
           localStorage.setItem('adminUserName', params.userName);
         }
