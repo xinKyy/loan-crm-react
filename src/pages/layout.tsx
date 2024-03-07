@@ -71,7 +71,7 @@ function PageLayout({ children }: { children: ReactNode }) {
 
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
-  const [routes, defaultRoute] = useRoute(userInfo?.permissions);
+  const [routes, defaultRoute] = useRoute();
 
   const defaultSelectedKeys = [currentComponent || defaultRoute];
   const paths = (currentComponent || defaultRoute).split('/');

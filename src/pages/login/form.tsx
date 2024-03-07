@@ -67,9 +67,9 @@ export default function LoginForm() {
       name: params.userName,
     })
       .then((resp: any) => {
-        console.log(resp, "resp")
         if (resp.data?.data.accessToken) {
           afterLoginSuccess(resp.data);
+          localStorage.setItem("loanUserRole", resp.data.data.type); // 1审批经理，2审批人员，3财务人员，4催收人员
           localStorage.setItem('adminUserName', params.userName);
         }
       })
