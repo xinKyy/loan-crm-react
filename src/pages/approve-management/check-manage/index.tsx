@@ -322,7 +322,7 @@ const ApproveManagement = () => {
     setQuestionVisible(false);
     setLoading(true);
     APIPushOrder({
-      orderNo: currentConfirmRecord?.orderNo,
+      orderId: currentConfirmRecord?.id,
     })
       .then((resp: any) => {
         if (resp.data) {
@@ -340,7 +340,7 @@ const ApproveManagement = () => {
       setPushOrderListVisible(false);
       setLoading(true);
       APIPushListOrder({
-        orderNos: selectedRowKeys,
+        orderId: selectedRowKeys,
       })
         .then((resp: any) => {
           if (resp.data) {
@@ -371,7 +371,7 @@ const ApproveManagement = () => {
           }}>批量推单</Button>
         </div>
         <Table
-          rowKey="orderNo"
+          rowKey="id"
           loading={loading}
           onChange={onChangeTable}
           pagination={pagination}
